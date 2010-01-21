@@ -848,12 +848,16 @@ coverage: init-coverage build-coverage gen-coverage
 # Update gettext files.
 PACKAGE ?= $(shell basename $(PWD))
 PO_DOMAIN ?= $(PACKAGE)
-POURL = http://translationproject.org/latest/$(PO_DOMAIN)/
 PODIR ?= po
+RSYNC_OPTIONS = -iz
+RSYNC_PROTECT ?= en@boldquot.po en@quot.po
+.PHONY: refresh-po
 refresh-po:
-	rm -f $(PODIR)/*.po && \
-	echo "$(ME): getting translations into po (please ignore the robots.txt ERROR 404)..." && \
-	wget --no-verbose --directory-prefix $(PODIR) --no-directories --recursive --level 1 --accept .po --accept .po.1 $(POURL) && \
+	@echo "$(ME): getting translations into $(PODIR)..."
+	rsync $(RSYNC_OPTIONS) -Lrc --delete \
+	$(patsubst %,-f 'protect %',$(RSYNC_PROTECT)) \
+	-f 'include *.po' -f 'exclude *' \
+	translationproject.org::tp/latest/$(PO_DOMAIN)/ $(PODIR)
 	echo 'en@boldquot' > $(PODIR)/LINGUAS && \
 	echo 'en@quot' >> $(PODIR)/LINGUAS && \
 	ls $(PODIR)/*.po | sed 's/\.po//' | sed 's,$(PODIR)/,,' | sort >> $(PODIR)/LINGUAS
