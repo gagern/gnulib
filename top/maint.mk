@@ -858,9 +858,10 @@ refresh-po:
 	$(patsubst %,-f 'protect %',$(RSYNC_PROTECT)) \
 	-f 'include *.po' -f 'exclude *' \
 	translationproject.org::tp/latest/$(PO_DOMAIN)/ $(PODIR)
-	echo 'en@boldquot' > $(PODIR)/LINGUAS && \
-	echo 'en@quot' >> $(PODIR)/LINGUAS && \
-	ls $(PODIR)/*.po | sed 's/\.po//' | sed 's,$(PODIR)/,,' | sort >> $(PODIR)/LINGUAS
+	@touch $(PODIR)/LINGUAS
+	sed -i -e '/^[a-z]/d' $(PODIR)/LINGUAS
+	{ echo 'en@boldquot'; echo 'en@quot'; ls $(PODIR)/*.po; } \
+	| sed -e 's/\.po//' -e 's,$(PODIR)/,,' | sort -u >> $(PODIR)/LINGUAS
 
 INDENT_SOURCES ?= $(C_SOURCES)
 .PHONY: indent
