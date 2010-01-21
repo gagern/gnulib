@@ -112,7 +112,11 @@ $(patsubst %, %.m, $(syntax-check-rules)):
 
 local-check := $(filter-out $(local-checks-to-skip), $(local-checks-available))
 
-syntax-check: $(local-check)
+syntax-check:
+	@$(VC_LIST) > .vc.list
+	@$(MAKE) -k $(local-check) VC_LIST='cat .vc.list'
+	@$(RM) .vc.list
+
 #	@grep -nE '#  *include <(limits|std(def|arg|bool))\.h>'		\
 #	    $$(find -type f -name '*.[chly]') &&			\
 #	  { echo '$(ME): found conditional include' 1>&2;		\
@@ -776,7 +780,7 @@ no-submodule-changes:
 
 .PHONY: alpha beta stable
 ALL_RECURSIVE_TARGETS += alpha beta stable
-alpha beta stable: $(local-check) writable-files no-submodule-changes
+alpha beta stable: syntax-check writable-files no-submodule-changes
 	test $@ = stable						\
 	  && { echo $(VERSION) | grep -E '^[0-9]+(\.[0-9]+)+$$'		\
 	       || { echo "invalid version string: $(VERSION)" 1>&2; exit 1;};}\
