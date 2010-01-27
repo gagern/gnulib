@@ -59,7 +59,7 @@ endif
 VC_LIST_EXCEPT = \
   $(VC_LIST) | sed 's|^$(_dot_escaped_srcdir)/||' \
 	| if test -f $(srcdir)/.x-$@; then grep -vEf $(srcdir)/.x-$@; \
-	  else grep -Ev -e "$${VC_LIST_EXCEPT_DEFAULT-ChangeLog}"; fi \
+	  else grep -Ev -e $(if $(VC_LIST_EXCEPT_$@),'$(VC_LIST_EXCEPT_$@)',"$${VC_LIST_EXCEPT_DEFAULT-ChangeLog}"); fi \
 	| grep -Ev -e '$(VC_LIST_ALWAYS_EXCLUDE_REGEX)' \
 	$(_prepend_srcdir_prefix)
 
