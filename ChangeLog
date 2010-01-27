@@ -1,3 +1,406 @@
+2010-01-26  Eric Blake  <ebb9@byu.net>
+
+	ignore-value: update recommended header name
+	* modules/ignore-value (Include): Only use <> for headers that
+	exist in glibc.
+
+2010-01-26  Jim Meyering  <meyering@redhat.com>
+
+	test-userspec.c: avoid compiler warnings
+	* tests/test-userspec.c (main): Avoid shadowing ("uid"),
+	and "initialization discards qualifiers..." warnings.
+	Put the first "uid" in its own scope, and make char* members "const".
+
+2010-01-25  Bruno Haible  <bruno@clisp.org>
+
+	gnulib-tool: Make warning diagnostics consistent.
+	* gnulib-tool (func_warning): New function.
+	Use it everywhere where gnulib-tool produces output to stderr and it is
+	not a fatal error.
+
+2010-01-25  Bruno Haible  <bruno@clisp.org>
+
+	Fix test dependencies.
+	* modules/xstrtol-tests (Depends-on): Add inttypes.
+	* modules/xstrtoll-tests (Depends-on): Likewise. Remove xstrtoll.
+
+2010-01-25 Pádraig Brady <P@draigBrady.com>
+
+	syntax-check: detect incorrect boolean macro values in config.h
+	* modules/maintainer-makefile (configure.ac): Parameterize the location
+	of config.h which will be available to makefiles as $(CONFIG_INCLUDE).
+	The logic is from Eric Blake and the location indicated by Jim Meyering.
+	Note the more natural CONFIG_HEADER name is prohibited by automake
+	for backwards compatibility reasons.
+	* top/maint.mk (sc_Wundef_boolean): New rule.
+
+2010-01-25  Jim Meyering  <meyering@redhat.com>
+
+	bootstrap: detect MacOS 10.6's shasum, too
+	* build-aux/bootstrap: Also recognize MacOS 10.6's shasum.
+	Suggested by Thomas Treichl <Thomas.Treichl@gmx.net>.
+
+2010-01-23  Jim Meyering  <meyering@redhat.com>
+
+	xstrtoll: new module
+	* modules/xstrtoll: New file.
+	* MODULES.html.sh (Numeric conversion functions): Add xstrtoll.
+	* lib/xstrtol.h [HAVE_LONG_LONG_INT]: Declare xstrtoll and xstrtoull.
+	* lib/xstrtoll.c, lib/xstrtoull.c: New files.
+	./configure fails if you use this module and lack "long long".
+	* modules/xstrtoll-tests: New module.
+	* tests/test-xstrtoll.c, tests/test-xstrtoull.c: New files.
+	* tests/test-xstrtoll.sh: Like test-xstrtol.c, but use the
+	new init.sh-based test framework.
+
+2010-01-24  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'yn'.
+	* modules/yn-tests: New file.
+	* tests/test-yn.c: New file.
+
+	Tests for module 'y1'.
+	* modules/y1-tests: New file.
+	* tests/test-y1.c: New file.
+
+	Tests for module 'y0'.
+	* modules/y0-tests: New file.
+	* tests/test-y0.c: New file.
+
+	Tests for module 'tanh'.
+	* modules/tanh-tests: New file.
+	* tests/test-tanh.c: New file.
+
+	Tests for module 'tan'.
+	* modules/tan-tests: New file.
+	* tests/test-tan.c: New file.
+
+	Tests for module 'sqrt'.
+	* modules/sqrt-tests: New file.
+	* tests/test-sqrt.c: New file.
+
+	Tests for module 'sinh'.
+	* modules/sinh-tests: New file.
+	* tests/test-sinh.c: New file.
+
+	Tests for module 'sin'.
+	* modules/sin-tests: New file.
+	* tests/test-sin.c: New file.
+
+	Tests for module 'rint'.
+	* modules/rint-tests: New file.
+	* tests/test-rint.c: New file.
+
+	Tests for module 'remainder'.
+	* modules/remainder-tests: New file.
+	* tests/test-remainder.c: New file.
+
+	Tests for module 'pow'.
+	* modules/pow-tests: New file.
+	* tests/test-pow.c: New file.
+
+	Tests for module 'nextafter'.
+	* modules/nextafter-tests: New file.
+	* tests/test-nextafter.c: New file.
+
+	Tests for module 'modf'.
+	* modules/modf-tests: New file.
+	* tests/test-modf.c: New file.
+
+	Tests for module 'logb'.
+	* modules/logb-tests: New file.
+	* tests/test-logb.c: New file.
+
+	Tests for module 'log1p'.
+	* modules/log1p-tests: New file.
+	* tests/test-log1p.c: New file.
+
+	Tests for module 'log10'.
+	* modules/log10-tests: New file.
+	* tests/test-log10.c: New file.
+
+	Tests for module 'log'.
+	* modules/log-tests: New file.
+	* tests/test-log.c: New file.
+
+	Tests for module 'lgamma'.
+	* modules/lgamma-tests: New file.
+	* tests/test-lgamma.c: New file.
+
+	Tests for module 'ldexp'.
+	* modules/ldexp-tests: New file.
+	* tests/test-ldexp.c: New file.
+
+	Tests for module 'jn'.
+	* modules/jn-tests: New file.
+	* tests/test-jn.c: New file.
+
+	Tests for module 'j1'.
+	* modules/j1-tests: New file.
+	* tests/test-j1.c: New file.
+
+	Tests for module 'j0'.
+	* modules/j0-tests: New file.
+	* tests/test-j0.c: New file.
+
+	Tests for module 'hypot'.
+	* modules/hypot-tests: New file.
+	* tests/test-hypot.c: New file.
+
+	Tests for module 'fmod'.
+	* modules/fmod-tests: New file.
+	* tests/test-fmod.c: New file.
+
+	Tests for module 'fabs'.
+	* modules/fabs-tests: New file.
+	* tests/test-fabs.c: New file.
+
+	Tests for module 'exp'.
+	* modules/exp-tests: New file.
+	* tests/test-exp.c: New file.
+
+	Tests for module 'erfc'.
+	* modules/erfc-tests: New file.
+	* tests/test-erfc.c: New file.
+
+	Tests for module 'erf'.
+	* modules/erf-tests: New file.
+	* tests/test-erf.c: New file.
+
+	Tests for module 'cosh'.
+	* modules/cosh-tests: New file.
+	* tests/test-cosh.c: New file.
+
+	Tests for module 'cos'.
+	* modules/cos-tests: New file.
+	* tests/test-cos.c: New file.
+
+	Tests for module 'copysign'.
+	* modules/copysign-tests: New file.
+	* tests/test-copysign.c: New file.
+
+	Tests for module 'cbrt'.
+	* modules/cbrt-tests: New file.
+	* tests/test-cbrt.c: New file.
+
+	Tests for module 'atan2'.
+	* modules/atan2-tests: New file.
+	* tests/test-atan2.c: New file.
+
+	Tests for module 'atan'.
+	* modules/atan-tests: New file.
+	* tests/test-atan.c: New file.
+
+	Tests for module 'asin'.
+	* modules/asin-tests: New file.
+	* tests/test-asin.c: New file.
+
+	Tests for module 'acos'.
+	* modules/acos-tests: New file.
+	* tests/test-acos.c: New file.
+
+2010-01-24  Bruno Haible  <bruno@clisp.org>
+
+	Fix tests for common <math.h> functions.
+	* m4/mathfunc.m4 (gl_MATHFUNC): Take two additional parameters. Use a
+	code snippet that references the function pointer, rather than merely
+	calling the function. Substitute the FUNC_LIBM variable.
+	* m4/sqrt.m4 (gl_FUNC_SQRT): Update gl_MATHFUNC invocation.
+	* modules/acos (configure.ac): Likewise.
+	* modules/asin (configure.ac): Likewise.
+	* modules/atan (configure.ac): Likewise.
+	* modules/atan2 (configure.ac): Likewise.
+	* modules/cbrt (configure.ac): Likewise.
+	* modules/copysign (configure.ac): Likewise.
+	* modules/cos (configure.ac): Likewise.
+	* modules/cosh (configure.ac): Likewise.
+	* modules/erf (configure.ac): Likewise.
+	* modules/erfc (configure.ac): Likewise.
+	* modules/exp (configure.ac): Likewise.
+	* modules/fabs (configure.ac): Likewise.
+	* modules/fmod (configure.ac): Likewise.
+	* modules/hypot (configure.ac): Likewise.
+	* modules/j0 (configure.ac): Likewise.
+	* modules/j1 (configure.ac): Likewise.
+	* modules/jn (configure.ac): Likewise.
+	* modules/ldexp (configure.ac): Likewise.
+	* modules/lgamma (configure.ac): Likewise.
+	* modules/log (configure.ac): Likewise.
+	* modules/log10 (configure.ac): Likewise.
+	* modules/log1p (configure.ac): Likewise.
+	* modules/logb (configure.ac): Likewise.
+	* modules/modf (configure.ac): Likewise.
+	* modules/nextafter (configure.ac): Likewise.
+	* modules/pow (configure.ac): Likewise.
+	* modules/remainder (configure.ac): Likewise.
+	* modules/rint (configure.ac): Likewise.
+	* modules/sin (configure.ac): Likewise.
+	* modules/sinh (configure.ac): Likewise.
+	* modules/tan (configure.ac): Likewise.
+	* modules/tanh (configure.ac): Likewise.
+	* modules/y0 (configure.ac): Likewise.
+	* modules/y1 (configure.ac): Likewise.
+	* modules/yn (configure.ac): Likewise.
+
+2010-01-24  Bruno Haible  <bruno@clisp.org>
+
+	Tests: Defeat inlining of math functions by GCC >= 4.3.0.
+	* tests/test-acosl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-asinl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-atanl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-cosl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-expl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-logl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-sinl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-sqrtl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+	* tests/test-tanl.c (x): New variable.
+	(main): Store argument in x and fetch it from x.
+
+2010-01-24  Bruno Haible  <bruno@clisp.org>
+
+	Provide EXEEXT and srcdir in TESTS_ENVIRONMENT by default.
+	* gnulib-tool (func_emit_tests_Makefile_am): Add EXEEXT and srcdir
+	assignments to the initial TESTS_ENVIRONMENT.
+	* doc/gnulib.texi (Unit test modules): Document it.
+	* modules/acl-tests (Makefile.am): Drop EXEEXT assignment from
+	TESTS_ENVIRONMENT.
+	* modules/btowc-tests (Makefile.am): Likewise.
+	* modules/c-stack-tests (Makefile.am): Likewise.
+	* modules/c-strcase-tests (Makefile.am): Likewise.
+	* modules/copy-file-tests (Makefile.am): Likewise.
+	* modules/mbmemcasecmp-tests (Makefile.am): Likewise.
+	* modules/mbmemcasecoll-tests (Makefile.am): Likewise.
+	* modules/mbrtowc-tests (Makefile.am): Likewise.
+	* modules/mbscasecmp-tests (Makefile.am): Likewise.
+	* modules/mbscasestr-tests (Makefile.am): Likewise.
+	* modules/mbschr-tests (Makefile.am): Likewise.
+	* modules/mbscspn-tests (Makefile.am): Likewise.
+	* modules/mbsinit-tests (Makefile.am): Likewise.
+	* modules/mbsncasecmp-tests (Makefile.am): Likewise.
+	* modules/mbsnrtowcs-tests (Makefile.am): Likewise.
+	* modules/mbspbrk-tests (Makefile.am): Likewise.
+	* modules/mbspcasecmp-tests (Makefile.am): Likewise.
+	* modules/mbsrchr-tests (Makefile.am): Likewise.
+	* modules/mbsrtowcs-tests (Makefile.am): Likewise.
+	* modules/mbsspn-tests (Makefile.am): Likewise.
+	* modules/mbsstr-tests (Makefile.am): Likewise.
+	* modules/nl_langinfo-tests (Makefile.am): Likewise.
+	* modules/unicase/locale-language-tests (Makefile.am): Likewise.
+	* modules/unistdio/u16-vasnprintf-tests (Makefile.am): Likewise.
+	* modules/unistdio/u32-vasnprintf-tests (Makefile.am): Likewise.
+	* modules/unistdio/u8-vasnprintf-tests (Makefile.am): Likewise.
+	* modules/unistdio/ulc-vasnprintf-tests (Makefile.am): Likewise.
+	* modules/uniwbrk/ulc-wordbreaks-tests (Makefile.am): Likewise.
+	* modules/vasnprintf-posix-tests (Makefile.am): Likewise.
+	* modules/wcrtomb-tests (Makefile.am): Likewise.
+	* modules/wcsnrtombs-tests (Makefile.am): Likewise.
+	* modules/wcsrtombs-tests (Makefile.am): Likewise.
+	* modules/quotearg-tests (Makefile.am): Drop EXEEXT and srcdir
+	assignments from TESTS_ENVIRONMENT.
+	* modules/argp-tests (Makefile.am): Drop TESTS_ENVIRONMENT
+	augmentation.
+	* modules/argp-version-etc-tests (Makefile.am): Likewise.
+	* modules/atexit-tests (Makefile.am): Likewise.
+	* modules/binary-io-tests (Makefile.am): Likewise.
+	* modules/closein-tests (Makefile.am): Likewise.
+	* modules/dprintf-posix-tests (Makefile.am): Likewise.
+	* modules/exclude-tests (Makefile.am): Likewise.
+	* modules/fflush-tests (Makefile.am): Likewise.
+	* modules/fpending-tests (Makefile.am): Likewise.
+	* modules/fprintf-posix-tests (Makefile.am): Likewise.
+	* modules/freadahead-tests (Makefile.am): Likewise.
+	* modules/freadptr-tests (Makefile.am): Likewise.
+	* modules/freadseek-tests (Makefile.am): Likewise.
+	* modules/fseek-tests (Makefile.am): Likewise.
+	* modules/fseeko-tests (Makefile.am): Likewise.
+	* modules/ftell-tests (Makefile.am): Likewise.
+	* modules/ftello-tests (Makefile.am): Likewise.
+	* modules/idpriv-drop-tests (Makefile.am): Likewise.
+	* modules/idpriv-droptemp-tests (Makefile.am): Likewise.
+	* modules/lseek-tests (Makefile.am): Likewise.
+	* modules/parse-duration-tests (Makefile.am): Likewise.
+	* modules/perror-tests (Makefile.am): Likewise.
+	* modules/pipe-filter-gi-tests (Makefile.am): Likewise.
+	* modules/pipe-filter-ii-tests (Makefile.am): Likewise.
+	* modules/pipe-tests (Makefile.am): Likewise.
+	* modules/pread-tests (Makefile.am): Likewise.
+	* modules/printf-posix-tests (Makefile.am): Likewise.
+	* modules/select-tests (Makefile.am): Likewise.
+	* modules/sigpipe-tests (Makefile.am): Likewise.
+	* modules/tsearch-tests (Makefile.am): Likewise.
+	* modules/unicase/ulc-casecmp-tests (Makefile.am): Likewise.
+	* modules/unicase/ulc-casecoll-tests (Makefile.am): Likewise.
+	* modules/uniname/uniname-tests (Makefile.am): Likewise.
+	* modules/uniwidth/width-tests (Makefile.am): Likewise.
+	* modules/vdprintf-posix-tests (Makefile.am): Likewise.
+	* modules/version-etc-tests (Makefile.am): Likewise.
+	* modules/vfprintf-posix-tests (Makefile.am): Likewise.
+	* modules/vprintf-posix-tests (Makefile.am): Likewise.
+	* modules/xalloc-die-tests (Makefile.am): Likewise.
+	* modules/xprintf-posix-tests (Makefile.am): Likewise.
+	* modules/xstrtoimax-tests (Makefile.am): Likewise.
+	* modules/xstrtol-tests (Makefile.am): Likewise.
+	* modules/xstrtoumax-tests (Makefile.am): Likewise.
+	* modules/yesno-tests (Makefile.am): Likewise.
+	Suggested by Jim Meyering.
+
+2010-01-24  Bruno Haible  <bruno@clisp.org>
+
+	More documentation.
+	* doc/gnulib.texi (Writing modules): New chapter.
+	(Miscellaneous Notes): Move sections "Comments" and "Header files" to
+	the new chapter.
+
+2010-01-24  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: do not prepend "./" after filtering
+	* top/maint.mk (_prepend_srcdir_prefix): New variable
+	(VC_LIST_EXCEPT): Use it to avoid prepending (post-filter)
+	"./" when $(srcdir) is ".".
+
+	define STREQ(a,b) consistently, removing useless parentheses
+	#define STREQ(a, b) (strcmp ((a), (b)) == 0) is over-parenthesized,
+	since the only risk is that "a" or "b" contains an unparenthesized
+	comma, but if either did that, STREQ would have 3 or more arguments.
+	Hence, #define STREQ(a, b) (strcmp (a, b) == 0) is better.
+	* lib/fts.c (STREQ): Remove unnecessary parentheses.
+	* lib/hash-triple.c (STREQ): Likewise.
+	* tests/test-argv-iter.c (STREQ): Use a and b, not s1 and s2.
+	* lib/getugroups.c (STREQ): Likewise.
+
+2010-01-23  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: fix syntax-check in a non-srcdir build directory
+	* top/maint.mk (_dot_escaped_srcdir): Remove erroneous backslash,
+	introduced in my 2010-01-21 commit, a6da6c45.  Reported by Eric Blake.
+
+2010-01-22  Jim Meyering  <meyering@redhat.com>
+
+	userspec: add unit tests
+	* tests/test-userspec.c: New file.
+	* modules/userspec-tests: Likewise.
+
+2010-01-21  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: handle source file names containing "." robustly
+	* top/maint.mk (_dot_escaped_srcdir): Define.
+	(VC_LIST): Use it in LHS of sed substitution.
+
+2010-01-21  Jiri Denemark  <jdenemar@redhat.com>
+
+	maint.mk: fix VC_LIST_EXCEPT for srcdir != builddir
+	* top/maint.mk (VC_LIST_EXCEPT): Preprocess the output of
+	$(VC_LIST) to remove a prefix of '$(srcdir)/', so that it works
+	from a non-srcdir build.
+
 2010-01-20  Eric Blake  <ebb9@byu.net>
 
 	warn-on-use: use instead of link-warning

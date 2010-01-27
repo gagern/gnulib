@@ -40,10 +40,28 @@ VC_LIST = $(build_aux)/vc-list-files -C $(srcdir)
 # matching files to ignore.
 VC_LIST_ALWAYS_EXCLUDE_REGEX ?= ^$$
 
+# This is to preprocess robustly the output of $(VC_LIST), so that even
+# when $(srcdir) is a pathological name like "....", the leading sed command
+# removes only the intended prefix.
+_dot_escaped_srcdir = $(subst .,\.,$(srcdir))
+
+# Post-process $(VC_LIST) output, prepending $(srcdir)/, but only
+# when $(srcdir) is not ".".
+ifeq ($(srcdir),.)
+_prepend_srcdir_prefix =
+else
+_prepend_srcdir_prefix = | sed 's|^|$(srcdir)/|'
+endif
+
+# In order to be able to consistently filter "."-relative names,
+# (i.e., with no $(srcdir) prefix), this definition is careful to
+# remove any $(srcdir) prefix, and to restore what it removes.
 VC_LIST_EXCEPT = \
-  $(VC_LIST) | if test -f $(srcdir)/.x-$@; then grep -vEf $(srcdir)/.x-$@; \
-	       else grep -Ev -e "$${VC_LIST_EXCEPT_DEFAULT-ChangeLog}"; fi \
-	| grep -Ev -e '$(VC_LIST_ALWAYS_EXCLUDE_REGEX)'
+  $(VC_LIST) | sed 's|^$(_dot_escaped_srcdir)/||' \
+	| if test -f $(srcdir)/.x-$@; then grep -vEf $(srcdir)/.x-$@; \
+	  else grep -Ev -e "$${VC_LIST_EXCEPT_DEFAULT-ChangeLog}"; fi \
+	| grep -Ev -e '$(VC_LIST_ALWAYS_EXCLUDE_REGEX)' \
+	$(_prepend_srcdir_prefix)
 
 ifeq ($(origin prev_version_file), undefined)
   prev_version_file = $(srcdir)/.prev-version
@@ -703,6 +721,14 @@ sc_copyright_check:
 	  || { echo 'out of date copyright in $(texi); update it' 1>&2;	\
 	       exit 1; };						\
 	fi
+
+# #if HAVE_... will evaluate to false for any non numeric string.
+# That would be flagged by using -Wundef, however gnulib currently
+# tests many undefined macros, and so we can't enable that option.
+# So at least preclude common boolean strings as macro values.
+sc_Wundef_boolean:
+	@grep -Ei '^#define.*(yes|no|true|false)$$' '$(CONFIG_INCLUDE)' && \
+	  { echo 'Use 0 or 1 for macro values' 1>&2; exit 1; } || :
 
 vc-diff-check:
 	(unset CDPATH; cd $(srcdir) && $(VC) diff) > vc-diffs || :
