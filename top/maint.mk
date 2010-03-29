@@ -125,7 +125,9 @@ local-checks-available = \
 
 # Arrange to print the name of each syntax-checking rule just before running it.
 $(syntax-check-rules): %: %.m
-$(patsubst %, %.m, $(syntax-check-rules)):
+sc_m_rules_ = $(patsubst %, %.m, $(syntax-check-rules))
+.PHONY: $(sc_m_rules_)
+$(sc_m_rules_):
 	@echo $(patsubst sc_%.m, %, $@)
 
 local-check := $(filter-out $(local-checks-to-skip), $(local-checks-available))
@@ -338,6 +340,11 @@ sc_prohibit_inttostr_without_use:
 	  $(_header_without_use)
 
 # Don't include this header unless you use one of its functions.
+sc_prohibit_ignore_value_without_use:
+	@h='"ignore-value.h"' re='\<ignore_(value|ptr) *\(' \
+	  $(_header_without_use)
+
+# Don't include this header unless you use one of its functions.
 sc_prohibit_error_without_use:
 	@h='"error.h"' \
 	re='\<error(_at_line|_print_progname|_one_per_line|_message_count)? *\('\
@@ -364,6 +371,22 @@ _xa2 = X([CZ]|N?M)ALLOC
 sc_prohibit_xalloc_without_use:
 	@h='"xalloc.h"' \
 	re='\<($(_xa1)|$(_xa2)) *\('\
+	  $(_header_without_use)
+
+# Extract function names:
+# perl -lne '/^(?:extern )?(?:void|char) \*?(\w+) \(/ and print $1' lib/hash.h
+_hash_re = \
+clear|delete|free|get_(first|next)|insert|lookup|print_statistics|reset_tuning
+_hash_fn = \<($(_hash_re)) *\(
+_hash_struct = (struct )?\<[Hh]ash_(table|tuning)\>
+sc_prohibit_hash_without_use:
+	@h='"hash.h"' \
+	re='$(_hash_fn)|$(_hash_struct)'\
+	  $(_header_without_use)
+
+sc_prohibit_hash_pjw_without_use:
+	@h='"hash-pjw.h"' \
+	re='\<hash_pjw *\(' \
 	  $(_header_without_use)
 
 sc_prohibit_safe_read_without_use:
@@ -431,6 +454,19 @@ _sig_syms_re = $(subst $(_sp),|,$(strip $(_sig_names) $(_sig_types_and_consts)))
 sc_prohibit_signal_without_use:
 	@h='<signal.h>'							\
 	re='\<($(_sig_function_re)) *\(|\<($(_sig_syms_re))\>'		\
+	  $(_header_without_use)
+
+# Get the list of symbol names with this:
+# perl -lne '/^# *define (\w+)\(/ and print $1' lib/intprops.h|grep -v '^s'|fmt
+_intprops_names =							\
+  TYPE_IS_INTEGER TYPE_TWOS_COMPLEMENT TYPE_ONES_COMPLEMENT		\
+  TYPE_SIGNED_MAGNITUDE TYPE_SIGNED TYPE_MINIMUM TYPE_MAXIMUM		\
+  INT_STRLEN_BOUND INT_BUFSIZE_BOUND
+_intprops_syms_re = $(subst $(_sp),|,$(strip $(_intprops_names)))
+# Prohibit the inclusion of intprops.h without an actual use.
+sc_prohibit_intprops_without_use:
+	@h='"intprops.h"'						\
+	re='\<($(_intprops_syms_re)) *\('				\
 	  $(_header_without_use)
 
 sc_obsolete_symbols:
@@ -529,6 +565,16 @@ sc_GFDL_version:
 	@re='$(_GFDL_regexp)' msg='GFDL vN, N!=3'			\
 	  $(_prohibit_regexp)
 
+# Don't use Texinfo @acronym{} as it is not a good idea.
+sc_texinfo_acronym:
+	@if $(VC_LIST_EXCEPT) | grep -lE '\.texi$$' >/dev/null; then	\
+		grep -nE '@acronym{'					\
+			$$($(VC_LIST_EXCEPT) | grep -E '\.texi$$') &&	\
+	  { echo '$(ME): found use of Texinfo @acronym{}' 1>&2;		\
+	    exit 1; } || :;						\
+	else :;								\
+	fi
+
 cvs_keywords = \
   Author|Date|Header|Id|Name|Locker|Log|RCSfile|Revision|Source|State
 
@@ -549,6 +595,14 @@ sc_prohibit_stat_st_blocks:
 sc_prohibit_S_IS_definition:
 	@re='^ *# *define  *S_IS'					\
 	msg='do not define S_IS* macros; include <sys/stat.h>'		\
+	  $(_prohibit_regexp)
+
+_ptm1 = use "test C1 && test C2", not "test C1 -''a C2"
+_ptm2 = use "test C1 || test C2", not "test C1 -''o C2"
+# Using test's -a and -o operators is not portable.
+sc_prohibit_test_minus_ao:
+	@re='\<test .+ -[ao] '						\
+	msg='$(_ptm1); $(_ptm2)'						\
 	  $(_prohibit_regexp)
 
 # Each program that uses proper_name_utf8 must link with one of the
@@ -727,8 +781,22 @@ sc_copyright_check:
 # tests many undefined macros, and so we can't enable that option.
 # So at least preclude common boolean strings as macro values.
 sc_Wundef_boolean:
-	@grep -Ei '^#define.*(yes|no|true|false)$$' '$(CONFIG_INCLUDE)' && \
-	  { echo 'Use 0 or 1 for macro values' 1>&2; exit 1; } || :
+	@test -e '$(CONFIG_INCLUDE)' &&                                 \
+	   grep -Ei '^#define.*(yes|no|true|false)$$' '$(CONFIG_INCLUDE)' && \
+	     { echo 'Use 0 or 1 for macro values' 1>&2; exit 1; } || :
+
+sc_vulnerable_makefile_CVE-2009-4029:
+	@files=$$(find $(srcdir) -name Makefile.in);			\
+	if test -n "$$files"; then					\
+	  grep -E							\
+	    'perm -777 -exec chmod a\+rwx|chmod 777 \$$\(distdir\)'	\
+	    $$files &&							\
+	  { echo '$(ME): the above files are vulnerable; beware of'	\
+	    'running "make dist*" rules, and upgrade to fixed automake'	\
+	    'see http://bugzilla.redhat.com/542609 for details'		\
+		1>&2; exit 1; } || :;					\
+	else :;								\
+	fi
 
 vc-diff-check:
 	(unset CDPATH; cd $(srcdir) && $(VC) diff) > vc-diffs || :
@@ -773,11 +841,12 @@ announcement: NEWS ChangeLog $(rel-files)
 ftp-gnu = ftp://ftp.gnu.org/gnu
 www-gnu = http://www.gnu.org
 
+upload_dest_dir_ ?= $(PACKAGE)
 emit_upload_commands:
 	@echo =====================================
 	@echo =====================================
 	@echo "$(build_aux)/gnupload $(GNUPLOADFLAGS) \\"
-	@echo "    --to $(gnu_rel_host):$(PACKAGE) \\"
+	@echo "    --to $(gnu_rel_host):$(upload_dest_dir_) \\"
 	@echo "  $(rel-files)"
 	@echo '# send the ~/announce-$(my_distdir) e-mail'
 	@echo =====================================

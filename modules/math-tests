@@ -2,6 +2,7 @@ Files:
 tests/test-math.c
 
 Depends-on:
+math-c++-tests
 
 configure.ac:
 

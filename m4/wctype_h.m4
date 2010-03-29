@@ -1,4 +1,4 @@
-# wctype.m4 serial 4
+# wctype_h.m4 serial 6
 
 dnl A placeholder for ISO C99 <wctype.h>, for platforms that lack it.
 
@@ -20,6 +20,13 @@ AC_DEFUN([gl_WCTYPE_H],
     HAVE_ISWCNTRL=0
   fi
   AC_SUBST([HAVE_ISWCNTRL])
+  AC_CHECK_FUNCS_ONCE([iswblank])
+  if test $ac_cv_func_iswblank = yes; then
+    HAVE_ISWBLANK=1
+  else
+    HAVE_ISWBLANK=0
+  fi
+  AC_SUBST([HAVE_ISWBLANK])
   AC_CHECK_HEADERS_ONCE([wctype.h])
   AC_REQUIRE([AC_C_INLINE])
 
@@ -31,7 +38,6 @@ AC_DEFUN([gl_WCTYPE_H],
   fi
   AC_SUBST([HAVE_WINT_T])
 
-  WCTYPE_H=wctype.h
   if test $ac_cv_header_wctype_h = yes; then
     if test $ac_cv_func_iswcntrl = yes; then
       dnl Linux libc5 has an iswprint function that returns 0 for all arguments.
@@ -53,27 +59,13 @@ AC_DEFUN([gl_WCTYPE_H],
               [gl_cv_func_iswcntrl_works=yes], [gl_cv_func_iswcntrl_works=no])
             ])
         ])
-      if test $gl_cv_func_iswcntrl_works = yes; then
-        case "$host_os" in
-          mingw*)
-            dnl On mingw, towlower and towupper return random high 16 bits.
-            ;;
-          *)
-            dnl iswcntrl works. towlower and towupper work as well.
-            WCTYPE_H=
-            ;;
-        esac
-      fi
     fi
-    dnl Compute NEXT_WCTYPE_H even if WCTYPE_H is empty,
-    dnl for the benefit of builds from non-distclean directories.
     gl_CHECK_NEXT_HEADERS([wctype.h])
     HAVE_WCTYPE_H=1
   else
     HAVE_WCTYPE_H=0
   fi
   AC_SUBST([HAVE_WCTYPE_H])
-  AC_SUBST([WCTYPE_H])
 
   if test "$gl_cv_func_iswcntrl_works" = no; then
     REPLACE_ISWCNTRL=1

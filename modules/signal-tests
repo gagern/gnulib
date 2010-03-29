@@ -2,6 +2,7 @@ Files:
 tests/test-signal.c
 
 Depends-on:
+signal-c++-tests
 
 configure.ac:
 

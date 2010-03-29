@@ -2,6 +2,7 @@ Files:
 tests/test-sys_socket.c
 
 Depends-on:
+sys_socket-c++-tests
 
 configure.ac:
 AC_CHECK_FUNCS_ONCE([shutdown])

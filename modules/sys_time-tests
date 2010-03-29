@@ -2,6 +2,7 @@ Files:
 tests/test-sys_time.c
 
 Depends-on:
+sys_time-c++-tests
 
 configure.ac:
 

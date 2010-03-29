@@ -2370,7 +2370,6 @@ func_all_modules ()
   func_module tsearch
   func_module unistd
   func_module unlink
-  func_module utime
   func_module utimensat
   func_module vasnprintf-posix
   func_module vasprintf-posix
@@ -2478,7 +2477,6 @@ func_all_modules ()
   func_module filenamecat
   func_module filenamecat-lgpl
   func_module fts
-  func_module fts-lgpl
   func_module isdir
   func_module lchmod
   func_module lchown
@@ -3145,6 +3143,7 @@ func_all_modules ()
   func_module exitfail
   func_module error
   func_module extensions
+  func_module forkpty
   func_module getdomainname
   func_module xgetdomainname
   func_module getloadavg
@@ -3152,9 +3151,11 @@ func_all_modules ()
   func_module getusershell
   func_module lib-symbol-visibility
   func_module nproc
+  func_module openpty
   func_module physmem
   func_module posixver
   func_module progname
+  func_module pty
   func_module quotearg
   func_module quote
   func_module readutmp

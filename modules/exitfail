@@ -4,21 +4,20 @@ Set exit status for fatal signal.
 Files:
 lib/exitfail.h
 lib/exitfail.c
-m4/exitfail.m4
 
 Depends-on:
 exit
 
 configure.ac:
-gl_EXITFAIL
 
 Makefile.am:
+lib_SOURCES += exitfail.c
 
 Include:
 "exitfail.h"
 
 License:
-GPL
+LGPLv2+
 
 Maintainer:
 Paul Eggert

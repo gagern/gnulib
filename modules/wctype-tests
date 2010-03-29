@@ -3,6 +3,7 @@ tests/test-wctype.c
 tests/macros.h
 
 Depends-on:
+wctype-c++-tests
 
 configure.ac:
 

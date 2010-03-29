@@ -2,6 +2,7 @@ Files:
 tests/test-sys_ioctl.c
 
 Depends-on:
+sys_ioctl-c++-tests
 
 configure.ac:
 

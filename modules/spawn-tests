@@ -2,6 +2,7 @@ Files:
 tests/test-spawn.c
 
 Depends-on:
+spawn-c++-tests
 
 configure.ac:
 

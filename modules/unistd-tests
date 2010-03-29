@@ -3,6 +3,7 @@ tests/test-unistd.c
 
 Depends-on:
 verify
+unistd-c++-tests
 
 configure.ac:
 

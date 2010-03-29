@@ -1,4 +1,4 @@
-# serial 55
+# serial 56
 
 # Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005, 2006,
 # 2007, 2008, 2009, 2010 Free Software Foundation, Inc.
@@ -94,6 +94,14 @@ AC_DEFUN([gl_REGEX],
             s = re_compile_pattern ("a[[:@:>@:]]b\n", 11, &regex);
             /* This should fail with _Invalid character class name_ error.  */
             if (!s)
+              return 1;
+
+            /* Ensure that [b-a] is diagnosed as invalid, when
+               using RE_NO_EMPTY_RANGES. */
+            re_set_syntax (RE_SYNTAX_POSIX_EGREP | RE_NO_EMPTY_RANGES);
+            memset (&regex, 0, sizeof regex);
+            s = re_compile_pattern ("a[b-a]", 6, &regex);
+            if (s == 0)
               return 1;
 
             /* This should succeed, but does not for glibc-2.1.3.  */

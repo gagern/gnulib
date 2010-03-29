@@ -20,13 +20,13 @@
    It is intended to provide definitions and prototypes needed by an
    application.  */
 
-#ifndef _GL_NETDB_H
-
-#if @HAVE_NETDB_H@
-
 # if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 # endif
+
+#ifndef _GL_NETDB_H
+
+#if @HAVE_NETDB_H@
 
 /* The include_next requires a split double-inclusion guard.  */
 # @INCLUDE_NEXT@ @NEXT_NETDB_H@
@@ -74,18 +74,24 @@ struct addrinfo
 # endif
 
 # if 0
-/* The commented out definitions below are not yet implemented in the
-   GNULIB getaddrinfo() replacement, so are not yet needed and may, in fact,
-   cause conflicts on systems with a getaddrinfo() function which does not
-   define them.
-
-   If they are restored, be sure to protect the definitions with #ifndef.  */
 #  define AI_NUMERICHOST        0x0004  /* Don't use name resolution.  */
-#  define AI_V4MAPPED   0x0008  /* IPv4 mapped addresses are acceptable.  */
-#  define AI_ALL                0x0010  /* Return IPv4 mapped and IPv6 addresses.  */
-#  define AI_ADDRCONFIG 0x0020  /* Use configuration of this host to choose
-                                   returned address type..  */
-# endif /* 0 */
+# endif
+
+/* These symbolic constants are required to be present by POSIX, but
+   our getaddrinfo replacement doesn't use them (yet).  Setting them
+   to 0 on systems that doesn't have them avoids causing problems for
+   system getaddrinfo implementations that would be confused by
+   unknown values.  */
+# ifndef AI_V4MAPPED
+#  define AI_V4MAPPED    0 /* 0x0008: IPv4 mapped addresses are acceptable.  */
+# endif
+# ifndef AI_ALL
+#  define AI_ALL         0 /* 0x0010: Return IPv4 mapped and IPv6 addresses. */
+# endif
+# ifndef AI_ADDRCONFIG
+#  define AI_ADDRCONFIG  0 /* 0x0020: Use configuration of this host to choose
+                                      returned address type.  */
+# endif
 
 /* Error values for `getaddrinfo' function.  */
 # ifndef EAI_BADFLAGS
@@ -165,10 +171,10 @@ extern const char *gai_strerror (int ecode);
 /* Convert socket address to printable node and service names.
    For more details, see the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/getnameinfo.html>.  */
-extern int getnameinfo(const struct sockaddr *restrict sa, socklen_t salen,
-                       char *restrict node, socklen_t nodelen,
-                       char *restrict service, socklen_t servicelen,
-                       int flags)
+extern int getnameinfo (const struct sockaddr *restrict sa, socklen_t salen,
+                        char *restrict node, socklen_t nodelen,
+                        char *restrict service, socklen_t servicelen,
+                        int flags)
      _GL_ARG_NONNULL ((1));
 # endif
 

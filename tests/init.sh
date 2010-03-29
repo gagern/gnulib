@@ -52,6 +52,43 @@
 #   4. Finally
 #   $ exit
 
+# We require $(...) support unconditionally.
+# We require a few additional shell features only when $EXEEXT is nonempty,
+# in order to support automatic $EXEEXT emulation:
+# - hyphen-containing alias names
+# - we prefer to use ${var#...} substitution, rather than having
+#   to work around lack of support for that feature.
+# The following code attempts to find a shell with support for these features
+# and re-exec's it.  If not, it skips the current test.
+
+gl_shell_test_script_='
+test $(echo y) = y || exit 1
+test -z "$EXEEXT" && exit 0
+shopt -s expand_aliases
+alias a-b="echo zoo"
+v=abx
+     test ${v%x} = ab \
+  && test ${v#a} = bx \
+  && test $(a-b) = zoo
+'
+
+if test "x$1" = "x--no-reexec"; then
+  shift
+else
+  for re_shell_ in "${CONFIG_SHELL:-no_shell}" /bin/sh bash dash zsh pdksh fail
+  do
+    test "$re_shell_" = no_shell && continue
+    test "$re_shell_" = fail && skip_ failed to find an adequate shell
+    if "$re_shell_" -c "$gl_shell_test_script_" 2>/dev/null; then
+      exec "$re_shell_" "$0" --no-reexec "$@"
+      echo "$ME_: exec failed" 1>&2
+      exit 127
+    fi
+  done
+fi
+
+test -n "$EXEEXT" && shopt -s expand_aliases
+
 # We use a trap below for cleanup.  This requires us to go through
 # hoops to get the right exit status transported through the handler.
 # So use `Exit STATUS' instead of `exit STATUS' inside of the tests.
@@ -92,8 +129,57 @@ remove_tmp_()
   exit $__st
 }
 
+# Given a directory name, DIR, if every entry in it that matches *.exe
+# contains only the specified bytes (see the case stmt below), then print
+# a space-separated list of those names and return 0.  Otherwise, don't
+# print anything and return 1.  Naming constraints apply also to DIR.
+find_exe_basenames_()
+{
+  feb_dir_=$1
+  feb_fail_=0
+  feb_result_=
+  feb_sp_=
+  for feb_file_ in $feb_dir_/*.exe; do
+    case $feb_file_ in
+      *[!-a-zA-Z/0-9_.+]*) feb_fail_=1; break;;
+      *) # Remove leading file name components as well as the .exe suffix.
+         feb_file_=${feb_file_##*/}
+         feb_file_=${feb_file_%.exe}
+         feb_result_="$feb_result_$feb_sp_$feb_file_";;
+    esac
+    feb_sp_=' '
+  done
+  test $feb_fail_ = 0 && printf %s "$feb_result_"
+  return $feb_fail_
+}
+
+# Consider the files in directory, $1.
+# For each file name of the form PROG.exe, create an alias named
+# PROG that simply invokes PROG.exe, then return 0.  If any selected
+# file name or the directory name, $1, contains an unexpected character,
+# define no function and return 1.
+create_exe_shims_()
+{
+  case $EXEEXT in
+    '') return 0 ;;
+    .exe) ;;
+    *) echo "$0: unexpected \$EXEEXT value: $EXEEXT" 1>&2; return 1 ;;
+  esac
+
+  base_names_=`find_exe_basenames_ $1` \
+    || { echo "$0 (exe_shim): skipping directory: $1" 1>&2; return 1; }
+
+  if test -n "$base_names_"; then
+    for base_ in $base_names_; do
+      alias "$base_"="$base_$EXEEXT"
+    done
+  fi
+
+  return 0
+}
+
 # Use this function to prepend to PATH an absolute name for each
-# specified, possibly-$initial_cwd_relative, directory.
+# specified, possibly-$initial_cwd_-relative, directory.
 path_prepend_()
 {
   while test $# != 0; do
@@ -108,6 +194,10 @@ path_prepend_()
       *:*) fail_ "invalid path dir: '$abs_path_dir_'";;
     esac
     PATH="$abs_path_dir_:$PATH"
+
+    # Create an alias, FOO, for each FOO.exe in this directory.
+    create_exe_shims_ "$abs_path_dir_" \
+      || fail_ "something failed (above): $abs_path_dir_"
     shift
   done
   export PATH

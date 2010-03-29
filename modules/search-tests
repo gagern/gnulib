@@ -2,6 +2,7 @@ Files:
 tests/test-search.c
 
 Depends-on:
+search-c++-tests
 
 configure.ac:
 

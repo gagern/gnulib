@@ -1,4 +1,4 @@
-# stdio_h.m4 serial 24
+# stdio_h.m4 serial 27
 dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -44,7 +44,9 @@ AC_DEFUN([gl_STDIO_MODULE_INDICATOR],
 [
   dnl Use AC_REQUIRE here, so that the default settings are expanded once only.
   AC_REQUIRE([gl_STDIO_H_DEFAULTS])
-  GNULIB_[]m4_translit([$1],[abcdefghijklmnopqrstuvwxyz./-],[ABCDEFGHIJKLMNOPQRSTUVWXYZ___])=1
+  gl_MODULE_INDICATOR_SET_VARIABLE([$1])
+  dnl Define it also as a C macro, for the benefit of the unit tests.
+  gl_MODULE_INDICATOR_FOR_TESTS([$1])
 ])
 
 AC_DEFUN([gl_STDIO_H_DEFAULTS],
@@ -111,6 +113,7 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   REPLACE_FSEEKO=0;              AC_SUBST([REPLACE_FSEEKO])
   REPLACE_FTELL=0;               AC_SUBST([REPLACE_FTELL])
   REPLACE_FTELLO=0;              AC_SUBST([REPLACE_FTELLO])
+  REPLACE_GETDELIM=0;            AC_SUBST([REPLACE_GETDELIM])
   REPLACE_GETLINE=0;             AC_SUBST([REPLACE_GETLINE])
   REPLACE_OBSTACK_PRINTF=0;      AC_SUBST([REPLACE_OBSTACK_PRINTF])
   REPLACE_PERROR=0;              AC_SUBST([REPLACE_PERROR])

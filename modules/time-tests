@@ -3,6 +3,7 @@ tests/test-time.c
 
 Depends-on:
 verify
+time-c++-tests
 
 configure.ac:
 

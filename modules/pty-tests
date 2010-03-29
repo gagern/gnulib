@@ -1,8 +1,8 @@
 Files:
-tests/signature.h
-tests/test-pty.c
+
+Depends-on:
+pty-c++-tests
+
+configure.ac:
 
 Makefile.am:
-TESTS += test-pty
-check_PROGRAMS += test-pty
-test_pty_LDADD = $(LDADD) $(PTY_LIB)

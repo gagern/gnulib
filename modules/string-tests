@@ -3,6 +3,7 @@ tests/test-string.c
 
 Depends-on:
 verify
+string-c++-tests
 
 configure.ac:
 

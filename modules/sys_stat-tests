@@ -3,6 +3,7 @@ tests/test-sys_stat.c
 
 Depends-on:
 verify
+sys_stat-c++-tests
 
 configure.ac:
 

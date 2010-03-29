@@ -3,6 +3,7 @@ tests/test-stdlib.c
 
 Depends-on:
 verify
+stdlib-c++-tests
 
 configure.ac:
 

@@ -1,0 +1,30 @@
+Description:
+openpty() function: Open a pseudo-terminal.
+
+Files:
+lib/openpty.c
+m4/pty.m4
+
+Depends-on:
+pty
+extensions
+fcntl-h
+ioctl
+
+configure.ac:
+gl_FUNC_OPENPTY
+gl_PTY_MODULE_INDICATOR([openpty])
+
+Makefile.am:
+
+Include:
+<pty.h>
+
+Link:
+$(PTY_LIB)
+
+License:
+LGPL
+
+Maintainer:
+Simon Josefsson

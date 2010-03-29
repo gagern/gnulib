@@ -2,6 +2,7 @@ Files:
 tests/test-fcntl-h.c
 
 Depends-on:
+fcntl-h-c++-tests
 
 configure.ac:
 

@@ -1,4 +1,4 @@
-# spawn_h.m4 serial 6
+# spawn_h.m4 serial 11
 dnl Copyright (C) 2008-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -33,6 +33,8 @@ AC_DEFUN([gl_SPAWN_H],
   fi
   AC_SUBST([HAVE_SPAWN_H])
 
+  AC_REQUIRE([gl_HAVE_POSIX_SPAWN])
+
   AC_REQUIRE([AC_C_RESTRICT])
 
   dnl Check for declarations of anything we want to poison if the
@@ -47,7 +49,21 @@ AC_DEFUN([gl_SPAWN_H],
     posix_spawnattr_getschedparam posix_spawnattr_setschedparam
     posix_spawn_file_actions_init posix_spawn_file_actions_destroy
     posix_spawn_file_actions_addopen posix_spawn_file_actions_addclose
-    posix_spawwn_file_actions_adddup2])
+    posix_spawn_file_actions_adddup2])
+])
+
+dnl Checks whether the system has the functions posix_spawn.
+dnl Sets ac_cv_func_posix_spawn and HAVE_POSIX_SPAWN.
+AC_DEFUN([gl_HAVE_POSIX_SPAWN],
+[
+  dnl Use AC_REQUIRE here, so that the default behavior below is expanded
+  dnl once only, before all statements that occur in other macros.
+  AC_REQUIRE([gl_SPAWN_H_DEFAULTS])
+
+  AC_CHECK_FUNCS_ONCE([posix_spawn])
+  if test $ac_cv_func_posix_spawn != yes; then
+    HAVE_POSIX_SPAWN=0
+  fi
 ])
 
 dnl Unconditionally enables the replacement of <spawn.h>.
@@ -61,7 +77,9 @@ AC_DEFUN([gl_SPAWN_MODULE_INDICATOR],
 [
   dnl Use AC_REQUIRE here, so that the default settings are expanded once only.
   AC_REQUIRE([gl_SPAWN_H_DEFAULTS])
-  GNULIB_[]m4_translit([$1],[abcdefghijklmnopqrstuvwxyz./-],[ABCDEFGHIJKLMNOPQRSTUVWXYZ___])=1
+  gl_MODULE_INDICATOR_SET_VARIABLE([$1])
+  dnl Define it also as a C macro, for the benefit of the unit tests.
+  gl_MODULE_INDICATOR_FOR_TESTS([$1])
 ])
 
 AC_DEFUN([gl_SPAWN_H_DEFAULTS],

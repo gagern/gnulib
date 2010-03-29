@@ -2,6 +2,7 @@ Files:
 tests/test-sys_select.c
 
 Depends-on:
+sys_select-c++-tests
 
 configure.ac:
 
