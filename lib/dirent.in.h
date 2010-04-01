@@ -14,11 +14,11 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#ifndef _GL_DIRENT_H
+
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
-
-#ifndef _GL_DIRENT_H
 
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_DIRENT_H@
@@ -77,7 +77,7 @@ _GL_WARN_ON_USE (dirfd, "dirfd is unportable - "
 _GL_FUNCDECL_RPL (fdopendir, DIR *, (int fd));
 _GL_CXXALIAS_RPL (fdopendir, DIR *, (int fd));
 # else
-#  if !@HAVE_FDOPENDIR@
+#  if !@HAVE_FDOPENDIR@ || !@HAVE_DECL_FDOPENDIR@
 _GL_FUNCDECL_SYS (fdopendir, DIR *, (int fd));
 #  endif
 _GL_CXXALIAS_SYS (fdopendir, DIR *, (int fd));

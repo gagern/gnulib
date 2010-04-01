@@ -1,3 +1,110 @@
+2010-03-31  Eric Blake  <eblake@redhat.com>
+
+	maint.mk: check for [ as well as test
+	* top/maint.mk (sc_prohibit_test_minus_ao): Extend test.
+	Based on a libvirt report by Matthias Bolte.
+
+	gnumakefile: don't squelch _version output
+	* top/GNUmakefile (_version): Create one-shot dependency rather
+	than using $(shell) when version must be regenerated.
+	(_autoreconf): Run verbosely, by default.
+
+	sys_time: avoid compiler warnings
+	* lib/sys_time.in.h (includes): Ensure gcc pragma is
+	unconditional, fixing regression from 2010-03-29.
+	Reported by Simon Josefsson.
+
+2010-03-28  Jose E. Marchesi  <jemarch@gnu.org>
+
+	maint.mk: s/_header_without_use/_sc_header_without_use/
+	* top/maint.mk (_sc_header_without_use): Rename from _header_without_use.
+	(sc_prohibit_assert_without_use): Use the new name.
+	(sc_prohibit_close_stream_without_use): Likewise.
+	(sc_prohibit_getopt_without_use): Likewise.
+	(sc_prohibit_quotearg_without_use): Likewise.
+	(sc_prohibit_quote_without_use): Likewise.
+	(sc_prohibit_long_options_without_use): Likewise.
+	(sc_prohibit_inttostr_without_use): Likewise.
+	(sc_prohibit_ignore_value_without_use): Likewise.
+	(sc_prohibit_error_without_use): Likewise.
+	(sc_prohibit_xalloc_without_use): Likewise.
+	(sc_prohibit_hash_without_use): Likewise.
+	(sc_prohibit_hash_pjw_without_use): Likewise.
+	(sc_prohibit_safe_read_without_use): Likewise.
+	(sc_prohibit_argmatch_without_use): Likewise.
+	(sc_prohibit_canonicalize_without_use): Likewise.
+	(sc_prohibit_root_dev_ino_without_use): Likewise.
+	(sc_prohibit_openat_without_use): Likewise.
+	(sc_prohibit_c_ctype_without_use): Likewise.
+	(sc_prohibit_signal_without_use): Likewise.
+	(sc_prohibit_intprops_without_use): Likewise.
+
+2010-03-30  Eric Blake  <eblake@redhat.com>
+
+	maint: improve module indicators
+	* m4/gnulib-common.m4 (gl_MODULE_INDICATOR_SET_VARIABLE)
+	(gl_MODULE_INDICATOR, gl_MODULE_INDICATOR_FOR_TESTS): Fit in 80
+	columns, and avoid extra macro expansion.
+
+	fdopendir: work around FreeBSD bug
+	* m4/dirent_h.m4 (gl_DIRENT_H_DEFAULTS): New witness.
+	* m4/fdopendir.m4 (gl_FUNC_FDOPENDIR): Set it.
+	* modules/dirent (Makefile.am): Substitute it.
+	* lib/dirent.in.h (fdopendir): Supply missing FreeBSD
+	declaration.
+	* doc/posix-functions/fdopendir.texi (fdopendir): Document the
+	fix.
+	Reported by Christian Weisgerber <naddy@mips.inka.de>.
+
+2010-03-29  Bruno Haible  <bruno@clisp.org>
+
+	Emit #pragma system_header after the inclusion guard, not before.
+	* lib/arpa_inet.in.h: Emit #pragma system_header after the inclusion
+	guard that spans the entire file, not before. This enables an
+	optimization in GCC's preprocessor.
+	* lib/ctype.in.h: Likewise.
+	* lib/dirent.in.h: Likewise.
+	* lib/errno.in.h: Likewise.
+	* lib/float.in.h: Likewise.
+	* lib/getopt.in.h: Likewise.
+	* lib/iconv.in.h: Likewise.
+	* lib/langinfo.in.h: Likewise.
+	* lib/locale.in.h: Likewise.
+	* lib/math.in.h: Likewise.
+	* lib/netdb.in.h: Likewise.
+	* lib/netinet_in.in.h: Likewise.
+	* lib/pty.in.h: Likewise.
+	* lib/sched.in.h: Likewise.
+	* lib/se-selinux.in.h: Likewise.
+	* lib/search.in.h: Likewise.
+	* lib/spawn.in.h: Likewise.
+	* lib/stdarg.in.h: Likewise.
+	* lib/stdint.in.h: Likewise.
+	* lib/string.in.h: Likewise.
+	* lib/strings.in.h: Likewise.
+	* lib/sys_file.in.h: Likewise.
+	* lib/sys_ioctl.in.h: Likewise.
+	* lib/sys_time.in.h: Likewise.
+	* lib/sys_times.in.h: Likewise.
+	* lib/sys_utsname.in.h: Likewise.
+	* lib/sys_wait.in.h: Likewise.
+	* lib/sysexits.in.h: Likewise.
+	* lib/wctype.in.h: Likewise.
+
+2010-03-28  James Youngman  <jay@gnu.org>
+
+	save-cwd: don't leak a file descriptor when the caller execs.
+	* lib/save-cwd.c (save_cwd): set the close-on-exec flag for the
+	saved file descriptor.
+	* modules/save-cwd (Depends-on): Depend on cloexec.
+
+2010-03-29  Bruno Haible  <bruno@clisp.org>
+
+	Remove vestiges of fts-lgpl module.
+	* lib/fts_.h: Assume GNULIB_FTS is 1.
+	* lib/fts.c: Likewise.
+	* modules/fts (configure.ac): Remove gl_MODULE_INDICATOR invocation.
+
 2010-03-28  Bruno Haible  <bruno@clisp.org>
 
 	Fix definition of tests witness macro.
