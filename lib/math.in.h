@@ -186,7 +186,10 @@ _GL_WARN_ON_USE (atanl, "atanl is unportable - "
 #  endif
 _GL_FUNCDECL_RPL (ceilf, float, (float x));
 _GL_CXXALIAS_RPL (ceilf, float, (float x));
-#else
+# else
+#  if !@HAVE_DECL_CEILF@
+_GL_FUNCDECL_SYS (ceilf, float, (float x));
+#  endif
 _GL_CXXALIAS_SYS (ceilf, float, (float x));
 # endif
 _GL_CXXALIASWARN (ceilf);
@@ -206,6 +209,9 @@ _GL_WARN_ON_USE (ceilf, "ceilf is unportable - "
 _GL_FUNCDECL_RPL (ceill, long double, (long double x));
 _GL_CXXALIAS_RPL (ceill, long double, (long double x));
 # else
+#  if !@HAVE_DECL_CEILL@
+_GL_FUNCDECL_SYS (ceill, long double, (long double x));
+#  endif
 _GL_CXXALIAS_SYS (ceill, long double, (long double x));
 # endif
 _GL_CXXALIASWARN (ceill);
@@ -219,19 +225,10 @@ _GL_WARN_ON_USE (ceill, "ceill is unportable - "
 
 
 #if @GNULIB_COSL@
-# if !@HAVE_COSL@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   undef cosl
-#   define cosl rpl_cosl
-#  endif
-_GL_FUNCDECL_RPL (cosl, long double, (long double x));
-_GL_CXXALIAS_RPL (cosl, long double, (long double x));
-# else
-#  if !@HAVE_DECL_COSL@
+# if !@HAVE_COSL@ || !@HAVE_DECL_COSL@
 _GL_FUNCDECL_SYS (cosl, long double, (long double x));
-#  endif
-_GL_CXXALIAS_SYS (cosl, long double, (long double x));
 # endif
+_GL_CXXALIAS_SYS (cosl, long double, (long double x));
 _GL_CXXALIASWARN (cosl);
 #elif defined GNULIB_POSIXCHECK
 # undef cosl
@@ -265,6 +262,9 @@ _GL_WARN_ON_USE (expl, "expl is unportable - "
 _GL_FUNCDECL_RPL (floorf, float, (float x));
 _GL_CXXALIAS_RPL (floorf, float, (float x));
 #else
+#  if !@HAVE_DECL_FLOORF@
+_GL_FUNCDECL_SYS (floorf, float, (float x));
+#  endif
 _GL_CXXALIAS_SYS (floorf, float, (float x));
 # endif
 _GL_CXXALIASWARN (floorf);
@@ -284,6 +284,9 @@ _GL_WARN_ON_USE (floorf, "floorf is unportable - "
 _GL_FUNCDECL_RPL (floorl, long double, (long double x));
 _GL_CXXALIAS_RPL (floorl, long double, (long double x));
 # else
+#  if !@HAVE_DECL_FLOORL@
+_GL_FUNCDECL_SYS (floorl, long double, (long double x));
+#  endif
 _GL_CXXALIAS_SYS (floorl, long double, (long double x));
 # endif
 _GL_CXXALIASWARN (floorl);
@@ -319,7 +322,7 @@ _GL_FUNCDECL_SYS (frexpl, long double,
 _GL_CXXALIAS_SYS (frexpl, long double, (long double x, int *expptr));
 # endif
 #endif
-#if @GNULIB_FREXPL@
+#if @GNULIB_FREXPL@ && !(@REPLACE_FREXPL@ && !@HAVE_DECL_FREXPL@)
 _GL_CXXALIASWARN (frexpl);
 #endif
 #if !@GNULIB_FREXPL@ && defined GNULIB_POSIXCHECK
@@ -359,19 +362,10 @@ _GL_WARN_ON_USE (ldexpl, "ldexpl is unportable - "
 
 
 #if @GNULIB_LOGL@
-# if !@HAVE_LOGL@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   undef logl
-#   define logl rpl_logl
-#  endif
-_GL_FUNCDECL_RPL (logl, long double, (long double x));
-_GL_CXXALIAS_RPL (logl, long double, (long double x));
-# else
-#  if !@HAVE_DECL_LOGL@
+# if !@HAVE_LOGL@ || !@HAVE_DECL_LOGL@
 _GL_FUNCDECL_SYS (logl, long double, (long double x));
-#  endif
-_GL_CXXALIAS_SYS (logl, long double, (long double x));
 # endif
+_GL_CXXALIAS_SYS (logl, long double, (long double x));
 _GL_CXXALIASWARN (logl);
 #elif defined GNULIB_POSIXCHECK
 # undef logl
@@ -391,6 +385,9 @@ _GL_WARN_ON_USE (logl, "logl is unportable - "
 _GL_FUNCDECL_RPL (roundf, float, (float x));
 _GL_CXXALIAS_RPL (roundf, float, (float x));
 # else
+#  if !@HAVE_DECL_ROUNDF@
+_GL_FUNCDECL_SYS (roundf, float, (float x));
+#  endif
 _GL_CXXALIAS_SYS (roundf, float, (float x));
 # endif
 _GL_CXXALIASWARN (roundf);
@@ -411,6 +408,9 @@ _GL_WARN_ON_USE (roundf, "roundf is unportable - "
 _GL_FUNCDECL_RPL (round, double, (double x));
 _GL_CXXALIAS_RPL (round, double, (double x));
 # else
+#  if !@HAVE_DECL_ROUND@
+_GL_FUNCDECL_SYS (round, double, (double x));
+#  endif
 _GL_CXXALIAS_SYS (round, double, (double x));
 # endif
 _GL_CXXALIASWARN (round);
@@ -431,6 +431,9 @@ _GL_WARN_ON_USE (round, "round is unportable - "
 _GL_FUNCDECL_RPL (roundl, long double, (long double x));
 _GL_CXXALIAS_RPL (roundl, long double, (long double x));
 # else
+#  if !@HAVE_DECL_ROUNDL@
+_GL_FUNCDECL_SYS (roundl, long double, (long double x));
+#  endif
 _GL_CXXALIAS_SYS (roundl, long double, (long double x));
 # endif
 _GL_CXXALIASWARN (roundl);
@@ -444,19 +447,10 @@ _GL_WARN_ON_USE (roundl, "roundl is unportable - "
 
 
 #if @GNULIB_SINL@
-# if !@HAVE_SINL@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   undef sinl
-#   define sinl rpl_sinl
-#  endif
-_GL_FUNCDECL_RPL (sinl, long double, (long double x));
-_GL_CXXALIAS_RPL (sinl, long double, (long double x));
-# else
-#  if !@HAVE_DECL_SINL@
+# if !@HAVE_SINL@ || !@HAVE_DECL_SINL@
 _GL_FUNCDECL_SYS (sinl, long double, (long double x));
-#  endif
-_GL_CXXALIAS_SYS (sinl, long double, (long double x));
 # endif
+_GL_CXXALIAS_SYS (sinl, long double, (long double x));
 _GL_CXXALIASWARN (sinl);
 #elif defined GNULIB_POSIXCHECK
 # undef sinl
@@ -499,14 +493,9 @@ _GL_WARN_ON_USE (tanl, "tanl is unportable - "
 
 #if @GNULIB_TRUNCF@
 # if !@HAVE_DECL_TRUNCF@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   define truncf rpl_truncf
-#  endif
-_GL_FUNCDECL_RPL (truncf, float, (float x));
-_GL_CXXALIAS_RPL (truncf, float, (float x));
-# else
-_GL_CXXALIAS_SYS (truncf, float, (float x));
+_GL_FUNCDECL_SYS (truncf, float, (float x));
 # endif
+_GL_CXXALIAS_SYS (truncf, float, (float x));
 _GL_CXXALIASWARN (truncf);
 #elif defined GNULIB_POSIXCHECK
 # undef truncf
@@ -518,14 +507,9 @@ _GL_WARN_ON_USE (truncf, "truncf is unportable - "
 
 #if @GNULIB_TRUNC@
 # if !@HAVE_DECL_TRUNC@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   define trunc rpl_trunc
-#  endif
-_GL_FUNCDECL_RPL (trunc, double, (double x));
-_GL_CXXALIAS_RPL (trunc, double, (double x));
-# else
-_GL_CXXALIAS_SYS (trunc, double, (double x));
+_GL_FUNCDECL_SYS (trunc, double, (double x));
 # endif
+_GL_CXXALIAS_SYS (trunc, double, (double x));
 _GL_CXXALIASWARN (trunc);
 #elif defined GNULIB_POSIXCHECK
 # undef trunc
@@ -544,6 +528,9 @@ _GL_WARN_ON_USE (trunc, "trunc is unportable - "
 _GL_FUNCDECL_RPL (truncl, long double, (long double x));
 _GL_CXXALIAS_RPL (truncl, long double, (long double x));
 # else
+#  if !@HAVE_DECL_TRUNCL@
+_GL_FUNCDECL_SYS (truncl, long double, (long double x));
+#  endif
 _GL_CXXALIAS_SYS (truncl, long double, (long double x));
 # endif
 _GL_CXXALIASWARN (truncl);

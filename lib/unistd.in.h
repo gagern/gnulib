@@ -86,7 +86,7 @@
 #endif
 
 #if (@GNULIB_WRITE@ || @GNULIB_READLINK@ || @GNULIB_READLINKAT@ \
-     || @GNULIB_PREAD@ || defined GNULIB_POSIXCHECK)
+     || @GNULIB_PREAD@ || @GNULIB_PWRITE@ || defined GNULIB_POSIXCHECK)
 /* Get ssize_t.  */
 # include <sys/types.h>
 #endif
@@ -415,9 +415,8 @@ _GL_WARN_ON_USE (faccessat, "faccessat is not portable - "
    Return 0 if successful, otherwise -1 and errno set.
    See the POSIX:2001 specification
    <http://www.opengroup.org/susv3xsh/fchdir.html>.  */
-# if @REPLACE_FCHDIR@
-_GL_FUNCDECL_RPL (fchdir, int, (int /*fd*/));
-_GL_CXXALIAS_RPL (fchdir, int, (int /*fd*/));
+# if ! @HAVE_FCHDIR@
+_GL_FUNCDECL_SYS (fchdir, int, (int /*fd*/));
 
 /* Gnulib internal hooks needed to maintain the fchdir metadata.  */
 _GL_EXTERN_C int _gl_register_fd (int fd, const char *filename)
@@ -426,9 +425,8 @@ _GL_EXTERN_C void _gl_unregister_fd (int fd);
 _GL_EXTERN_C int _gl_register_dup (int oldfd, int newfd);
 _GL_EXTERN_C const char *_gl_directory_name (int fd);
 
-# else
-_GL_CXXALIAS_SYS (fchdir, int, (int /*fd*/));
 # endif
+_GL_CXXALIAS_SYS (fchdir, int, (int /*fd*/));
 _GL_CXXALIASWARN (fchdir);
 #elif defined GNULIB_POSIXCHECK
 # undef fchdir
@@ -525,7 +523,9 @@ _GL_WARN_ON_USE (ftruncate, "ftruncate is unportable - "
 _GL_FUNCDECL_RPL (getcwd, char *, (char *buf, size_t size));
 _GL_CXXALIAS_RPL (getcwd, char *, (char *buf, size_t size));
 # else
-_GL_CXXALIAS_SYS (getcwd, char *, (char *buf, size_t size));
+/* Need to cast, because on mingw, the second parameter is
+                                                   int size.  */
+_GL_CXXALIAS_SYS_CAST (getcwd, char *, (char *buf, size_t size));
 # endif
 _GL_CXXALIASWARN (getcwd);
 #elif defined GNULIB_POSIXCHECK
@@ -773,7 +773,9 @@ getpagesize ()
 /* Need to cast, because on Cygwin 1.5.x systems, the return type is size_t.  */
 _GL_CXXALIAS_SYS_CAST (getpagesize, int, (void));
 # endif
+# if @HAVE_DECL_GETPAGESIZE@
 _GL_CXXALIASWARN (getpagesize);
+# endif
 #elif defined GNULIB_POSIXCHECK
 # undef getpagesize
 # if HAVE_RAW_DECL_GETPAGESIZE
@@ -1014,6 +1016,40 @@ _GL_WARN_ON_USE (pread, "pread is unportable - "
 #endif
 
 
+#if @GNULIB_PWRITE@
+/* Write at most BUFSIZE bytes from BUF into FD, starting at OFFSET.
+   Return the number of bytes written if successful, otherwise
+   set errno and return -1.  0 indicates nothing written.  See the
+   POSIX:2001 specification
+   <http://www.opengroup.org/susv3xsh/pwrite.html>.  */
+# if @REPLACE_PWRITE@
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   define pwrite rpl_pwrite
+#  endif
+_GL_FUNCDECL_RPL (pwrite, ssize_t,
+                  (int fd, const void *buf, size_t bufsize, off_t offset)
+                  _GL_ARG_NONNULL ((2)));
+_GL_CXXALIAS_RPL (pwrite, ssize_t,
+                  (int fd, const void *buf, size_t bufsize, off_t offset));
+# else
+#  if !@HAVE_PWRITE@
+_GL_FUNCDECL_SYS (pwrite, ssize_t,
+                  (int fd, const void *buf, size_t bufsize, off_t offset)
+                  _GL_ARG_NONNULL ((2)));
+#  endif
+_GL_CXXALIAS_SYS (pwrite, ssize_t,
+                  (int fd, const void *buf, size_t bufsize, off_t offset));
+# endif
+_GL_CXXALIASWARN (pwrite);
+#elif defined GNULIB_POSIXCHECK
+# undef pwrite
+# if HAVE_RAW_DECL_PWRITE
+_GL_WARN_ON_USE (pwrite, "pwrite is unportable - "
+                 "use gnulib module pwrite for portability");
+# endif
+#endif
+
+
 #if @GNULIB_READLINK@
 /* Read the contents of the symbolic link FILE and place the first BUFSIZE
    bytes of it into BUF.  Return the number of bytes placed into BUF if
@@ -1162,12 +1198,23 @@ _GL_WARN_ON_USE (symlinkat, "symlinkat is not portable - "
 #if @GNULIB_TTYNAME_R@
 /* Store at most BUFLEN characters of the pathname of the terminal FD is
    open on in BUF.  Return 0 on success, otherwise an error number.  */
-# if !@HAVE_TTYNAME_R@
+# if @REPLACE_TTYNAME_R@
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   undef ttyname_r
+#   define ttyname_r rpl_ttyname_r
+#  endif
+_GL_FUNCDECL_RPL (ttyname_r, int,
+                  (int fd, char *buf, size_t buflen) _GL_ARG_NONNULL ((2)));
+_GL_CXXALIAS_RPL (ttyname_r, int,
+                  (int fd, char *buf, size_t buflen));
+# else
+#  if !@HAVE_TTYNAME_R@
 _GL_FUNCDECL_SYS (ttyname_r, int,
                   (int fd, char *buf, size_t buflen) _GL_ARG_NONNULL ((2)));
-# endif
+#  endif
 _GL_CXXALIAS_SYS (ttyname_r, int,
                   (int fd, char *buf, size_t buflen));
+# endif
 _GL_CXXALIASWARN (ttyname_r);
 #elif defined GNULIB_POSIXCHECK
 # undef ttyname_r
@@ -1266,7 +1313,10 @@ _GL_FUNCDECL_RPL (write, ssize_t, (int fd, const void *buf, size_t count)
                                   _GL_ARG_NONNULL ((2)));
 _GL_CXXALIAS_RPL (write, ssize_t, (int fd, const void *buf, size_t count));
 # else
-_GL_CXXALIAS_SYS (write, ssize_t, (int fd, const void *buf, size_t count));
+/* Need to cast, because on mingw, the third parameter is
+                                                             unsigned int count
+   and the return type is 'int'.  */
+_GL_CXXALIAS_SYS_CAST (write, ssize_t, (int fd, const void *buf, size_t count));
 # endif
 _GL_CXXALIASWARN (write);
 #endif

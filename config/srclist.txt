@@ -1,4 +1,3 @@
-# $Id: srclist.txt,v 1.152 2007-06-21 18:41:50 karl Exp $
 # Files for which we are not the source.  See ./srclistvars.sh for the
 # variable definitions.
 
@@ -161,7 +160,7 @@ $GNUORG/disclaim.program			doc/Copyright
 #
 # c89 changes $LIBCSRC/string/strdup.c		lib gpl
 #tab changes $LIBCSRC/stdlib/strtoll.c		lib gpl
-$LIBCSRC/stdlib/strtoul.c		lib gpl
+#tab changes $LIBCSRC/stdlib/strtoul.c		lib gpl
 # (no more strtok_r.h) $LIBCSRC/string/strtok_r.c		lib gpl
 # (gnulib needs config.h?) $LIBCSRC/string/memmem.c		lib gpl
 #$LIBCSRC/time/mktime.c			lib gpl

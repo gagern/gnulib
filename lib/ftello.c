@@ -1,5 +1,5 @@
 /* An ftello() function that works around platform bugs.
-   Copyright (C) 2007, 2009, 2010 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2009-2010 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,19 +22,42 @@
 /* Get lseek.  */
 #include <unistd.h>
 
+#include "stdio-impl.h"
+
+off_t
+ftello (FILE *fp)
 #undef ftello
 #if !HAVE_FTELLO
 # undef ftell
 # define ftello ftell
 #endif
-
-off_t
-rpl_ftello (FILE *fp)
 {
 #if LSEEK_PIPE_BROKEN
   /* mingw gives bogus answers rather than failure on non-seekable files.  */
   if (lseek (fileno (fp), 0, SEEK_CUR) == -1)
     return -1;
+#endif
+
+#if FTELLO_BROKEN_AFTER_SWITCHING_FROM_READ_TO_WRITE /* Solaris */
+  /* The Solaris stdio leaves the _IOREAD flag set after reading from a file
+     reaches EOF and the program then starts writing to the file.  ftello
+     gets confused by this.  */
+  if (fp_->_flag & _IOWRT)
+    {
+      off_t pos;
+
+      /* Call ftello nevertheless, for the side effects that it does on fp.  */
+      ftello (fp);
+
+      /* Compute the file position ourselves.  */
+      pos = llseek (fileno (fp), (off_t) 0, SEEK_CUR);
+      if (pos >= 0)
+        {
+          if ((fp_->_flag & _IONBF) == 0 && fp_->_base != NULL)
+            pos += fp_->_ptr - fp_->_base;
+        }
+      return pos;
+    }
 #endif
 
 #if defined __SL64 && defined __SCLE /* Cygwin */

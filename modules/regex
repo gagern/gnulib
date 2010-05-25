@@ -12,7 +12,7 @@ m4/regex.m4
 m4/mbstate_t.m4
 
 Depends-on:
-alloca
+alloca-opt
 btowc
 extensions
 gettext-h
@@ -36,7 +36,7 @@ gl_REGEX
 Makefile.am:
 
 Include:
-"regex.h"
+<regex.h>
 
 License:
 LGPLv2+

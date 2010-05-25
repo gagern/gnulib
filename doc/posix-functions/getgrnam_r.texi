@@ -4,10 +4,13 @@
 
 POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/getgrnam_r.html}
 
-Gnulib module: ---
+Gnulib module: extensions
 
 Portability problems fixed by Gnulib:
 @itemize
+@item
+This function has an incompatible declaration on some platforms:
+Solaris 10 (when @code{_POSIX_PTHREAD_SEMANTICS} is not defined).
 @end itemize
 
 Portability problems not fixed by Gnulib:

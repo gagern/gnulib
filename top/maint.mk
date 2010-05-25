@@ -129,24 +129,28 @@ sc_m_rules_ = $(patsubst %, %.m, $(syntax-check-rules))
 .PHONY: $(sc_m_rules_)
 $(sc_m_rules_):
 	@echo $(patsubst sc_%.m, %, $@)
+	@date +%s.%N > .sc-start-$(basename $@)
 
-local-check := $(filter-out $(local-checks-to-skip), $(local-checks-available))
+# Compute and print the elapsed time for each syntax-check rule.
+sc_z_rules_ = $(patsubst %, %.z, $(syntax-check-rules))
+.PHONY: $(sc_z_rules_)
+$(sc_z_rules_): %.z: %
+	@end=$$(date +%s.%N);						\
+	start=$$(cat .sc-start-$*);					\
+	rm -f .sc-start-$*;						\
+	awk -v s=$$start -v e=$$end					\
+	  'END {printf "%.2f $(patsubst sc_%,%,$*)\n", e - s}' < /dev/null
+
+# The patsubst here is to replace each sc_% rule with its sc_%.z wrapper
+# that computes and prints elapsed time.
+local-check :=								\
+  $(patsubst sc_%, sc_%.z,						\
+    $(filter-out $(local-checks-to-skip), $(local-checks-available)))
 
 syntax-check:
 	@$(VC_LIST) > .vc.list
 	@$(MAKE) -k $(local-check) VC_LIST='cat .vc.list'
 	@$(RM) .vc.list
-
-#	@grep -nE '#  *include <(limits|std(def|arg|bool))\.h>'		\
-#	    $$(find -type f -name '*.[chly]') &&			\
-#	  { echo '$(ME): found conditional include' 1>&2;		\
-#	    exit 1; } || :
-
-#	grep -nE '^#  *include <(string|stdlib)\.h>'			\
-#	    $(srcdir)/{lib,src}/*.[chy] &&				\
-#	  { echo '$(ME): FIXME' 1>&2;					\
-#	    exit 1; } || :
-# FIXME: don't allow `#include .strings\.h' anywhere
 
 # _sc_search_regexp
 #
@@ -192,6 +196,15 @@ define _sc_say_and_exit
    dummy=; : so we do not need a semicolon before each use;		\
    { echo -e "$(ME): $$msg" 1>&2; exit 1; };
 endef
+
+# _sc_search_regexp used to be named _prohibit_regexp.  However,
+# upgrading to the new definition and leaving the old name undefined
+# would usually convert each custom rule using $(_prohibit_regexp)
+# (usually defined in cfg.mk) into a no-op.  This definition ensures
+# that people know right away if they're still using the old name.
+# FIXME: remove in 2012.
+_prohibit_regexp = \
+  $(error '*** you need to s/_prohibit_regexp/_sc_search_regexp/, and adapt')
 
 define _sc_search_regexp
    dummy=; : so we do not need a semicolon before each use;		\
@@ -367,7 +380,7 @@ sc_require_config_h_first:
 
 sc_prohibit_HAVE_MBRTOWC:
 	@prohibit='\bHAVE_MBRTOWC\b'					\
-	halt="do not use $$re; it is always defined"			\
+	halt="do not use $$prohibit; it is always defined"		\
 	  $(_sc_search_regexp)
 
 # To use this "command" macro, you must first define two shell variables:
@@ -534,6 +547,13 @@ sc_prohibit_signal_without_use:
 	re='\<($(_sig_function_re)) *\(|\<($(_sig_syms_re))\>'		\
 	  $(_sc_header_without_use)
 
+# Prohibit the inclusion of strings.h without a sensible use.
+# Using the likes of bcmp, bcopy, bzero, index or rindex is not sensible.
+sc_prohibit_strings_without_use:
+	@h='<strings.h>'						\
+	re='\<(strn?casecmp|ffs(ll)?)\>'				\
+	  $(_sc_header_without_use)
+
 # Get the list of symbol names with this:
 # perl -lne '/^# *define (\w+)\(/ and print $1' lib/intprops.h|grep -v '^s'|fmt
 _intprops_names =							\
@@ -625,6 +645,73 @@ sc_useless_cpp_parens:
 	halt='found useless parentheses in cpp directive'		\
 	  $(_sc_search_regexp)
 
+# List headers for which HAVE_HEADER_H is always true, assuming you are
+# using the appropriate gnulib module.  CAUTION: for each "unnecessary"
+# #if HAVE_HEADER_H that you remove, be sure that your project explicitly
+# requires the gnulib module that guarantees the usability of that header.
+gl_assured_headers_ = \
+  cd $(gnulib_dir)/lib && echo *.in.h|sed 's/\.in\.h//g'
+
+# Convert the list of names to upper case, and replace each space with "|".
+az_ = abcdefghijklmnopqrstuvwxyz
+AZ_ = ABCDEFGHIJKLMNOPQRSTUVWXYZ
+gl_header_upper_case_or_ =						\
+  $$($(gl_assured_headers_)						\
+    | tr $(az_)/.- $(AZ_)___						\
+    | tr -s ' ' '|'							\
+    )
+sc_prohibit_always_true_header_tests:
+	@or=$(gl_header_upper_case_or_);				\
+	re="HAVE_($$or)_H";						\
+	prohibit='\<'"$$re"'\>'						\
+	halt='do not test the above HAVE_<header>_H symbol(s);\n'\
+'  with the corresponding gnulib module, they are always true'		\
+	  $(_sc_search_regexp)
+
+# ==================================================================
+gl_other_headers_ ?= \
+  intprops.h	\
+  openat.h	\
+  stat-macros.h
+
+# Perl -lne code to extract "significant" cpp-defined symbols from a
+# gnulib header file, eliminating a few common false-positives.
+gl_extract_significant_defines_ = \
+  /^\# *define ([^_ (][^ (]*)(\s*\(|\s+\w+)/\
+    && $$2 !~ /(?:rpl_|_used_without_)/\
+    && $$1 !~ /^(?:NSIG|ATTRIBUTE_NORETURN)$$/\
+    and print $$1
+
+# Create a list of regular expressions matching the names
+# of macros that are guaranteed to be defined by parts of gnulib.
+define def_sym_regex
+	gen_h=$(gl_generated_headers_);					\
+	(cd $(gnulib_dir)/lib;						\
+	  for f in *.in.h $(gl_other_headers_); do			\
+	    perl -lne '$(gl_extract_significant_defines_)' $$f;		\
+	  done;								\
+	) | sort -u							\
+	  | sed 's/^/^ *# *define /;s/$$/\\>/'
+endef
+
+# Don't define macros that we already get from gnulib header files.
+sc_prohibit_always-defined_macros:
+	@if test -d $(gnulib_dir); then					\
+	  case $$(echo all: | grep -l -f - Makefile) in Makefile);; *)	\
+	    echo '$(ME): skipping $@: you lack GNU grep' 1>&2; exit 0;;	\
+	  esac;								\
+	  $(def_sym_regex) | grep -f - $$($(VC_LIST_EXCEPT))		\
+	    && { echo '$(ME): define the above via some gnulib .h file'	\
+		  1>&2;  exit 1; } || :;				\
+	fi
+# ==================================================================
+
+# Prohibit checked in backup files.
+sc_prohibit_backup_files:
+	@$(VC_LIST) | grep '~$$' &&				\
+	  { echo '$(ME): found version controlled backup file' 1>&2;	\
+	    exit 1; } || :
+
 # Require the latest GPL.
 sc_GPL_version:
 	@prohibit='either ''version [^3]'				\
@@ -640,9 +727,10 @@ sc_GFDL_version:
 	  $(_sc_search_regexp)
 
 # Don't use Texinfo @acronym{} as it is not a good idea.
+texinfo_suffix_re_ ?= \.(txi|texi(nfo)?)$$
 sc_texinfo_acronym:
-	@prohibit='@acronym{'						\
-	in_vc_files='\.texi$$'						\
+	@prohibit='@acronym\{'						\
+	in_vc_files='$(texinfo_suffix_re_)'				\
 	halt='found use of Texinfo @acronym{}'				\
 	  $(_sc_search_regexp)
 
@@ -653,6 +741,42 @@ sc_prohibit_cvs_keyword:
 	@prohibit='\$$($(cvs_keywords))\$$'				\
 	halt='do not use CVS keyword expansion'				\
 	  $(_sc_search_regexp)
+
+# This Perl code is slightly obfuscated.  Not only is each "$" doubled
+# because it's in a Makefile, but the $$c's are comments;  we cannot
+# use "#" due to the way the script ends up concatenated onto one line.
+# It would be much more concise, and would produce better output (including
+# counts) if written as:
+#   perl -ln -0777 -e '/\n(\n+)$/ and print "$ARGV: ".length $1' ...
+# but that would be far less efficient, reading the entire contents
+# of each file, rather than just the last two bytes of each.
+#
+# This is a perl script that is expected to be the single-quoted argument
+# to a command-line "-le".  The remaining arguments are file names.
+# Print the name of each file that ends in two or more newline bytes.
+# Exit nonzero if at least one such file is found, otherwise, exit 0.
+# Warn about, but otherwise ignore open failure.  Ignore seek/read failure.
+#
+# Use this if you want to remove trailing empty lines from selected files:
+#   perl -pi -0777 -e 's/\n\n+$/\n/' files...
+#
+detect_empty_lines_at_EOF_ =						\
+  foreach my $$f (@ARGV)						\
+    {									\
+      open F, "<", $$f or (warn "failed to open $$f: $$!\n"), next;	\
+      my $$p = sysseek (F, -2, 2);					\
+      my $$c = "seek failure probably means file has < 2 bytes; ignore"; \
+      my $$last_two_bytes;						\
+      defined $$p and $$p = sysread F, $$last_two_bytes, 2;		\
+      close F;								\
+      $$c = "ignore read failure";					\
+      $$p && $$last_two_bytes eq "\n\n" and (print $$f), $$fail=1;	\
+    }									\
+  END { exit defined $$fail }
+sc_prohibit_empty_lines_at_EOF:
+	@perl -le '$(detect_empty_lines_at_EOF_)' $$($(VC_LIST_EXCEPT))	\
+          || { echo '$(ME): the above files end with empty line(s)'     \
+		1>&2; exit 1; } || :;					\
 
 # Make sure we don't use st_blocks.  Use ST_NBLOCKS instead.
 # This is a bit of a kludge, since it prevents use of the string
@@ -845,6 +969,32 @@ sc_copyright_check:
 	halt='out of date copyright in $(texi); update it'		\
 	  $(_sc_search_regexp)
 
+# If tests/help-version exists and seems to be new enough, assume that its
+# use of init.sh and path_prepend_ is correct, and ensure that every other
+# use of init.sh is identical.
+# This is useful because help-version cross-checks prog --version
+# with $(VERSION), which verifies that its path_prepend_ invocation
+# sets PATH correctly.  This is an inexpensive way to ensure that
+# the other init.sh-using tests also get it right.
+_hv_file ?= $(srcdir)/tests/help-version
+_hv_regex_weak ?= ^ *\. .*/init\.sh"
+_hv_regex_strong ?= ^ *\. "\$${srcdir=\.}/init\.sh"
+sc_cross_check_PATH_usage_in_tests:
+	@if test -f $(_hv_file); then					\
+	  grep -l 'VERSION mismatch' $(_hv_file) >/dev/null		\
+	    || { echo "$@: skipped: no such file: $(_hv_file)" 1>&2;	\
+		 exit 0; };						\
+	  grep -lE '$(_hv_regex_strong)' $(_hv_file) >/dev/null		\
+	    || { echo "$@: $(_hv_file) lacks conforming use of init.sh" 1>&2; \
+		 exit 1; };						\
+	  good=$$(grep -E '$(_hv_regex_strong)' $(_hv_file));		\
+	  grep -LFx "$$good"						\
+		$$(grep -lE '$(_hv_regex_weak)' $$($(VC_LIST_EXCEPT)))	\
+	      | grep . &&						\
+	    { echo "$(ME): the above files use path_prepend_ inconsistently" \
+		1>&2; exit 1; } || :;					\
+	fi
+
 # #if HAVE_... will evaluate to false for any non numeric string.
 # That would be flagged by using -Wundef, however gnulib currently
 # tests many undefined macros, and so we can't enable that option.
@@ -886,8 +1036,16 @@ gpg_key_ID ?= \
      && gpgv .ann-sig - < /dev/null 2>&1 \
 	  | sed -n '/.*key ID \([0-9A-F]*\)/s//\1/p'; rm -f .ann-sig)
 
+translation_project_ ?= coordinator@translationproject.org
+announcement_Cc_ ?= $(translation_project_), $(PACKAGE_BUGREPORT)
+announcement_mail_headers_ ?=						\
+To: info-gnu@gnu.org							\
+Cc: $(announcement_Cc_)							\
+Mail-Followup-To: $(PACKAGE_BUGREPORT)
+
 announcement: NEWS ChangeLog $(rel-files)
 	@$(build_aux)/announce-gen					\
+	    --mail-headers='$(announcement_mail_headers_)'		\
 	    --release-type=$(RELEASE_TYPE)				\
 	    --package=$(PACKAGE)					\
 	    --prev=$(PREV_VERSION)					\
@@ -971,12 +1129,17 @@ release-prep:
 	$(VC) commit -F .ci-msg -a
 	rm .ci-msg
 
+# Override this with e.g., -s $(srcdir)/some_other_name.texi
+# if the default $(PACKAGE)-derived name doesn't apply.
+gendocs_options_ ?=
+
 .PHONY: web-manual
 web-manual:
 	@test -z "$(manual_title)" \
 	  && { echo define manual_title in cfg.mk 1>&2; exit 1; } || :
 	@cd '$(srcdir)/doc'; \
-	  $(SHELL) ../build-aux/gendocs.sh -o '$(abs_builddir)/doc/manual' \
+	  $(SHELL) ../build-aux/gendocs.sh $(gendocs_options_) \
+	     -o '$(abs_builddir)/doc/manual' \
 	     --email $(PACKAGE_BUGREPORT) $(PACKAGE) \
 	    "$(PACKAGE_NAME) - $(manual_title)"
 	@echo " *** Upload the doc/manual directory to web-cvs."
@@ -1023,9 +1186,11 @@ refresh-po:
 	{ echo 'en@boldquot'; echo 'en@quot'; ls $(PODIR)/*.po; } \
 	| sed -e 's/\.po//' -e 's,$(PODIR)/,,' | sort -u >> $(PODIR)/LINGUAS
 
+ # Running indent once is not idempotent, but running it twice is.
 INDENT_SOURCES ?= $(C_SOURCES)
 .PHONY: indent
 indent:
+	indent $(INDENT_SOURCES)
 	indent $(INDENT_SOURCES)
 
 # If you want to set UPDATE_COPYRIGHT_* environment variables,

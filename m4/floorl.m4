@@ -1,5 +1,5 @@
-# floorl.m4 serial 4
-dnl Copyright (C) 2007, 2009, 2010 Free Software Foundation, Inc.
+# floorl.m4 serial 6
+dnl Copyright (C) 2007, 2009-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -20,13 +20,12 @@ AC_DEFUN([gl_FUNC_FLOORL],
       REPLACE_FLOORL=1
     fi
   else
-    REPLACE_FLOORL=1
+    HAVE_DECL_FLOORL=0
   fi
-  if test $REPLACE_FLOORL = 1; then
+  if test $HAVE_DECL_FLOORL = 0 || test $REPLACE_FLOORL = 1; then
     AC_LIBOBJ([floorl])
     FLOORL_LIBM=
   fi
-  AC_SUBST([REPLACE_FLOORL])
   AC_SUBST([FLOORL_LIBM])
 ])
 
