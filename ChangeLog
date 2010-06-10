@@ -1,3 +1,189 @@
+2010-06-09  Ben Pfaff  <blp@cs.stanford.edu>
+            Bruno Haible  <bruno@clisp.org>
+
+	Add "Extending Gnulib" chapter to manual.
+	* doc/gnulib.texi (Writing Modules): Add cross-reference to new
+	chapter.
+	(Extending Gnulib): New chapter.
+	* doc/gnulib-intro.texi (Openness): Add cross-reference to new
+	chapter.
+
+2010-06-09  Bruno Haible  <bruno@clisp.org>
+
+	Avoid relocwrapper link errors due to gnulib replacement functions.
+	* lib/areadlink.c: Use the system's malloc, realloc functions.
+	(areadlink): Set errno to ENOMEM explicitly.
+	* modules/areadlink (Depends-on): Remove malloc-posix.
+	Reported by Ben Pfaff <blp@cs.stanford.edu>.
+
+2010-06-09  Bruno Haible  <bruno@clisp.org>
+
+	Avoid relocwrapper link errors due to gnulib replacement functions.
+	* lib/canonicalize-lgpl.c: Use the system's malloc function.
+	* lib/malloca.c: Likewise.
+	* lib/relocatable.c: Likewise.
+	* lib/progreloc.c: Use the system's malloc, sprintf functions.
+	* lib/relocwrapper.c: Use the system's fprintf, malloc functions.
+	* lib/setenv.c: Use the system's malloc, realloc functions.
+	* lib/strerror.c: Use the system's sprintf function.
+	Reported by Ben Pfaff <blp@cs.stanford.edu>.
+
+2010-06-04  Bruno Haible  <bruno@clisp.org>
+
+	Prefer documented low-level autoconf macro names.
+	* m4/lib-link.m4: Use m4_translit instead of translit.
+	* m4/environ.m4: Likewise.
+	* m4/mathfunc.m4: Likewise.
+	* m4/onceonly.m4: Likewise.
+	* m4/stdint.m4: Likewise.
+	Suggested by Eric Blake.
+
+2010-06-04  Martin Lambers  <marlam@marlam.de>
+            Bruno Haible  <bruno@clisp.org>
+
+	havelib: Allow library names with '+' characters.
+	* m4/lib-link.m4 (AC_LIB_LINKFLAGS, AC_LIB_HAVE_LINKFLAGS,
+	AC_LIB_FROMPACKAGE, AC_LIB_LINKFLAGS_BODY): Convert '+' in name to '_'.
+
+2010-06-09  Bruno Haible  <bruno@clisp.org>
+
+	Module setenv does not depend on 'malloc-posix', 'realloc-posix'.
+	* lib/setenv.c (__add_to_environ): Set errno to ENOMEM when malloc or
+	realloc failed.
+
+2010-06-08  Peter Simons  <simons@cryp.to>
+
+	maint.mk: make the news-check rule more configurable
+	* top/maint.mk (news-check-lines-spec) New variable.
+	(news-check): Use "sed -n 1,10p" in place of "head".
+
+2010-06-07  Jim Meyering  <meyering@redhat.com>
+
+	do-release-commit-and-tag: fix typo in --help
+	* build-aux/do-release-commit-and-tag (Usage): Fix typo in --help.
+
+	regex: avoid new dead-code warning with gcc-4.6.0
+	* lib/regex_internal.c (re_string_reconstruct): #if-0-out a dead
+	if-block containing a while-loop.  It's been unused for at least
+	5 years.
+
+2010-06-05  Bruno Haible  <bruno@clisp.org>
+
+	* doc/posix-functions/strcoll.texi: Mention Solaris limitation.
+	Reported by River Tarnell <river.tarnell@wikimedia.de> via Eric Blake.
+
+2010-06-04  Bruno Haible  <bruno@clisp.org>
+
+	Update to GNU gettext 0.18.1.
+	* modules/gettext (configure.ac): Require gettext infrastructure from
+	version 0.18.1.
+
+2010-06-03  Bruno Haible  <bruno@clisp.org>
+
+	Don't use AC_LIBOBJ with file names in subdirectories.
+	* m4/libunistring-base.m4 (gl_LIBUNISTRING_MODULE): Renamed from
+	gl_LIBUNISTRING_LIBSOURCE. Take a module name as argument, not a file
+	name. Define an automake conditional. Don't invoke AC_LIBOBJ.
+	* m4/libunistring.m4 (gl_LIBUNISTRING): Update AC_BEFORE invocation.
+	* modules/uni*/* (configure.ac): Use gl_LIBUNISTRING_MODULE instead of
+	gl_LIBUNISTRING_LIBSOURCE.
+	(Makefile.am): Augment lib_SOURCES here, conditionally.
+	* NEWS: Drop requirement for Automake option 'subdir-objects'.
+
+2010-06-03  Bruno Haible  <bruno@clisp.org>
+
+	Simplify gl_LIBUNISTRING_VERSION_CMP expansion.
+	* m4/libunistring-base.m4 (gl_LIBUNISTRING_VERSION_CMP): Ensure
+	expansion does not end with a newline.
+	(gl_LIBUNISTRING_LIBSOURCE, gl_LIBUNISTRING_LIBHEADER): Avoid
+	unnecessary newline.
+
+2010-06-03  Bruno Haible  <bruno@clisp.org>
+
+	Reduce dependencies.
+	* tests/test-quotearg.h: New file, extracted from
+	tests/test-quotearg.c.
+	* tests/test-quotearg-simple.c: New file, extracted from
+	tests/test-quotearg.c.
+	* tests/test-quotearg.c: Don't include <ctype.h>.
+	(struct result_strings, struct result_groups, LQ, RQ, LQ_ENC, RQ_ENC,
+	RQ_ESC, inputs, compare, use_quotearg_buffer, use_quotearg,
+	use_quote_double_quotes, use_quotearg_colon): Moved to
+	tests/test-quotearg.h.
+	(results_g, flag_results, custom_quotes, custom_results): Moved
+	to tests/test-quotearg-simple.c.
+	(main): Moved the part that does not depend on gettext to
+	tests/test-quotearg-simple.c. Return 77 if the test cannot be
+	performed.
+	* modules/quotearg-simple: New file.
+	* modules/quotearg-simple-tests: New file.
+	* modules/quotearg (Depends-on): Add quotearg-simple.
+	* modules/quotearg-tests (Status): Mark as gettext-dependent-test.
+	(Files): Add tests/test-quotearg.h.
+	Reported by Paolo Bonzini.
+
+2010-06-03  Bruno Haible  <bruno@clisp.org>
+
+	Reduce dependencies.
+	* modules/acl (Depends-on): Add gettext-h. Remove gettext.
+
+2010-06-03  Bruno Haible  <bruno@clisp.org>
+
+	time: Undefine more broken macros.
+	* lib/time.in.h: Undefine broken localtime_r and gmtime_r macros only
+	for pthread-win32. Undefine also asctime_r, ctime_r, rand_r, strtok_r.
+	Reported by Eric Blake.
+
+2010-06-03  Bruno Haible  <bruno@clisp.org>
+
+	Choose among AC_DEFUN_ONCE, AC_DEFUN in a way that aclocal understands.
+	* m4/iconv.m4 (gl_iconv_AC_DEFUN): New macro.
+	(AM_ICONV): Define it through gl_iconv_AC_DEFUN.
+	* m4/libunistring.m4 (gl_libunistring_AC_DEFUN): New macro.
+	(gl_LIBUNISTRING): Define it through gl_libunistring_AC_DEFUN.
+	Reported by Ludovic Courtès <ludo@gnu.org>.
+
+2010-06-02  Eric Blake  <eblake@redhat.com>
+
+	time: work with mingw + pthreads-win32 library
+	* m4/time_h.m4 (gl_CHECK_TYPE_STRUCT_TIMESPEC): Set new variable
+	if timespec is defined only in pthread.h.
+	* modules/time (Makefile.am): Substitute it.
+	* lib/time.in.h (!TIME_H_DEFINES_STRUCT_TIMESPEC): Include
+	<pthread.h>, when needed.
+	(GNULIB_TIME_R): Undefine broken localtime_r and gmtime_r macros
+	from the library.
+
+2010-05-31  Bruno Haible  <bruno@clisp.org>
+
+	Avoid expanding two macros in the wrong order.
+	* m4/libunistring-base.m4 (gl_LIBUNISTRING_LIB_PREPARE): Require
+	gl_LIBUNISTRING if it is defined.
+	* m4/libunistring.m4 (gl_LIBUNISTRING): Define using AC_DEFUN_ONCE for
+	autoconf >= 2.64.
+	Reported by Ludovic Courtès <ludo@gnu.org>.
+
+2010-05-27  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: also prohibit "#undef" of always-defined symbols
+	* top/maint.mk (def_sym_regex): Handle #undef as well as #define.
+	Allow more than one space before the symbol name.
+	(sc_prohibit_always-defined_macros): Use grep's -E, now that
+	the regexp uses alternation.
+
+2010-05-26  Eric Blake  <eblake@redhat.com>
+
+	maint.mk: avoid echo -e
+	* top/maint.mk (gzip_rsyncable, _ignore_case, _sc_say_and_exit):
+	Convert all uses of echo -* to printf.
+	Reported by Matthias Bolte.
+
+2010-05-25  Bruno Haible  <bruno@clisp.org>
+
+	Update to GNU gettext 0.18, part 2.
+	* build-aux/po/Makefile.in.in: Update to GNU gettext 0.18.
+	Reported by Martin von Gagern <Martin.vGagern@gmx.net>.
+
 2010-05-25  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	Add missing include in test-pwrite.c.
@@ -1119,8 +1305,8 @@
 
 2010-05-09  Bruno Haible  <bruno@clisp.org>
 
-	Update to GNU gettext 0.18.
-	* m4/gettext.m4: Update to GNU gettext 0.17.
+	Update to GNU gettext 0.18, part 1.
+	* m4/gettext.m4: Update to GNU gettext 0.18.
 	* m4/intl.m4: Likewise.
 	* m4/po.m4: Likewise.
 	* modules/gettext (Files): Add m4/fcntl-o.m4.

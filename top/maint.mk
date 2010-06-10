@@ -27,7 +27,8 @@ build_aux ?= $(srcdir)/build-aux
 # Do not save the original name or timestamp in the .tar.gz file.
 # Use --rsyncable if available.
 gzip_rsyncable := \
-  $(shell gzip --help 2>/dev/null|grep rsyncable >/dev/null && echo --rsyncable)
+  $(shell gzip --help 2>/dev/null|grep rsyncable >/dev/null \
+    && printf %s --rsyncable)
 GZIP_ENV = '--no-name --best $(gzip_rsyncable)'
 
 GIT = git
@@ -102,6 +103,12 @@ endif
 # Override this in cfg.mk if you are using a different format in your
 # NEWS file.
 today = $(shell date +%Y-%m-%d)
+
+# Select which lines of NEWS are searched for $(news-check-regexp).
+# This is a sed line number spec.  The default says that we search
+# lines 1..10 of NEWS for $(news-check-regexp).
+# If you want to search only line 3 or only lines 20-22, use "3" or "20,22".
+news-check-lines-spec ?= 1,10
 news-check-regexp ?= '^\*.* $(VERSION_REGEXP) \($(today)\)'
 
 # Prevent programs like 'sort' from considering distinct strings to be equal.
@@ -190,11 +197,11 @@ syntax-check:
 
 # By default, _sc_search_regexp does not ignore case.
 export ignore_case =
-_ignore_case = $$(test -n "$$ignore_case" && echo -i || :)
+_ignore_case = $$(test -n "$$ignore_case" && printf %s -i || :)
 
 define _sc_say_and_exit
    dummy=; : so we do not need a semicolon before each use;		\
-   { echo -e "$(ME): $$msg" 1>&2; exit 1; };
+   { printf '%s\n' "$(ME): $$msg" 1>&2; exit 1; };
 endef
 
 # _sc_search_regexp used to be named _prohibit_regexp.  However,
@@ -691,7 +698,8 @@ define def_sym_regex
 	    perl -lne '$(gl_extract_significant_defines_)' $$f;		\
 	  done;								\
 	) | sort -u							\
-	  | sed 's/^/^ *# *define /;s/$$/\\>/'
+	  | grep -Ev '^ATTRIBUTE_NORETURN'				\
+	  | sed 's/^/^ *# *(define|undef)  */;s/$$/\\>/'
 endef
 
 # Don't define macros that we already get from gnulib header files.
@@ -700,7 +708,7 @@ sc_prohibit_always-defined_macros:
 	  case $$(echo all: | grep -l -f - Makefile) in Makefile);; *)	\
 	    echo '$(ME): skipping $@: you lack GNU grep' 1>&2; exit 0;;	\
 	  esac;								\
-	  $(def_sym_regex) | grep -f - $$($(VC_LIST_EXCEPT))		\
+	  $(def_sym_regex) | grep -E -f - $$($(VC_LIST_EXCEPT))		\
 	    && { echo '$(ME): define the above via some gnulib .h file'	\
 		  1>&2;  exit 1; } || :;				\
 	fi
@@ -875,8 +883,8 @@ sc_makefile_at_at_check:
 	  && { echo '$(ME): use $$(...), not @...@' 1>&2; exit 1; } || :
 
 news-check: NEWS
-	if head $(srcdir)/NEWS | grep -E $(news-check-regexp)		\
-	    >/dev/null; then						\
+	if sed -n $(news-check-lines-spec)p $(srcdir)/NEWS		\
+	    | grep -E $(news-check-regexp) >/dev/null; then		\
 	  :;								\
 	else								\
 	  echo 'NEWS: $$(news-check-regexp) failed to match' 1>&2;	\

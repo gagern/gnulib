@@ -64,6 +64,10 @@ __libc_lock_define_initialized (static, envlock)
 # define clearenv __clearenv
 # define tfind __tfind
 # define tsearch __tsearch
+#else
+/* Use the system functions, not the gnulib overrides in this file.  */
+# undef malloc
+# undef realloc
 #endif
 
 /* In the GNU C library implementation we try to be more clever and
@@ -147,6 +151,9 @@ __add_to_environ (const char *name, const char *value, const char *combined,
                    : realloc (last_environ, (size + 2) * sizeof (char *)));
       if (new_environ == NULL)
         {
+          /* It's easier to set errno to ENOMEM than to rely on the
+             'malloc-posix' and 'realloc-posix' gnulib modules.  */
+          __set_errno (ENOMEM);
           UNLOCK;
           return -1;
         }
