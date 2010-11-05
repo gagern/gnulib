@@ -1,15 +1,18 @@
 Description:
 calloc() function that is glibc compatible.
 
+Status:
+obsolete
+
+Notice:
+This module is obsolete. Use the module 'calloc-gnu' instead.
+
 Files:
-lib/calloc.c
-m4/calloc.m4
 
 Depends-on:
-calloc-posix
+calloc-gnu
 
 configure.ac:
-AC_FUNC_CALLOC
 
 Makefile.am:
 

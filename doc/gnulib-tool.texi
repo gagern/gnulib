@@ -145,7 +145,7 @@ Don't forget to
 By default, the source code is copied into @file{lib/} and the M4
 macros in @file{m4/}.  You can override these paths by using
 @code{--source-base=DIRECTORY} and @code{--m4-base=DIRECTORY}.  Some
-modules also provide other files necessary for building. These files
+modules also provide other files necessary for building.  These files
 are copied into the directory specified by @samp{AC_CONFIG_AUX_DIR} in
 @file{configure.ac} or by the @code{--aux-dir=DIRECTORY} option.  If
 neither is specified, the current directory is assumed.
@@ -161,11 +161,11 @@ mechanism the maintainer applies to the sources.  For these reasons,
 this option is generally discouraged.
 
 @code{gnulib-tool} will overwrite any pre-existing files, in
-particular @file{Makefile.am}.  Unfortunately, separating the
+particular @file{Makefile.am}.  It is also possible to separate the
 generated @file{Makefile.am} content (for building the gnulib library)
-into a separate file, say @file{gnulib.mk}, that could be included
-by your handwritten @file{Makefile.am} is not possible, due to how
-variable assignments are handled by Automake.
+into a separate file, say @file{gnulib.mk}, that can be included by your
+handwritten @file{Makefile.am}, but this is a more advanced use of
+@code{gnulib-tool}.
 
 Consequently, it is a good idea to choose directories that are not
 already used by your projects, to separate gnulib imported files from
@@ -302,32 +302,50 @@ is built from the contents of a different variable, usually
 
 You can at any moment decide to use Gnulib differently than the last time.
 
-If you only want to use more Gnulib modules, simply invoke
-@command{gnulib-tool --import @var{new-modules}}.  @code{gnulib-tool}
-remembers which modules were used last time.  The list of modules that
-you pass after @samp{--import} is @emph{added} to the previous list of
-modules.
+There are two ways to change how Gnulib is used.  Which one you'll use,
+depends on where you keep track of options and module names that you pass
+to @code{gnulib-tool}.
 
-For most changes, such as added or removed modules, or even different
-choices of @samp{--lib}, @samp{--source-base} or @samp{--aux-dir}, there
-are two ways to perform the change.
+@itemize @bullet
+@item
+If you store the options and module names in a file under your own
+control, such as @file{autogen.sh}, @file{bootstrap},
+@file{bootstrap.conf}, or similar, simply invoke @command{gnulib-tool}
+again, with modified options and more or fewer module names.
 
-The standard way is to modify manually the file @file{gnulib-cache.m4}
-in the M4 macros directory, then launch @samp{gnulib-tool --import}.
+@item
+@code{gnulib-tool} remembers which modules were used last time.  If you
+want to rely on @code{gnulib-tool}'s own memory of the last used
+options and module names, you can use the commands
+@command{gnulib-tool --add-import} and
+@command{gnulib-tool --remove-import}.
 
-The other way is to call @command{gnulib-tool} again, with the changed
-command-line options.  Note that this doesn't let you remove modules,
-because as you just learned, the list of modules is always cumulated.
-Also this way is often impractical, because you don't remember the way
-you invoked @code{gnulib-tool} last time.
+So, if you only want to use more Gnulib modules, simply invoke
+@command{gnulib-tool --add-import @var{new-modules}}.  The list of
+modules that you pass after @samp{--add-import} is @emph{added} to the
+previous list of modules.
+
+Similarly, if you want to use fewer Gnulib modules, simply invoke
+@command{gnulib-tool --remove-import @var{unneeded-modules}}.  The list
+of modules that you pass after @samp{--remove-import} is @emph{removed}
+from the previous list of modules.  Note that if a module is then still
+needed as dependency of other modules, it will be used nevertheless.
+If you want to @emph{really} not use a module any more, regardless of
+whether other modules may need it, you need to use the @samp{--avoid}
+option.
+
+For other changes, such as different choices of @samp{--lib},
+@samp{--source-base} or @samp{--aux-dir}, the normal way is to
+modify manually the file @file{gnulib-cache.m4} in the M4 macros
+directory, then launch @samp{gnulib-tool --add-import}.
 
 The only change for which this doesn't work is a change of the
 @samp{--m4-base} directory.  Because, when you pass a different value of
 @samp{--m4-base}, @code{gnulib-tool} will not find the previous
-@file{gnulib-cache.m4} file any more... A possible solution is to manually
-copy the @file{gnulib-cache.m4} into the new M4 macro directory.
+@file{gnulib-cache.m4} file any more.  A possible solution is to
+manually copy the @file{gnulib-cache.m4} into the new M4 macro directory.
 
-In the @file{gnulib-cache.m4}, the macros have the following meaning:
+In the @file{gnulib-cache.m4} file, the macros have the following meaning:
 @table @code
 @item gl_MODULES
 The argument is a space separated list of the requested modules, not including
@@ -372,6 +390,7 @@ The argument is the prefix to use for macros in the @file{gnulib-comp.m4}
 file.  Corresponds to the @samp{--macro-prefix} command line argument.
 @end table
 
+@end itemize
 
 @node Simple update
 @section Simple update
@@ -381,7 +400,7 @@ changing the list of modules or other parameters, a simple call
 does it:
 
 @smallexample
-$ gnulib-tool --import
+$ gnulib-tool --add-import
 @end smallexample
 
 @noindent
@@ -575,20 +594,34 @@ into the VCS, but instead added to @file{.cvsignore} or equivalent.
 @item
 In projects which customarily omit from their VCS all files that are
 generated from other source files, none of these files and directories
-are added into the VCS.  The only file that must be added to the VCS
-is @file{gnulib-cache.m4} in the M4 macros directory.  Also, the
-script for restoring files not in the VCS, customarily called
-@file{autogen.sh} or @file{bootstrap}, will typically contain the
-statement for restoring the omitted files:
+are added into the VCS.  As described in @ref{Modified imports}, there
+are two ways to keep track of options and module names that are passed
+to @code{gnulib-tool}.  The command for restoring the omitted files
+depends on it:
+
+@itemize @bullet
+@item
+If they are stored in a file other than @code{gnulib-cache.m4}, such as
+@file{autogen.sh}, @file{bootstrap}, @file{bootstrap.conf}, or similar,
+the restoration command is the entire @code{gnulib-tool ... --import ...}
+invocation with all options and module names.
+
+@item
+If the project relies on @code{gnulib-tool}'s memory of the last used
+options and module names, then the file @file{gnulib-cache.m4} in the M4
+macros directory must be added to the VCS, and the restoration command
+is:
 
 @smallexample
 $ gnulib-tool --update
 @end smallexample
 
-The @samp{--update} option operates much like the @samp{--import} option,
-but it does not offer the possibility to change the way Gnulib is used.
-Also it does not report in the ChangeLogs the files that it had to add
-because they were missing.
+The @samp{--update} option operates much like the @samp{--add-import}
+option, but it does not offer the possibility to change the way Gnulib is
+used.  Also it does not report in the ChangeLogs the files that it had to
+add because they were missing.
+
+@end itemize
 
 Gnulib includes the file @file{build-aux/bootstrap} to aid a developer
 in using this setup.  Furthermore, in projects that use git for

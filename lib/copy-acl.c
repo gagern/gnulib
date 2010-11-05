@@ -420,7 +420,7 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
 
       if (count < 0)
         {
-          if (errno == ENOSYS || errno == EOPNOTSUPP)
+          if (ACL_NOT_WELL_SUPPORTED (errno))
             {
               count = 0;
               break;
@@ -455,7 +455,7 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
     {
       int saved_errno = errno;
 
-      if (errno == ENOSYS || errno == EOPNOTSUPP)
+      if (ACL_NOT_WELL_SUPPORTED (errno))
         {
           struct stat source_statbuf;
 
@@ -514,6 +514,68 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
   /* No need to call chmod_or_fchmod at this point, since the mode bits
      S_ISUID, S_ISGID, S_ISVTX are also stored in the ACL.  */
 
+  return 0;
+
+#elif USE_ACL && HAVE_ACLSORT /* NonStop Kernel */
+
+  int count;
+  struct acl entries[NACLENTRIES];
+  int ret;
+
+  for (;;)
+    {
+      count = acl ((char *) src_name, ACL_CNT, NACLENTRIES, NULL);
+
+      if (count < 0)
+        {
+          if (0)
+            {
+              count = 0;
+              break;
+            }
+          else
+            return -2;
+        }
+
+      if (count == 0)
+        break;
+
+      if (count > NACLENTRIES)
+        /* If NACLENTRIES cannot be trusted, use dynamic memory allocation.  */
+        abort ();
+
+      if (acl ((char *) src_name, ACL_GET, count, entries) == count)
+        break;
+      /* Huh? The number of ACL entries changed since the last call.
+         Repeat.  */
+    }
+
+  if (count == 0)
+    return qset_acl (dst_name, dest_desc, mode);
+
+  ret = acl ((char *) dst_name, ACL_SET, count, entries);
+  if (ret < 0)
+    {
+      int saved_errno = errno;
+
+      if (0)
+        {
+          if (!acl_nontrivial (count, entries))
+            return chmod_or_fchmod (dst_name, dest_desc, mode);
+        }
+
+      chmod_or_fchmod (dst_name, dest_desc, mode);
+      errno = saved_errno;
+      return -1;
+    }
+
+  if (mode & (S_ISUID | S_ISGID | S_ISVTX))
+    {
+      /* We did not call chmod so far, and either the mode and the ACL are
+         separate or special bits are to be set which don't fit into ACLs.  */
+
+      return chmod_or_fchmod (dst_name, dest_desc, mode);
+    }
   return 0;
 
 #else

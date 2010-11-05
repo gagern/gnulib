@@ -1,4 +1,4 @@
-# mathfunc.m4 serial 4
+# mathfunc.m4 serial 6
 dnl Copyright (C) 2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -24,12 +24,16 @@ AC_DEFUN([gl_MATHFUNC],
     [gl_cv_func_]func[_no_libm],
     [
       AC_LINK_IFELSE(
-        [AC_LANG_PROGRAM([[#ifndef __NO_MATH_INLINES
-                           # define __NO_MATH_INLINES 1 /* for glibc */
-                           #endif
-                           #include <math.h>
-                           $2 (*funcptr) $3 = ]func[;]],
-                         [[return 0;]])],
+        [AC_LANG_PROGRAM(
+           [[#ifndef __NO_MATH_INLINES
+             # define __NO_MATH_INLINES 1 /* for glibc */
+             #endif
+             #include <math.h>
+             $2 (*funcptr) $3 = ]func[;
+             double d_ret;]],
+           [[$2 y = funcptr ]m4_bpatsubst([m4_bpatsubst([m4_bpatsubst([$3], [int], [2])], [double \*], [&d_ret])], [double], [1.6180339887])[;
+             return y < 0.3 || y > 1.7;
+           ]])],
         [gl_cv_func_]func[_no_libm=yes],
         [gl_cv_func_]func[_no_libm=no])
     ])
@@ -40,12 +44,16 @@ AC_DEFUN([gl_MATHFUNC],
         save_LIBS="$LIBS"
         LIBS="$LIBS -lm"
         AC_LINK_IFELSE(
-          [AC_LANG_PROGRAM([[#ifndef __NO_MATH_INLINES
-                             # define __NO_MATH_INLINES 1 /* for glibc */
-                             #endif
-                             #include <math.h>
-                             $2 (*funcptr) $3 = ]func[;]],
-                           [[return 0;]])],
+          [AC_LANG_PROGRAM(
+             [[#ifndef __NO_MATH_INLINES
+               # define __NO_MATH_INLINES 1 /* for glibc */
+               #endif
+               #include <math.h>
+               $2 (*funcptr) $3 = ]func[;
+               double d_ret;]],
+             [[$2 y = funcptr ]m4_bpatsubst([m4_bpatsubst([m4_bpatsubst([$3], [int], [2])], [double \*], [&d_ret])], [double], [1.6180339887])[;
+               return y < 0.3 || y > 1.7;
+             ]])],
           [gl_cv_func_]func[_in_libm=yes],
           [gl_cv_func_]func[_in_libm=no])
         LIBS="$save_LIBS"
@@ -65,8 +73,8 @@ AC_DEFUN([gl_MATHFUNC],
 # It sets FUNC_LIBM to empty or "-lm" accordingly.
 # FUNC must be one of the following functions, that are present on all systems
 # and provided by libm on all systems except MacOS X, BeOS, Haiku:
-#   acos asin atan atan2 cbrt copysign cos cosh erf erfc exp fmod hypot j0 j1
-#   jn lgamma log log10 log1p pow remainder sin sinh sqrt tan tanh y0 y1 yn
+#   acos asin atan atan2 cbrt cos cosh erf erfc exp fmod hypot j0 j1 jn lgamma
+#   log log10 log1p pow remainder sin sinh sqrt tan tanh y0 y1 yn
 
 AC_DEFUN([gl_COMMON_DOUBLE_MATHFUNC],
 [
@@ -86,7 +94,6 @@ AC_DEFUN([gl_COMMON_DOUBLE_MATHFUNC_TEST],
   dnl gl_MATHFUNC([atan], [double], [(double)])
   dnl gl_MATHFUNC([atan2], [double], [(double, double)])
   dnl gl_MATHFUNC([cbrt], [double], [(double)])
-  dnl gl_MATHFUNC([copysign], [double], [(double, double)])
   dnl gl_MATHFUNC([cos], [double], [(double)])
   dnl gl_MATHFUNC([cosh], [double], [(double)])
   dnl gl_MATHFUNC([erf], [double], [(double)])

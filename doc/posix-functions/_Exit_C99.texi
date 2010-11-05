@@ -5,17 +5,17 @@
 @c with _exit.texi on case-insensitive file systems (MacOS X HFS+ and Woe32
 @c file systems).
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/_Exit.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/_Exit.html}
 
-Gnulib module: ---
+Gnulib module: _Exit
 
 Portability problems fixed by Gnulib:
-@itemize
-@end itemize
-
-Portability problems not fixed by Gnulib:
 @itemize
 @item
 This function is missing on some platforms:
 AIX 5.1, HP-UX 11, IRIX 6.5, OSF/1 5.1, Solaris 9, Cygwin 1.5.x, Interix 3.5, BeOS.
+@end itemize
+
+Portability problems not fixed by Gnulib:
+@itemize
 @end itemize

@@ -1,4 +1,4 @@
-# frexpl.m4 serial 9
+# frexpl.m4 serial 12
 dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -12,24 +12,18 @@ AC_DEFUN([gl_FUNC_FREXPL],
   AC_CHECK_DECL([frexpl], , [HAVE_DECL_FREXPL=0], [#include <math.h>])
   FREXPL_LIBM=
   if test $HAVE_DECL_FREXPL = 1; then
-    AC_CACHE_CHECK([whether frexpl() can be used without linking with libm],
-      [gl_cv_func_frexpl_no_libm],
-      [
-        AC_TRY_LINK([#include <math.h>
-                     long double x;],
-                    [int e; return frexpl (x, &e) > 0;],
-          [gl_cv_func_frexpl_no_libm=yes],
-          [gl_cv_func_frexpl_no_libm=no])
-      ])
+    gl_CHECK_FREXPL_NO_LIBM
     if test $gl_cv_func_frexpl_no_libm = no; then
       AC_CACHE_CHECK([whether frexpl() can be used with libm],
         [gl_cv_func_frexpl_in_libm],
         [
           save_LIBS="$LIBS"
           LIBS="$LIBS -lm"
-          AC_TRY_LINK([#include <math.h>
-                       long double x;],
-                      [int e; return frexpl (x, &e) > 0;],
+          AC_LINK_IFELSE(
+            [AC_LANG_PROGRAM(
+               [[#include <math.h>
+                 long double x;]],
+               [[int e; return frexpl (x, &e) > 0;]])],
             [gl_cv_func_frexpl_in_libm=yes],
             [gl_cv_func_frexpl_in_libm=no])
           LIBS="$save_LIBS"
@@ -69,15 +63,7 @@ AC_DEFUN([gl_FUNC_FREXPL_NO_LIBM],
   dnl MacOS X 10.3 has frexpl() in libc but doesn't declare it in <math.h>.
   AC_CHECK_DECL([frexpl], , [HAVE_DECL_FREXPL=0], [#include <math.h>])
   if test $HAVE_DECL_FREXPL = 1; then
-    AC_CACHE_CHECK([whether frexpl() can be used without linking with libm],
-      [gl_cv_func_frexpl_no_libm],
-      [
-        AC_TRY_LINK([#include <math.h>
-                     long double x;],
-                    [int e; return frexpl (x, &e) > 0;],
-          [gl_cv_func_frexpl_no_libm=yes],
-          [gl_cv_func_frexpl_no_libm=no])
-      ])
+    gl_CHECK_FREXPL_NO_LIBM
     if test $gl_cv_func_frexpl_no_libm = yes; then
       gl_FUNC_FREXPL_WORKS
       case "$gl_cv_func_frexpl_works" in
@@ -99,6 +85,23 @@ AC_DEFUN([gl_FUNC_FREXPL_NO_LIBM],
   fi
 ])
 
+dnl Test whether frexpl() can be used without linking with libm.
+dnl Set gl_cv_func_frexpl_no_libm to 'yes' or 'no' accordingly.
+AC_DEFUN([gl_CHECK_FREXPL_NO_LIBM],
+[
+  AC_CACHE_CHECK([whether frexpl() can be used without linking with libm],
+    [gl_cv_func_frexpl_no_libm],
+    [
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM(
+           [[#include <math.h>
+             long double x;]],
+           [[int e; return frexpl (x, &e) > 0;]])],
+        [gl_cv_func_frexpl_no_libm=yes],
+        [gl_cv_func_frexpl_no_libm=no])
+    ])
+])
+
 dnl Test whether frexpl() works on finite numbers (this fails on
 dnl MacOS X 10.4/PowerPC, on AIX 5.1, and on BeOS), on denormalized numbers
 dnl (this fails on MacOS X 10.5/i386), and also on infinite numbers (this
@@ -109,7 +112,8 @@ AC_DEFUN([gl_FUNC_FREXPL_WORKS],
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_CACHE_CHECK([whether frexpl works], [gl_cv_func_frexpl_works],
     [
-      AC_TRY_RUN([
+      AC_RUN_IFELSE(
+        [AC_LANG_SOURCE([[
 #include <float.h>
 #include <math.h>
 /* Override the values of <float.h>, like done in float.in.h.  */
@@ -179,12 +183,17 @@ int main()
       return 1;
   }
   return 0;
-}], [gl_cv_func_frexpl_works=yes], [gl_cv_func_frexpl_works=no],
-      [case "$host_os" in
-         aix* | beos* | darwin* | irix* | mingw* | pw*)
-            gl_cv_func_frexpl_works="guessing no";;
-         *) gl_cv_func_frexpl_works="guessing yes";;
-       esac
-      ])
+}]])],
+        [gl_cv_func_frexpl_works=yes],
+        [gl_cv_func_frexpl_works=no],
+        [
+changequote(,)dnl
+         case "$host_os" in
+           aix | aix[3-6]* | beos* | darwin* | irix* | mingw* | pw*)
+              gl_cv_func_frexpl_works="guessing no";;
+           *) gl_cv_func_frexpl_works="guessing yes";;
+         esac
+changequote([,])dnl
+        ])
     ])
 ])

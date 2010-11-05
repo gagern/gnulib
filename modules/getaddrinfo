@@ -11,13 +11,13 @@ extensions
 gettext-h
 inet_ntop
 snprintf
-socklen
 stdbool
 sys_socket
 netdb
 strdup
 servent
 hostent
+sockets
 
 configure.ac:
 gl_GETADDRINFO

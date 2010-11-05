@@ -58,12 +58,31 @@ main ()
     ASSERT (result == input + 11);
   }
 
+  /* Check that a long periodic needle does not cause false positives.  */
+  {
+    const char input[] = ("F_BD_CE_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD"
+                          "_C3_88_20_EF_BF_BD_EF_BF_BD_EF_BF_BD"
+                          "_C3_A7_20_EF_BF_BD");
+    const char need[] = "_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD";
+    const char *result = c_strcasestr (input, need);
+    ASSERT (result == NULL);
+  }
+  {
+    const char input[] = ("F_BD_CE_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD"
+                          "_C3_88_20_EF_BF_BD_EF_BF_BD_EF_BF_BD"
+                          "_C3_A7_20_EF_BF_BD_DA_B5_C2_A6_20"
+                          "_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD");
+    const char need[] = "_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD_EF_BF_BD";
+    const char *result = c_strcasestr (input, need);
+    ASSERT (result == input + 115);
+  }
+
   /* Check that a very long haystack is handled quickly if the needle is
      short and occurs near the beginning.  */
   {
     size_t repeat = 10000;
     size_t m = 1000000;
-    char *needle =
+    const char *needle =
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaAaaaaaaAAAAaaaaaaa"
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -88,7 +107,7 @@ main ()
   {
     size_t repeat = 10000;
     size_t m = 1000000;
-    char *haystack =
+    const char *haystack =
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "ABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAB";
     char *needle = (char *) malloc (m + 1);

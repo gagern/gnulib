@@ -1,5 +1,5 @@
 # acl.m4 - check for access control list (ACL) primitives
-# serial 9
+# serial 11
 
 # Copyright (C) 2002, 2004-2010 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
@@ -45,10 +45,10 @@ AC_DEFUN([gl_FUNC_ACL],
              AC_REPLACE_FUNCS([acl_entries])
              AC_CACHE_CHECK([for ACL_FIRST_ENTRY],
                [gl_cv_acl_ACL_FIRST_ENTRY],
-               [AC_COMPILE_IFELSE(
+               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [[#include <sys/types.h>
 #include <sys/acl.h>
-int type = ACL_FIRST_ENTRY;]],
+int type = ACL_FIRST_ENTRY;]])],
                   [gl_cv_acl_ACL_FIRST_ENTRY=yes],
                   [gl_cv_acl_ACL_FIRST_ENTRY=no])])
              if test $gl_cv_acl_ACL_FIRST_ENTRY = yes; then
@@ -58,10 +58,10 @@ int type = ACL_FIRST_ENTRY;]],
              dnl On MacOS X, other types of ACLs are supported.
              AC_CACHE_CHECK([for ACL_TYPE_EXTENDED],
                [gl_cv_acl_ACL_TYPE_EXTENDED],
-               [AC_COMPILE_IFELSE(
+               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [[#include <sys/types.h>
 #include <sys/acl.h>
-int type = ACL_TYPE_EXTENDED;]],
+int type = ACL_TYPE_EXTENDED;]])],
                   [gl_cv_acl_ACL_TYPE_EXTENDED=yes],
                   [gl_cv_acl_ACL_TYPE_EXTENDED=no])])
              if test $gl_cv_acl_ACL_TYPE_EXTENDED = yes; then
@@ -76,8 +76,8 @@ int type = ACL_TYPE_EXTENDED;]],
 
       dnl Test for Solaris API (Solaris, Cygwin).
       if test $use_acl = 0; then
-        AC_CHECK_FUNCS([acl])
-        if test $ac_cv_func_acl = yes; then
+        AC_CHECK_FUNCS([facl])
+        if test $ac_cv_func_facl = yes; then
           AC_SEARCH_LIBS([acl_trivial], [sec],
             [if test "$ac_cv_search_acl_trivial" != "none required"; then
                LIB_ACL=$ac_cv_search_acl_trivial
@@ -89,7 +89,7 @@ int type = ACL_TYPE_EXTENDED;]],
       fi
 
       dnl Test for HP-UX API.
-      if test $use_acl = 0 || test "$ac_cv_func_acl" = yes; then
+      if test $use_acl = 0; then
         AC_CHECK_FUNCS([getacl])
         if test $ac_cv_func_getacl = yes; then
           use_acl=1
@@ -108,6 +108,14 @@ int type = ACL_TYPE_EXTENDED;]],
       if test $use_acl = 0 || test "$ac_cv_func_aclx_get" = yes; then
         AC_CHECK_FUNCS([statacl])
         if test $ac_cv_func_statacl = yes; then
+          use_acl=1
+        fi
+      fi
+
+      dnl Test for NonStop Kernel API.
+      if test $use_acl = 0; then
+        AC_CHECK_FUNCS([aclsort])
+        if test $ac_cv_func_aclsort = yes; then
           use_acl=1
         fi
       fi

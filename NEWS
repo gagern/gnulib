@@ -1,10 +1,70 @@
 Important notes
 ---------------
 
+2010-09-04  gnulib-tool     The option '--import' is no longer cumulative; it
+                            now expects the complete list of modules and other
+                            options on the command line. If you want to
+                            augment (not set) the list of modules, use the
+                            new option '--add-import' instead of '--import'.
+
 User visible incompatible changes
 ---------------------------------
 
 Date        Modules         Changes
+
+2010-10-05  getdate         This module is deprecated. Please use the new
+                            parse-datetime module for the replacement
+                            function parse_datetime(), or help us write
+                            getdate-posix for getdate(). Also, the header
+                            "getdate.h" has been renamed "parse-datetime.h",
+                            and doc/getdate.texi to doc/parse-datetime.texi.
+
+2010-09-29  sys_wait        This module no longer provides the waitpid()
+                            function. If you need this function, you now need
+                            to request the 'waitpid' module.
+
+2010-09-17  utimens         The function gl_futimens is removed, and its
+                            signature has been migrated to fdutimens.  Callers
+                            of gl_futimens should change function name, and
+                            callers of fdutimens should swap parameter order.
+
+2010-09-17  fdutimensat     This function has a new signature: the fd now comes
+                            first instead of the dir/name pair, and a new
+                            atflag parameter is added at the end.  Old code
+                            should rearrange parameters, and pass 0 for atflag.
+
+2010-09-13  regex           The module is not guaranteeing anymore support for
+                            64-bit regoff_t on 64-bit systems.  The size of
+                            regoff_t will always be 32-bit unless the program
+                            is being configured --with-included-regex.  This
+                            may change again in the future once glibc provides
+                            this feature as well.
+
+2010-09-12  savedir         The fdsavedir function is now deprecated.
+
+2010-09-10  fcntl-h         This module now defaults O_CLOEXEC to 0, and
+                            it defaults O_EXEC and O_SEARCH to O_RDONLY.
+                            Use "#if O_CLOEXEC" instead of "#ifdef O_CLOEXEC".
+
+2010-08-28  realloc         This module is deprecated. Use 'realloc-gnu'
+                            instead. It will be removed 2012-01-01.
+
+2010-08-28  calloc          This module is deprecated. Use 'calloc-gnu'
+                            instead. It will be removed 2012-01-01.
+
+2010-08-28  malloc          This module is deprecated. Use 'malloc-gnu'
+                            instead. It will be removed 2012-01-01.
+
+2010-08-14  memxfrm         This module is renamed to amemxfrm. The include
+                            file is renamed to "amemxfrm.h". The function is
+                            renamed to amemxfrm.
+
+2010-08-09  symlinkat       This module now only provides symlinkat; use the
+                            new module 'readlinkat' if needed.
+
+2010-07-31  ansi-c++-opt    If Autoconf >= 2.66 is used, the 'configure'
+                            option is now called --disable-c++ rather than
+                            --disable-cxx.
 
 2010-04-02  maintainer-makefile
                             The macro _prohibit_regexp has been revamped into

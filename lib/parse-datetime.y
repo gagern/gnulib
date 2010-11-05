@@ -33,7 +33,7 @@
 
 #include <config.h>
 
-#include "getdate.h"
+#include "parse-datetime.h"
 
 #include "intprops.h"
 #include "timespec.h"
@@ -50,7 +50,7 @@
 #define YYMAXDEPTH 20
 #define YYINITDEPTH YYMAXDEPTH
 
-/* Since the code of getdate.y is not included in the Emacs executable
+/* Since the code of parse-datetime.y is not included in the Emacs executable
    itself, there is no need to #define static in this file.  Even if
    the code were included in the Emacs executable, it probably
    wouldn't do any harm to #undef it here; this will only cause
@@ -68,6 +68,14 @@
 
 #include "xalloc.h"
 
+/* Bison's skeleton tests _STDLIB_H, while some stdlib.h headers
+   use _STDLIB_H_ as witness.  Map the latter to the one bison uses.  */
+/* FIXME: this is temporary.  Remove when we have a mechanism to ensure
+   that the version we're using is fixed, too.  */
+#ifdef _STDLIB_H_
+# undef _STDLIB_H
+# define _STDLIB_H 1
+#endif
 
 /* ISDIGIT differs from isdigit, as follows:
    - Its arg may be any int or unsigned int; it need not be an unsigned char
@@ -712,7 +720,7 @@ static table const universal_time_zone_table[] =
 /* The time zone table.  This table is necessarily incomplete, as time
    zone abbreviations are ambiguous; e.g. Australians interpret "EST"
    as Eastern time in Australia, not as US Eastern Standard Time.
-   You cannot rely on getdate to handle arbitrary time zone
+   You cannot rely on parse_datetime to handle arbitrary time zone
    abbreviations; use numeric abbreviations like `-0500' instead.  */
 static table const time_zone_table[] =
 {
@@ -1201,7 +1209,8 @@ get_tz (char tzbuf[TZBUFSIZE])
    P can be an incomplete or relative time specification; if so, use
    *NOW as the basis for the returned time.  */
 bool
-get_date (struct timespec *result, char const *p, struct timespec const *now)
+parse_datetime (struct timespec *result, char const *p,
+                struct timespec const *now)
 {
   time_t Start;
   long int Start_ns;
@@ -1550,7 +1559,7 @@ main (int ac, char **av)
     {
       struct timespec d;
       struct tm const *tm;
-      if (! get_date (&d, buff, NULL))
+      if (! parse_datetime (&d, buff, NULL))
         printf ("Bad format - couldn't convert.\n");
       else if (! (tm = localtime (&d.tv_sec)))
         {

@@ -1,7 +1,7 @@
 @node sys/wait.h
 @section @file{sys/wait.h}
 
-POSIX specification: @url{http://www.opengroup.org/susv3xbd/sys/wait.h.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/basedefs/sys_wait.h.html}
 
 Gnulib module: sys_wait
 
@@ -14,4 +14,8 @@ mingw.
 
 Portability problems not fixed by Gnulib:
 @itemize
+@item
+System status macros such as @code{WEXITSTATUS} require an lvalue
+argument on some platforms.
+MacOS X 10.5.
 @end itemize

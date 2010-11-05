@@ -1,4 +1,4 @@
-# isnanf.m4 serial 10
+# isnanf.m4 serial 11
 dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -71,16 +71,18 @@ AC_DEFUN([gl_HAVE_ISNANF_NO_LIBM],
   AC_CACHE_CHECK([whether isnan(float) can be used without linking with libm],
     [gl_cv_func_isnanf_no_libm],
     [
-      AC_TRY_LINK([#include <math.h>
-                   #if __GNUC__ >= 4
-                   # undef isnanf
-                   # define isnanf(x) __builtin_isnanf ((float)(x))
-                   #elif defined isnan
-                   # undef isnanf
-                   # define isnanf(x) isnan ((float)(x))
-                   #endif
-                   float x;],
-                  [return isnanf (x);],
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM(
+           [[#include <math.h>
+             #if __GNUC__ >= 4
+             # undef isnanf
+             # define isnanf(x) __builtin_isnanf ((float)(x))
+             #elif defined isnan
+             # undef isnanf
+             # define isnanf(x) isnan ((float)(x))
+             #endif
+             float x;]],
+           [[return isnanf (x);]])],
         [gl_cv_func_isnanf_no_libm=yes],
         [gl_cv_func_isnanf_no_libm=no])
     ])
@@ -94,16 +96,18 @@ AC_DEFUN([gl_HAVE_ISNANF_IN_LIBM],
     [
       save_LIBS="$LIBS"
       LIBS="$LIBS -lm"
-      AC_TRY_LINK([#include <math.h>
-                   #if __GNUC__ >= 4
-                   # undef isnanf
-                   # define isnanf(x) __builtin_isnanf ((float)(x))
-                   #elif defined isnan
-                   # undef isnanf
-                   # define isnanf(x) isnan ((float)(x))
-                   #endif
-                   float x;],
-                  [return isnanf (x);],
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM(
+           [[#include <math.h>
+             #if __GNUC__ >= 4
+             # undef isnanf
+             # define isnanf(x) __builtin_isnanf ((float)(x))
+             #elif defined isnan
+             # undef isnanf
+             # define isnanf(x) isnan ((float)(x))
+             #endif
+             float x;]],
+           [[return isnanf (x);]])],
         [gl_cv_func_isnanf_in_libm=yes],
         [gl_cv_func_isnanf_in_libm=no])
       LIBS="$save_LIBS"
@@ -120,7 +124,8 @@ AC_DEFUN([gl_ISNANF_WORKS],
   AC_REQUIRE([gl_FLOAT_EXPONENT_LOCATION])
   AC_CACHE_CHECK([whether isnan(float) works], [gl_cv_func_isnanf_works],
     [
-      AC_TRY_RUN([
+      AC_RUN_IFELSE(
+        [AC_LANG_SOURCE([[
 #include <math.h>
 #if __GNUC__ >= 4
 # undef isnanf
@@ -169,7 +174,9 @@ int main()
 #endif
 
   return 0;
-}], [gl_cv_func_isnanf_works=yes], [gl_cv_func_isnanf_works=no],
+}]])],
+        [gl_cv_func_isnanf_works=yes],
+        [gl_cv_func_isnanf_works=no],
         [case "$host_os" in
            irix* | solaris*) gl_cv_func_isnanf_works="guessing no";;
            *)                gl_cv_func_isnanf_works="guessing yes";;

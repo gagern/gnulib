@@ -1,17 +1,21 @@
 @node termios.h
 @section @file{termios.h}
 
-POSIX specification: @url{http://www.opengroup.org/susv3xbd/termios.h.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/basedefs/termios.h.html}
 
-Gnulib module: ---
+Gnulib module: termios
 
 Portability problems fixed by Gnulib:
 @itemize
+@item
+This header file is missing on some platforms:
+mingw.
 @end itemize
 
 Portability problems not fixed by Gnulib:
 @itemize
 @item
-This header file is missing on some platforms:
+The types @code{struct termios}, @code{cc_t}, @code{speed_t}, @code{tcflag_t}
+are not defined on some platforms:
 mingw.
 @end itemize

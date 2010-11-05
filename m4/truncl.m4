@@ -1,4 +1,4 @@
-# truncl.m4 serial 4
+# truncl.m4 serial 5
 dnl Copyright (C) 2007-2008, 2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -15,24 +15,26 @@ AC_DEFUN([gl_FUNC_TRUNCL],
   if test "$ac_cv_have_decl_truncl" = yes; then
     dnl Test whether truncl() can be used without libm.
     TRUNCL_LIBM=?
-    AC_TRY_LINK([
-       #ifndef __NO_MATH_INLINES
-       # define __NO_MATH_INLINES 1 /* for glibc */
-       #endif
-       #include <math.h>
-       long double x;],
-      [x = truncl(x);],
+    AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM(
+         [[#ifndef __NO_MATH_INLINES
+           # define __NO_MATH_INLINES 1 /* for glibc */
+           #endif
+           #include <math.h>
+           long double x;]],
+         [[x = truncl(x);]])],
       [TRUNCL_LIBM=])
     if test "$TRUNCL_LIBM" = "?"; then
       save_LIBS="$LIBS"
       LIBS="$LIBS -lm"
-      AC_TRY_LINK([
-         #ifndef __NO_MATH_INLINES
-         # define __NO_MATH_INLINES 1 /* for glibc */
-         #endif
-         #include <math.h>
-         long double x;],
-        [x = truncl(x);],
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM(
+           [[#ifndef __NO_MATH_INLINES
+             # define __NO_MATH_INLINES 1 /* for glibc */
+             #endif
+             #include <math.h>
+             long double x;]],
+           [[x = truncl(x);]])],
         [TRUNCL_LIBM="-lm"])
       LIBS="$save_LIBS"
     fi
@@ -40,22 +42,28 @@ AC_DEFUN([gl_FUNC_TRUNCL],
       TRUNCL_LIBM=
     fi
     dnl Test whether truncl() works. It crashes on OSF/1 4.0d.
+    save_LIBS="$LIBS"
+    LIBS="$LIBS $TRUNCL_LIBM"
     AC_CACHE_CHECK([whether truncl works], [gl_cv_func_truncl_works],
       [
-        AC_TRY_RUN([
+        AC_RUN_IFELSE(
+          [AC_LANG_SOURCE([[
 #include <math.h>
 long double x;
 int main()
 {
   x = truncl (0.0L);
   return 0;
-}], [gl_cv_func_truncl_works=yes], [gl_cv_func_truncl_works=no],
+}]])],
+          [gl_cv_func_truncl_works=yes],
+          [gl_cv_func_truncl_works=no],
           [case "$host_os" in
              osf4*) gl_cv_func_truncl_works="guessing no";;
              *)     gl_cv_func_truncl_works="guessing yes";;
            esac
           ])
       ])
+    LIBS="$save_LIBS"
     case "$gl_cv_func_truncl_works" in
       *yes) ;;
       *) REPLACE_TRUNCL=1 ;;

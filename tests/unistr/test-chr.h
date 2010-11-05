@@ -19,32 +19,65 @@
 int
 main (void)
 {
-  size_t n = 0x100000;
-  UNIT *input = (UNIT *) malloc (n * sizeof (UNIT));
+  size_t size = 0x100000;
+  size_t i;
+  size_t length;
+  UNIT *input;
+  uint32_t *input32 = (uint32_t *) malloc (size * sizeof (uint32_t));
+  ASSERT (input32);
+
+  input32[0] = 'a';
+  input32[1] = 'b';
+  u32_set (input32 + 2, 'c', 1024);
+  for (i = 1026; i < size - 2; i += 63)
+    {
+      size_t last = i + 63 < size - 2 ? i + 63 : size - 2;
+      ucs4_t uc = 'd' | (i - 1026);
+      if (uc >= 0xd800 && uc <= 0xdfff)
+        uc |= 0x100000;
+      u32_set (input32 + i, uc, last - i);
+    }
+
+  input32[size - 2] = 'e';
+  input32[size - 1] = 'a';
+
+  input = U32_TO_U (input32, size, NULL, &length);
   ASSERT (input);
 
-  input[0] = 'a';
-  input[1] = 'b';
-  U_SET (input + 2, 'c', 1024);
-  U_SET (input + 1026, 'd', n - 1028);
-  input[n - 2] = 'e';
-  input[n - 1] = 'a';
-
   /* Basic behavior tests.  */
-  ASSERT (U_CHR (input, n, 'a') == input);
+  ASSERT (U_CHR (input, length, 'a') == input);
 
   ASSERT (U_CHR (input, 0, 'a') == NULL);
   ASSERT (U_CHR (zerosize_ptr (), 0, 'a') == NULL);
 
-  ASSERT (U_CHR (input, n, 'b') == input + 1);
-  ASSERT (U_CHR (input, n, 'c') == input + 2);
-  ASSERT (U_CHR (input, n, 'd') == input + 1026);
+  ASSERT (U_CHR (input, length, 'b') == input + 1);
+  ASSERT (U_CHR (input, length, 'c') == input + 2);
+  ASSERT (U_CHR (input, length, 'd') == input + 1026);
 
-  ASSERT (U_CHR (input + 1, n - 1, 'a') == input + n - 1);
-  ASSERT (U_CHR (input + 1, n - 1, 'e') == input + n - 2);
+  {
+    UNIT *exp = input + 1026;
+    UNIT *prev = input + 1;
+    for (i = 1026; i < size - 2; i += 63)
+      {
+        UNIT c[6];
+        size_t n;
+        ucs4_t uc = 'd' | (i - 1026);
+        if (uc >= 0xd800 && uc <= 0xdfff)
+          uc |= 0x100000;
+        n = U_UCTOMB (c, uc, 6);
+        ASSERT (exp < input + length - 1);
+        ASSERT (U_CHR (prev, (length - 1) - (prev - input), uc) == exp);
+        ASSERT (memcmp (exp, c, n * sizeof (UNIT)) == 0);
+        prev = exp;
+        exp += n * 63;
+      }
+  }
 
-  ASSERT (U_CHR (input, n, 'f') == NULL);
-  ASSERT (U_CHR (input, n, '\0') == NULL);
+  ASSERT (U_CHR (input + 1, length - 1, 'a') == input + length - 1);
+  ASSERT (U_CHR (input + 1, length - 1, 'e') == input + length - 2);
+
+  ASSERT (U_CHR (input, length, 'f') == NULL);
+  ASSERT (U_CHR (input, length, '\0') == NULL);
 
   /* Check that a very long haystack is handled quickly if the byte is
      found near the beginning.  */
@@ -52,7 +85,7 @@ main (void)
     size_t repeat = 10000;
     for (; repeat > 0; repeat--)
       {
-        ASSERT (U_CHR (input, n, 'c') == input + 2);
+        ASSERT (U_CHR (input, length, 'c') == input + 2);
       }
   }
 
@@ -74,6 +107,7 @@ main (void)
      byte being searched.  */
   {
     char *page_boundary = (char *) zerosize_ptr ();
+    size_t n;
 
     if (page_boundary != NULL)
       {

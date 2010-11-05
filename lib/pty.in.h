@@ -20,6 +20,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 /* The include_next requires a split double-inclusion guard.  */
 #if @HAVE_PTY_H@
@@ -34,6 +35,8 @@
 # include <util.h>
 #endif
 #if @HAVE_LIBUTIL_H@
+/* <sys/types.h> is a prerequisite of <libutil.h> on FreeBSD 8.0.  */
+# include <sys/types.h>
 # include <libutil.h>
 #endif
 

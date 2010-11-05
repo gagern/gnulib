@@ -7,6 +7,8 @@
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
 
+#serial 2
+
 # Autoconf defines AC_FUNC_GETLOADAVG, but that is obsolescent.
 # New applications should use gl_GETLOADAVG instead.
 
@@ -43,11 +45,10 @@ test $ac_cv_lib_perfstat_perfstat_cpu_total = yes && gl_have_func=yes
 # Some systems with -lutil have (and need) -lkvm as well, some do not.
 # On Solaris, -lkvm requires nlist from -lelf, so check that first
 # to get the right answer into the cache.
-# For kstat on solaris, we need libelf to force the definition of SVR4 below.
+# For kstat on solaris, we need to test for libelf and libkvm to force the
+# definition of SVR4 below.
 if test $gl_have_func = no; then
   AC_CHECK_LIB([elf], [elf_begin], [LIBS="-lelf $LIBS"])
-fi
-if test $gl_have_func = no; then
   AC_CHECK_LIB([kvm], [kvm_open], [LIBS="-lkvm $LIBS"])
   # Check for the 4.4BSD definition of getloadavg.
   AC_CHECK_LIB([util], [getloadavg],
@@ -144,7 +145,8 @@ AC_CHECK_HEADER([sys/dg_sys_info.h],
 # We cannot check for <dwarf.h>, because Solaris 2 does not use dwarf (it
 # uses stabs), but it is still SVR4.  We cannot check for <elf.h> because
 # Irix 4.0.5F has the header but not the library.
-if test $gl_have_func = no && test "$ac_cv_lib_elf_elf_begin" = yes; then
+if test $gl_have_func = no && test "$ac_cv_lib_elf_elf_begin" = yes \
+    && test "$ac_cv_lib_kvm_kvm_open" = yes; then
   gl_have_func=yes
   AC_DEFINE([SVR4], [1], [Define to 1 on System V Release 4.])
 fi

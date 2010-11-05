@@ -2,7 +2,7 @@
 @section @code{cproj}
 @findex cproj
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/cproj.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/cproj.html}
 
 Gnulib module: ---
 
@@ -14,7 +14,8 @@ Portability problems not fixed by Gnulib:
 @itemize
 @item
 This function is missing on some platforms:
-FreeBSD 6.0, NetBSD 3.0, OpenBSD 3.8, AIX 5.1, HP-UX 11, IRIX 6.5, OSF/1 4.0, Solaris 9, Cygwin, mingw, Interix 3.5.
+FreeBSD 6.0, NetBSD 3.0, OpenBSD 3.8, AIX 5.1, HP-UX 11, IRIX 6.5,
+OSF/1 4.0, Solaris 9, Cygwin 1.7.7, mingw, Interix 3.5.
 @item
 The glibc implementation is or was broken.
 @end itemize

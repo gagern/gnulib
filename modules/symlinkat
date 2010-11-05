@@ -1,5 +1,5 @@
 Description:
-symlinkat() and readlinkat(): manage symlinks relative to a directory
+symlinkat(): create symlinks relative to a directory
 
 Files:
 lib/symlinkat.c
@@ -9,14 +9,12 @@ Depends-on:
 extensions
 fcntl-h
 openat
-readlink
 symlink
 unistd
 
 configure.ac:
 gl_FUNC_SYMLINKAT
 gl_UNISTD_MODULE_INDICATOR([symlinkat])
-gl_UNISTD_MODULE_INDICATOR([readlinkat])
 
 Makefile.am:
 

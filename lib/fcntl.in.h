@@ -20,6 +20,7 @@
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
 #endif
+@PRAGMA_COLUMNS@
 
 #if defined __need_system_fcntl_h
 /* Special invocation convention.  */
@@ -170,6 +171,10 @@ _GL_WARN_ON_USE (openat, "openat is not portable - "
 # define O_CLOEXEC O_NOINHERIT
 #endif
 
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
+
 #ifndef O_DIRECT
 # define O_DIRECT 0
 #endif
@@ -180,6 +185,10 @@ _GL_WARN_ON_USE (openat, "openat is not portable - "
 
 #ifndef O_DSYNC
 # define O_DSYNC 0
+#endif
+
+#ifndef O_EXEC
+# define O_EXEC O_RDONLY /* This is often close enough in older systems.  */
 #endif
 
 #ifndef O_NDELAY
@@ -208,6 +217,10 @@ _GL_WARN_ON_USE (openat, "openat is not portable - "
 
 #ifndef O_RSYNC
 # define O_RSYNC 0
+#endif
+
+#ifndef O_SEARCH
+# define O_SEARCH O_RDONLY /* This is often close enough in older systems.  */
 #endif
 
 #ifndef O_SYNC

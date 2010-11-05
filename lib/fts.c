@@ -160,8 +160,6 @@ enum Fts_stat
 # define fchdir __fchdir
 # undef open
 # define open __open
-# undef opendir
-# define opendir __opendir
 # undef readdir
 # define readdir __readdir
 #else
@@ -290,17 +288,20 @@ fts_set_stat_required (FTSENT *p, bool required)
 /* FIXME: if others need this function, move it into lib/openat.c */
 static inline DIR *
 internal_function
-opendirat (int fd, char const *dir)
+opendirat (int fd, char const *dir, int extra_flags, int *pdir_fd)
 {
   int new_fd = openat (fd, dir,
-                       O_RDONLY | O_DIRECTORY | O_NOCTTY | O_NONBLOCK);
+                       (O_RDONLY | O_DIRECTORY | O_NOCTTY | O_NONBLOCK
+                        | extra_flags));
   DIR *dirp;
 
   if (new_fd < 0)
     return NULL;
   set_cloexec_flag (new_fd, true);
   dirp = fdopendir (new_fd);
-  if (dirp == NULL)
+  if (dirp)
+    *pdir_fd = new_fd;
+  else
     {
       int saved_errno = errno;
       close (new_fd);
@@ -347,7 +348,7 @@ static inline int
 internal_function
 diropen (FTS const *sp, char const *dir)
 {
-  int open_flags = (O_RDONLY | O_DIRECTORY | O_NOCTTY | O_NONBLOCK
+  int open_flags = (O_SEARCH | O_DIRECTORY | O_NOCTTY | O_NONBLOCK
                     | (ISSET (FTS_PHYSICAL) ? O_NOFOLLOW : 0));
 
   int fd = (ISSET (FTS_CWDFD)
@@ -405,7 +406,7 @@ fts_open (char * const *argv,
                early, doing it here saves us the trouble of ensuring
                later (where it'd be messier) that "." can in fact
                be opened.  If not, revert to FTS_NOCHDIR mode.  */
-            int fd = open (".", O_RDONLY);
+            int fd = open (".", O_SEARCH);
             if (fd < 0)
               {
                 /* Even if `.' is unreadable, don't revert to FTS_NOCHDIR mode
@@ -1221,6 +1222,7 @@ fts_build (register FTS *sp, int type)
         bool nostat;
         size_t len, maxlen, new_len;
         char *cp;
+        int dir_fd;
 
         /* Set current node pointer. */
         cur = sp->fts_cur;
@@ -1236,9 +1238,14 @@ fts_build (register FTS *sp, int type)
                 oflag = DTF_HIDEW|DTF_NODUP|DTF_REWIND;
 #else
 # define __opendir2(file, flag) \
-        ( ! ISSET(FTS_NOCHDIR) && ISSET(FTS_CWDFD) \
-          ? opendirat(sp->fts_cwd_fd, file)        \
-          : opendir(file))
+        opendirat((! ISSET(FTS_NOCHDIR) && ISSET(FTS_CWDFD)     \
+                   ? sp->fts_cwd_fd : AT_FDCWD),                \
+                  file,                                         \
+                  ((ISSET(FTS_PHYSICAL)                         \
+                    && ! (ISSET(FTS_COMFOLLOW)                  \
+                          && cur->fts_level == FTS_ROOTLEVEL))  \
+                   ? O_NOFOLLOW : 0),                           \
+                  &dir_fd)
 #endif
        if ((dirp = __opendir2(cur->fts_accpath, oflag)) == NULL) {
                 if (type == BREAD) {
@@ -1301,11 +1308,11 @@ fts_build (register FTS *sp, int type)
          * checking FTS_NS on the returned nodes.
          */
         if (nlinks || type == BREAD) {
-                int dir_fd = dirfd(dirp);
-                if (ISSET(FTS_CWDFD) && 0 <= dir_fd)
+                if (ISSET(FTS_CWDFD))
                   {
                     dir_fd = dup (dir_fd);
-                    set_cloexec_flag (dir_fd, true);
+                    if (0 <= dir_fd)
+                      set_cloexec_flag (dir_fd, true);
                   }
                 if (dir_fd < 0 || fts_safe_changedir(sp, cur, dir_fd, NULL)) {
                         if (nlinks && type == BREAD)
@@ -1646,7 +1653,7 @@ fd_ring_check (FTS const *sp)
       int fd = i_ring_pop (&fd_w);
       if (0 <= fd)
         {
-          int parent_fd = openat (cwd_fd, "..", O_RDONLY);
+          int parent_fd = openat (cwd_fd, "..", O_SEARCH);
           if (parent_fd < 0)
             {
               // Warn?

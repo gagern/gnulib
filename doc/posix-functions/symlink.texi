@@ -2,7 +2,7 @@
 @section @code{symlink}
 @findex symlink
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/symlink.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/symlink.html}
 
 Gnulib module: symlink
 
@@ -11,7 +11,7 @@ Portability problems fixed by Gnulib:
 @item
 On some systems, @code{symlink(value,"name/")} mistakenly creates a
 symlink:
-FreeBSD 7.2, Solaris 9
+FreeBSD 7.2, AIX 7.1, Solaris 9.
 @item
 This function is missing on some platforms; however, the replacement
 always fails with @code{EPERM}:

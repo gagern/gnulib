@@ -1,4 +1,4 @@
-# isnanl.m4 serial 12
+# isnanl.m4 serial 13
 dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -67,16 +67,18 @@ AC_DEFUN([gl_HAVE_ISNANL_NO_LIBM],
   AC_CACHE_CHECK([whether isnan(long double) can be used without linking with libm],
     [gl_cv_func_isnanl_no_libm],
     [
-      AC_TRY_LINK([#include <math.h>
-                   #if __GNUC__ >= 4
-                   # undef isnanl
-                   # define isnanl(x) __builtin_isnanl ((long double)(x))
-                   #elif defined isnan
-                   # undef isnanl
-                   # define isnanl(x) isnan ((long double)(x))
-                   #endif
-                   long double x;],
-                  [return isnanl (x);],
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM(
+           [[#include <math.h>
+             #if __GNUC__ >= 4
+             # undef isnanl
+             # define isnanl(x) __builtin_isnanl ((long double)(x))
+             #elif defined isnan
+             # undef isnanl
+             # define isnanl(x) isnan ((long double)(x))
+             #endif
+             long double x;]],
+           [[return isnanl (x);]])],
         [gl_cv_func_isnanl_no_libm=yes],
         [gl_cv_func_isnanl_no_libm=no])
     ])
@@ -90,16 +92,18 @@ AC_DEFUN([gl_HAVE_ISNANL_IN_LIBM],
     [
       save_LIBS="$LIBS"
       LIBS="$LIBS -lm"
-      AC_TRY_LINK([#include <math.h>
-                   #if __GNUC__ >= 4
-                   # undef isnanl
-                   # define isnanl(x) __builtin_isnanl ((long double)(x))
-                   #elif defined isnan
-                   # undef isnanl
-                   # define isnanl(x) isnan ((long double)(x))
-                   #endif
-                   long double x;],
-                  [return isnanl (x);],
+      AC_LINK_IFELSE(
+        [AC_LANG_PROGRAM(
+           [[#include <math.h>
+             #if __GNUC__ >= 4
+             # undef isnanl
+             # define isnanl(x) __builtin_isnanl ((long double)(x))
+             #elif defined isnan
+             # undef isnanl
+             # define isnanl(x) isnan ((long double)(x))
+             #endif
+             long double x;]],
+           [[return isnanl (x);]])],
         [gl_cv_func_isnanl_in_libm=yes],
         [gl_cv_func_isnanl_in_libm=no])
       LIBS="$save_LIBS"
@@ -118,7 +122,8 @@ AC_DEFUN([gl_FUNC_ISNANL_WORKS],
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_CACHE_CHECK([whether isnanl works], [gl_cv_func_isnanl_works],
     [
-      AC_TRY_RUN([
+      AC_RUN_IFELSE(
+        [AC_LANG_SOURCE([[
 #include <float.h>
 #include <limits.h>
 #include <math.h>
@@ -229,17 +234,19 @@ int main ()
 #endif
 
   return 0;
-}], [gl_cv_func_isnanl_works=yes], [gl_cv_func_isnanl_works=no],
-      [case "$host_cpu" in
-                               # Guess no on ia64, x86_64, i386.
-         ia64 | x86_64 | i*86) gl_cv_func_isnanl_works="guessing no";;
-         *)
-           case "$host_os" in
-             netbsd*) gl_cv_func_isnanl_works="guessing no";;
-             *)       gl_cv_func_isnanl_works="guessing yes";;
-           esac
-           ;;
-       esac
-      ])
+}]])],
+        [gl_cv_func_isnanl_works=yes],
+        [gl_cv_func_isnanl_works=no],
+        [case "$host_cpu" in
+                                 # Guess no on ia64, x86_64, i386.
+           ia64 | x86_64 | i*86) gl_cv_func_isnanl_works="guessing no";;
+           *)
+             case "$host_os" in
+               netbsd*) gl_cv_func_isnanl_works="guessing no";;
+               *)       gl_cv_func_isnanl_works="guessing yes";;
+             esac
+             ;;
+         esac
+        ])
     ])
 ])

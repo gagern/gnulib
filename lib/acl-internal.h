@@ -26,7 +26,7 @@
 #if HAVE_SYS_ACL_H
 # include <sys/acl.h>
 #endif
-#if defined HAVE_ACL && ! defined GETACLCNT && defined ACL_CNT
+#if defined HAVE_FACL && ! defined GETACLCNT && defined ACL_CNT
 # define GETACLCNT ACL_CNT
 #endif
 
@@ -51,6 +51,18 @@
 # define fchmod(fd, mode) (-1)
 #endif
 
+/* Recognize some common errors such as from an NFS mount that does
+   not support ACLs, even when local drives do.  */
+#if defined __APPLE__ && defined __MACH__ /* MacOS X */
+# define ACL_NOT_WELL_SUPPORTED(Err) \
+     ((Err) == ENOTSUP || (Err) == ENOSYS || (Err) == EINVAL || (Err) == EBUSY || (Err) == ENOENT)
+#elif defined EOPNOTSUPP /* Tru64 NFS */
+# define ACL_NOT_WELL_SUPPORTED(Err) \
+     ((Err) == ENOTSUP || (Err) == ENOSYS || (Err) == EINVAL || (Err) == EBUSY || (Err) == EOPNOTSUPP)
+#else
+# define ACL_NOT_WELL_SUPPORTED(Err) \
+     ((Err) == ENOTSUP || (Err) == ENOSYS || (Err) == EINVAL || (Err) == EBUSY)
+#endif
 
 #if USE_ACL
 
@@ -125,17 +137,6 @@ rpl_acl_set_fd (int fd, acl_t acl)
 #   define MODE_INSIDE_ACL 1
 #  endif
 
-#  if defined __APPLE__ && defined __MACH__ /* MacOS X */
-#   define ACL_NOT_WELL_SUPPORTED(Err) \
-     ((Err) == ENOTSUP || (Err) == ENOSYS || (Err) == EINVAL || (Err) == EBUSY || (Err) == ENOENT)
-#  elif defined EOPNOTSUPP /* Tru64 NFS */
-#   define ACL_NOT_WELL_SUPPORTED(Err) \
-     ((Err) == ENOTSUP || (Err) == ENOSYS || (Err) == EINVAL || (Err) == EBUSY || (Err) == EOPNOTSUPP)
-#  else
-#   define ACL_NOT_WELL_SUPPORTED(Err) \
-     ((Err) == ENOTSUP || (Err) == ENOSYS || (Err) == EINVAL || (Err) == EBUSY)
-#  endif
-
 /* Return the number of entries in ACL.
    Return -1 and set errno upon failure to determine it.  */
 /* Define a replacement for acl_entries if needed. (Only Linux has it.)  */
@@ -157,7 +158,7 @@ extern int acl_extended_nontrivial (acl_t);
 extern int acl_access_nontrivial (acl_t);
 #  endif
 
-# elif HAVE_ACL && defined GETACL /* Solaris, Cygwin, not HP-UX */
+# elif HAVE_FACL && defined GETACL /* Solaris, Cygwin, not HP-UX */
 
 /* Set to 1 if a file's mode is implicit by the ACL.
    Set to 0 if a file's mode is stored independently from the ACL.  */
@@ -214,6 +215,12 @@ extern int acl_nontrivial (int count, struct acl_entry *entries, struct stat *sb
 /* Return 1 if the given ACL is non-trivial.
    Return 0 if it is trivial, i.e. equivalent to a simple stat() mode.  */
 extern int acl_nontrivial (struct acl *a);
+
+# elif HAVE_ACLSORT /* NonStop Kernel */
+
+/* Return 1 if the given ACL is non-trivial.
+   Return 0 if it is trivial, i.e. equivalent to a simple stat() mode.  */
+extern int acl_nontrivial (int count, struct acl *entries);
 
 # endif
 

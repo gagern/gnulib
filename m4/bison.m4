@@ -1,4 +1,4 @@
-# serial 5
+# serial 6
 
 # Copyright (C) 2002, 2005, 2009, 2010 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
@@ -7,13 +7,13 @@
 
 AC_DEFUN([gl_BISON],
 [
-  # getdate.y works with bison only.
+  # parse-datetime.y works with bison only.
   : ${YACC='bison -y'}
 dnl
 dnl Declaring YACC & YFLAGS precious will not be necessary after GNULIB
 dnl requires an Autoconf greater than 2.59c, but it will probably still be
 dnl useful to override the description of YACC in the --help output, re
-dnl getdate.y assuming `bison -y'.
+dnl parse-datetime.y assuming `bison -y'.
   AC_ARG_VAR([YACC],
 [The `Yet Another C Compiler' implementation to use.  Defaults to `bison -y'.
 Values other than `bison -y' will most likely break on most systems.])dnl

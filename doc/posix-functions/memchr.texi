@@ -2,7 +2,7 @@
 @section @code{memchr}
 @findex memchr
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/memchr.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/memchr.html}
 
 Gnulib module: memchr
 
@@ -13,7 +13,7 @@ This function is missing on some older platforms.
 
 @item
 This function dereferences too much memory on some platforms:
-glibc 2.10 on x86_64, IA-64, Alpha.
+glibc 2.10 on x86_64, IA-64; glibc 2.11 on Alpha.
 @end itemize
 
 Portability problems not fixed by Gnulib:

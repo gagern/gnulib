@@ -2,7 +2,7 @@
 @section @code{malloc}
 @findex malloc
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/malloc.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/malloc.html}
 
 Gnulib module: malloc-posix
 
@@ -16,10 +16,10 @@ mingw.
 
 Portability problems not fixed by Gnulib:
 @itemize
-@code{malloc (0)} always returns a NULL pointer on some platforms:
+@item @code{malloc (0)} always returns a NULL pointer on some platforms:
 AIX 5.1, OSF/1 5.1.
 @end itemize
 
-Extension: Gnulib provides a module @samp{malloc} that substitutes a
+Extension: Gnulib provides a module @samp{malloc-gnu} that substitutes a
 @code{malloc} implementation that behaves more like the glibc implementation,
 regarding the result of @code{malloc (0)}.

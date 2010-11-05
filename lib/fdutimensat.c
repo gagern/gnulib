@@ -35,16 +35,19 @@
    use just futimes (or equivalent) instead of utimes (or equivalent),
    and fail if on an old system without futimes (or equivalent).
    If TIMESPEC is null, set the time stamps to the current time.
+   ATFLAG is passed to utimensat if FD is negative or futimens was
+   unsupported, which can allow operation on FILE as a symlink.
    Return 0 on success, -1 (setting errno) on failure.  */
 
 int
-fdutimensat (int dir, char const *file, int fd, struct timespec const ts[2])
+fdutimensat (int fd, int dir, char const *file, struct timespec const ts[2],
+             int atflag)
 {
   int result = 1;
   if (0 <= fd)
     result = futimens (fd, ts);
   if (file && (fd < 0 || (result == -1 && errno == ENOSYS)))
-    result = utimensat (dir, file, ts, 0);
+    result = utimensat (dir, file, ts, atflag);
   if (result == 1)
     {
       errno = EBADF;

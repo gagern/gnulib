@@ -1,4 +1,4 @@
-# open.m4 serial 8
+# open.m4 serial 9
 dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -22,7 +22,8 @@ AC_DEFUN([gl_FUNC_OPEN],
             touch conftest.tmp
             ln -s conftest.tmp conftest.lnk
           fi
-          AC_TRY_RUN([
+          AC_RUN_IFELSE(
+            [AC_LANG_SOURCE([[
 #include <fcntl.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
@@ -33,14 +34,16 @@ int main ()
   if (open ("conftest.lnk/", O_RDONLY) != -1) return 2;
 #endif
   return open ("conftest.sl/", O_CREAT, 0600) >= 0;
-}], [gl_cv_func_open_slash=yes], [gl_cv_func_open_slash=no],
+}]])],
+            [gl_cv_func_open_slash=yes],
+            [gl_cv_func_open_slash=no],
             [
 changequote(,)dnl
              case "$host_os" in
-               freebsd*)        gl_cv_func_open_slash="guessing no" ;;
-               solaris2.[0-9]*) gl_cv_func_open_slash="guessing no" ;;
-               hpux*)           gl_cv_func_open_slash="guessing no" ;;
-               *)               gl_cv_func_open_slash="guessing yes" ;;
+               freebsd* | aix* | hpux* | solaris2.[0-9]*)
+                 gl_cv_func_open_slash="guessing no" ;;
+               *)
+                 gl_cv_func_open_slash="guessing yes" ;;
              esac
 changequote([,])dnl
             ])

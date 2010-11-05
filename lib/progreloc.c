@@ -59,6 +59,10 @@
 # include "xalloc.h"
 #endif
 
+#ifndef O_EXEC
+# define O_EXEC O_RDONLY /* This is often close enough in older systems.  */
+#endif
+
 /* Declare canonicalize_file_name.
    The <stdlib.h> included above may be the system's one, not the gnulib
    one.  */
@@ -189,7 +193,7 @@ find_executable (const char *argv0)
     if (link != NULL && link[0] != '[')
       return link;
     if (executable_fd < 0)
-      executable_fd = open ("/proc/self/exe", O_RDONLY, 0);
+      executable_fd = open ("/proc/self/exe", O_EXEC, 0);
 
     {
       char buf[6+10+5];
@@ -198,7 +202,7 @@ find_executable (const char *argv0)
       if (link != NULL && link[0] != '[')
         return link;
       if (executable_fd < 0)
-        executable_fd = open (buf, O_RDONLY, 0);
+        executable_fd = open (buf, O_EXEC, 0);
     }
   }
 #endif

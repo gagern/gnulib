@@ -2,7 +2,7 @@
 @section @code{feupdateenv}
 @findex feupdateenv
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/feupdateenv.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/feupdateenv.html}
 
 Gnulib module: ---
 
@@ -14,5 +14,6 @@ Portability problems not fixed by Gnulib:
 @itemize
 @item
 This function is missing on some platforms:
-MacOS X 10.3, FreeBSD 5.2.1, NetBSD 3.0, OpenBSD 3.8, AIX 5.1, IRIX 6.5, OSF/1 5.1, Solaris 9, Cygwin, Interix 3.5.
+MacOS X 10.3, FreeBSD 5.2.1, NetBSD 3.0, OpenBSD 3.8, AIX 5.1, IRIX
+6.5, OSF/1 5.1, Solaris 9, Cygwin 1.7.7, Interix 3.5.
 @end itemize

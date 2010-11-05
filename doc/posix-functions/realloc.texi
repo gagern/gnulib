@@ -2,7 +2,7 @@
 @section @code{realloc}
 @findex realloc
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/realloc.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/realloc.html}
 
 Gnulib module: realloc-posix
 
@@ -18,5 +18,5 @@ Portability problems not fixed by Gnulib:
 @itemize
 @end itemize
 
-Extension: Gnulib provides a module @samp{realloc} that substitutes a
+Extension: Gnulib provides a module @samp{realloc-gnu} that substitutes a
 @code{realloc} implementation that behaves more like the glibc implementation.

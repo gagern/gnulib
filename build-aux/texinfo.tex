@@ -3,7 +3,7 @@
 % Load plain if necessary, i.e., if running under initex.
 \expandafter\ifx\csname fmtname\endcsname\relax\input plain\fi
 %
-\def\texinfoversion{2010-05-22.17}
+\def\texinfoversion{2010-09-06.17}
 %
 % Copyright 1985, 1986, 1988, 1990, 1991, 1992, 1993, 1994, 1995,
 % 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
@@ -2064,8 +2064,9 @@ end
 %   @fonttextsize 10
 % (or 11) to redefine the text font size.  pt is assumed.
 %
-\def\xword{10}
 \def\xiword{11}
+\def\xword{10}
+\def\xwordpt{10pt}
 %
 \parseargdef\fonttextsize{%
   \def\textsizearg{#1}%
@@ -2332,7 +2333,7 @@ end
 % and 2) do not add an italic correction.
 \def\dosmartslant#1#2{%
   \ifusingtt 
-    {\ttsl #2\let\next=\relax}%
+    {{\ttsl #2}\let\next=\relax}%
     {\def\next{{#1#2}\futurelet\next\smartitaliccorrection}}%
   \next
 }
@@ -2669,10 +2670,9 @@ end
     \def_{\ifnum\fam=\slfam \_\else\sb\fi}%
   }
 }
-% Another complication: we want \\ (and @\) to output a \ character.
-% FYI, plain.tex uses \\ as a temporary control sequence (why?), but
-% this is not advertised and we don't care.  Texinfo does not
-% otherwise define @\.
+% Another complication: we want \\ (and @\) to output a math (or tt) \.
+% FYI, plain.tex uses \\ as a temporary control sequence (for no
+% particular reason), but this is not advertised and we don't care.
 %
 % The \mathchar is class=0=ordinary, family=7=ttfam, position=5C=\.
 \def\mathbackslash{\ifnum\fam=\ttfam \mathchar"075C \else\backslash \fi}
@@ -2785,7 +2785,18 @@ end
 \def\LaTeX{%
   L\kern-.36em
   {\setbox0=\hbox{T}%
-   \vbox to \ht0{\hbox{\selectfonts\lllsize A}\vss}}%
+   \vbox to \ht0{\hbox{%
+     \ifx\textnominalsize\xwordpt
+       % for 10pt running text, \lllsize (8pt) is too small for the A in LaTeX.
+       % Revert to plain's \scriptsize, which is 7pt.
+       \count255=\the\fam $\fam\count255 \scriptstyle A$%
+     \else
+       % For 11pt, we can use our lllsize.
+       \selectfonts\lllsize A%
+     \fi
+     }%
+     \vss
+  }}%
   \kern-.15em
   \TeX
 }
@@ -4201,7 +4212,7 @@ end
 \def\commondummies{%
   %
   % \definedummyword defines \#1 as \string\#1\space, thus effectively
-  % preventing its expansion.  This is used only for control% words,
+  % preventing its expansion.  This is used only for control words,
   % not control letters, because the \space would be incorrect for
   % control characters, but is needed to separate the control word
   % from whatever follows.
@@ -4220,6 +4231,7 @@ end
   \commondummiesnofonts
   %
   \definedummyletter\_%
+  \definedummyletter\-%
   %
   % Non-English letters.
   \definedummyword\AA
@@ -4256,6 +4268,7 @@ end
   \definedummyword\TeX
   %
   % Assorted special characters.
+  \definedummyword\arrow
   \definedummyword\bullet
   \definedummyword\comma
   \definedummyword\copyright
@@ -4266,11 +4279,13 @@ end
   \definedummyword\equiv
   \definedummyword\error
   \definedummyword\euro
+  \definedummyword\expansion
+  \definedummyword\geq
   \definedummyword\guillemetleft
   \definedummyword\guillemetright
   \definedummyword\guilsinglleft
   \definedummyword\guilsinglright
-  \definedummyword\expansion
+  \definedummyword\leq
   \definedummyword\minus
   \definedummyword\ogonek
   \definedummyword\pounds
@@ -4327,7 +4342,9 @@ end
   \definedummyword\b
   \definedummyword\i
   \definedummyword\r
+  \definedummyword\sansserif
   \definedummyword\sc
+  \definedummyword\slanted
   \definedummyword\t
   %
   % Commands that take arguments.
@@ -4336,10 +4353,12 @@ end
   \definedummyword\code
   \definedummyword\command
   \definedummyword\dfn
+  \definedummyword\dmn
   \definedummyword\email
   \definedummyword\emph
   \definedummyword\env
   \definedummyword\file
+  \definedummyword\indicateurl
   \definedummyword\kbd
   \definedummyword\key
   \definedummyword\math
@@ -4367,7 +4386,7 @@ end
   \def\definedummyaccent##1{\let##1\asis}%
   % We can just ignore other control letters.
   \def\definedummyletter##1{\let##1\empty}%
-  % Hopefully, all control words can become @asis.
+  % All control words become @asis by default; overrides below.
   \let\definedummyword\definedummyaccent
   %
   \commondummiesnofonts
@@ -4379,8 +4398,14 @@ end
   %
   \def\ { }%
   \def\@{@}%
-  % how to handle braces?
   \def\_{\normalunderscore}%
+  \def\-{}% @- shouldn't affect sorting
+  %
+  % Unfortunately, texindex is not prepared to handle braces in the
+  % content at all.  So for index sorting, we map @{ and @} to strings
+  % starting with |, since that ASCII character is between ASCII { and }.
+  \def\{{|a}%
+  \def\}{|b}%
   %
   % Non-English letters.
   \def\AA{AA}%
@@ -4408,6 +4433,7 @@ end
   %
   % Assorted special characters.
   % (The following {} will end up in the sort string, but that's ok.)
+  \def\arrow{->}%
   \def\bullet{bullet}%
   \def\comma{,}%
   \def\copyright{copyright}%
@@ -4417,10 +4443,12 @@ end
   \def\error{error}%
   \def\euro{euro}%
   \def\expansion{==>}%
+  \def\geq{>=}%
   \def\guillemetleft{<<}%
   \def\guillemetright{>>}%
   \def\guilsinglleft{<}%
   \def\guilsinglright{>}%
+  \def\leq{<=}%
   \def\minus{-}%
   \def\point{.}%
   \def\pounds{pounds}%
@@ -6381,21 +6409,28 @@ end
 
 % Setup for the @verbatim environment
 %
-% Real tab expansion
+% Real tab expansion.
 \newdimen\tabw \setbox0=\hbox{\tt\space} \tabw=8\wd0 % tab amount
 %
-\def\starttabbox{\setbox0=\hbox\bgroup}
+% We typeset each line of the verbatim in an \hbox, so we can handle
+% tabs.  The \global is in case the verbatim line starts with an accent,
+% or some other command that starts with a begin-group.  Otherwise, the
+% entire \verbbox would disappear at the corresponding end-group, before
+% it is typeset.  Meanwhile, we can't have nested verbatim commands
+% (can we?), so the \global won't be overwriting itself.
+\newbox\verbbox
+\def\starttabbox{\global\setbox\verbbox=\hbox\bgroup}
 %
 \begingroup
   \catcode`\^^I=\active
   \gdef\tabexpand{%
     \catcode`\^^I=\active
     \def^^I{\leavevmode\egroup
-      \dimen0=\wd0 % the width so far, or since the previous tab
-      \divide\dimen0 by\tabw
-      \multiply\dimen0 by\tabw % compute previous multiple of \tabw
-      \advance\dimen0 by\tabw  % advance to next multiple of \tabw
-      \wd0=\dimen0 \box0 \starttabbox
+      \dimen\verbbox=\wd\verbbox % the width so far, or since the previous tab
+      \divide\dimen\verbbox by\tabw
+      \multiply\dimen\verbbox by\tabw % compute previous multiple of \tabw
+      \advance\dimen\verbbox by\tabw  % advance to next multiple of \tabw
+      \wd\verbbox=\dimen\verbbox \box\verbbox \starttabbox
     }%
   }
 \endgroup
@@ -6404,15 +6439,16 @@ end
 \def\setupverbatim{%
   \let\nonarrowing = t%
   \nonfillstart
-  % Easiest (and conventionally used) font for verbatim
-  \tt
-  \def\par{\leavevmode\egroup\box0\endgraf}%
+  \tt % easiest (and conventionally used) font for verbatim
+  % The \leavevmode here is for blank lines.  Otherwise, we would
+  % never \starttabox and the \egroup would end verbatim mode.
+  \def\par{\leavevmode\egroup\box\verbbox\endgraf}%
   \tabexpand
   \setupmarkupstyle{verbatim}%
   % Respect line breaks,
   % print special symbols as themselves, and
-  % make each space count
-  % must do in this order:
+  % make each space count.
+  % Must do in this order:
   \obeylines \uncatcodespecials \sepspaces
   \everypar{\starttabbox}%
 }
@@ -6927,17 +6963,18 @@ end
 
 % Macro bodies are absorbed as an argument in a context where
 % all characters are catcode 10, 11 or 12, except \ which is active
-% (as in normal texinfo). It is necessary to change the definition of \.
-
+% (as in normal texinfo). It is necessary to change the definition of \
+% to recognize macro arguments; this is the job of \mbodybackslash.
+%
 % Non-ASCII encodings make 8-bit characters active, so un-activate
 % them to avoid their expansion.  Must do this non-globally, to
 % confine the change to the current group.
-
+%
 % It's necessary to have hard CRs when the macro is executed. This is
-% done by  making ^^M (\endlinechar) catcode 12 when reading the macro
+% done by making ^^M (\endlinechar) catcode 12 when reading the macro
 % body, and then making it the \newlinechar in \scanmacro.
-
-\def\scanctxt{%
+%
+\def\scanctxt{% used as subroutine
   \catcode`\"=\other
   \catcode`\+=\other
   \catcode`\<=\other
@@ -6950,13 +6987,13 @@ end
   \ifx\declaredencoding\ascii \else \setnonasciicharscatcodenonglobal\other \fi
 }
 
-\def\scanargctxt{%
+\def\scanargctxt{% used for copying and captions, not macros.
   \scanctxt
   \catcode`\\=\other
   \catcode`\^^M=\other
 }
 
-\def\macrobodyctxt{%
+\def\macrobodyctxt{% used for @macro definitions
   \scanctxt
   \catcode`\{=\other
   \catcode`\}=\other
@@ -6964,30 +7001,48 @@ end
   \usembodybackslash
 }
 
-\def\macroargctxt{%
+\def\macroargctxt{% used when scanning invocations
   \scanctxt
-  \catcode`\\=\other
+  \catcode`\\=0
 }
+% why catcode 0 for \ in the above?  To recognize \\ \{ \} as "escapes"
+% for the single characters \ { }.  Thus, we end up with the "commands"
+% that would be written @\ @{ @} in a Texinfo document.
+% 
+% We already have @{ and @}.  For @\, we define it here, and only for
+% this purpose, to produce a typewriter backslash (so, the @\ that we
+% define for @math can't be used with @macro calls):
+%
+\def\\{\normalbackslash}%
+% 
+% We would like to do this for \, too, since that is what makeinfo does.
+% But it is not possible, because Texinfo already has a command @, for a
+% cedilla accent.  Documents must use @comma{} instead.
+%
+% \anythingelse will almost certainly be an error of some kind.
+
 
 % \mbodybackslash is the definition of \ in @macro bodies.
 % It maps \foo\ => \csname macarg.foo\endcsname => #N
 % where N is the macro parameter number.
 % We define \csname macarg.\endcsname to be \realbackslash, so
 % \\ in macro replacement text gets you a backslash.
-
+%
 {\catcode`@=0 @catcode`@\=@active
  @gdef@usembodybackslash{@let\=@mbodybackslash}
  @gdef@mbodybackslash#1\{@csname macarg.#1@endcsname}
 }
 \expandafter\def\csname macarg.\endcsname{\realbackslash}
 
+\def\margbackslash#1{\char`\#1 }
+
 \def\macro{\recursivefalse\parsearg\macroxxx}
 \def\rmacro{\recursivetrue\parsearg\macroxxx}
 
 \def\macroxxx#1{%
-  \getargs{#1}%           now \macname is the macname and \argl the arglist
+  \getargs{#1}% now \macname is the macname and \argl the arglist
   \ifx\argl\empty       % no arguments
-     \paramno=0%
+     \paramno=0
   \else
      \expandafter\parsemargdef \argl;%
   \fi
@@ -7036,28 +7091,32 @@ end
 % an opening brace, and that opening brace is not consumed.
 \def\getargs#1{\getargsxxx#1{}}
 \def\getargsxxx#1#{\getmacname #1 \relax\getmacargs}
-\def\getmacname #1 #2\relax{\macname={#1}}
+\def\getmacname#1 #2\relax{\macname={#1}}
 \def\getmacargs#1{\def\argl{#1}}
 
 % Parse the optional {params} list.  Set up \paramno and \paramlist
 % so \defmacro knows what to do.  Define \macarg.blah for each blah
-% in the params list, to be ##N where N is the position in that list.
+% in the params list to be ##N where N is the position in that list.
 % That gets used by \mbodybackslash (above).
-
+%
 % We need to get `macro parameter char #' into several definitions.
-% The technique used is stolen from LaTeX:  let \hash be something
+% The technique used is stolen from LaTeX: let \hash be something
 % unexpandable, insert that wherever you need a #, and then redefine
 % it to # just before using the token list produced.
 %
 % The same technique is used to protect \eatspaces till just before
 % the macro is used.
 
-\def\parsemargdef#1;{\paramno=0\def\paramlist{}%
-        \let\hash\relax\let\xeatspaces\relax\parsemargdefxxx#1,;,}
+\def\parsemargdef#1;{%
+  \paramno=0\def\paramlist{}%
+  \let\hash\relax
+  \let\xeatspaces\relax
+  \parsemargdefxxx#1,;,%
+}
 \def\parsemargdefxxx#1,{%
   \if#1;\let\next=\relax
   \else \let\next=\parsemargdefxxx
-    \advance\paramno by 1%
+    \advance\paramno by 1
     \expandafter\edef\csname macarg.\eatspaces{#1}\endcsname
         {\xeatspaces{\hash\the\paramno}}%
     \edef\paramlist{\paramlist\hash\the\paramno,}%
@@ -7065,7 +7124,7 @@ end
 
 % These two commands read recursive and nonrecursive macro bodies.
 % (They're different since rec and nonrec macros end differently.)
-
+%
 \long\def\parsemacbody#1@end macro%
 {\xdef\temp{\eatcr{#1}}\endgroup\defmacro}%
 \long\def\parsermacbody#1@end rmacro%
@@ -7076,6 +7135,7 @@ end
 % Much magic with \expandafter here.
 % \xdef is used so that macro definitions will survive the file
 % they're defined in; @include reads the file inside a group.
+%
 \def\defmacro{%
   \let\hash=##% convert placeholders to macro parameter chars
   \ifrecursive
@@ -7139,7 +7199,8 @@ end
 % \braceorline decides whether the next nonwhitespace character is a
 % {.  If so it reads up to the closing }, if not, it reads the whole
 % line.  Whatever was read is then fed to the next control sequence
-% as an argument (by \parsebrace or \parsearg)
+% as an argument (by \parsebrace or \parsearg).
+% 
 \def\braceorline#1{\let\macnamexxx=#1\futurelet\nchar\braceorlinexxx}
 \def\braceorlinexxx{%
   \ifx\nchar\bgroup\else
@@ -7149,7 +7210,8 @@ end
 
 % @alias.
 % We need some trickery to remove the optional spaces around the equal
-% sign.  Just make them active and then expand them all to nothing.
+% sign.  Make them active and then expand them all to nothing.
+%
 \def\alias{\parseargusing\obeyspaces\aliasxxx}
 \def\aliasxxx #1{\aliasyyy#1\relax}
 \def\aliasyyy #1=#2\relax{%
@@ -7407,7 +7469,8 @@ end
     \angleleft un\-de\-fined\angleright
     \iflinks
       \ifhavexrefs
-        \message{\linenumber Undefined cross reference `#1'.}%
+        {\toks0 = {#1}% avoid expansion of possibly-complex value
+         \message{\linenumber Undefined cross reference `\the\toks0'.}}%
       \else
         \ifwarnedxrefs\else
           \global\warnedxrefstrue
@@ -8389,8 +8452,8 @@ directory should work if nowhere else does.}
   \gdef^^ea{\ogonek{e}}
   \gdef^^eb{\"e}
   \gdef^^ec{\v e}
-  \gdef^^ed{\'\i}
-  \gdef^^ee{\^\i}
+  \gdef^^ed{\'{\dotless{i}}}
+  \gdef^^ee{\^{\dotless{i}}}
   \gdef^^ef{\v d}
   %
   \gdef^^f0{\dh}

@@ -2,7 +2,7 @@
 @section @code{getopt}
 @findex getopt
 
-POSIX specification: @url{http://www.opengroup.org/onlinepubs/9699919799/functions/getopt.html}
+POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/getopt.html}
 
 Gnulib module: getopt-posix or getopt-gnu
 
@@ -19,7 +19,7 @@ mingw.
 @item
 The value of @code{optind} after a missing required argument is wrong
 on some platforms:
-MacOS 10.5.
+MacOS 10.5, AIX 7.1.
 @end itemize
 
 Portability problems fixed by Gnulib module @code{getopt-gnu}:

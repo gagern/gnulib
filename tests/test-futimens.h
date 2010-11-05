@@ -16,7 +16,7 @@
 
 #include "test-utimens-common.h"
 
-/* This file is designed to test both gl_futimens(a,NULL,b) and
+/* This file is designed to test both fdutimens(a,NULL,b) and
    futimens(a,b).  FUNC is the function to test.  Assumes that BASE
    and ASSERT are already defined.  If PRINT, warn before skipping
    tests with status 77.  */
@@ -76,6 +76,9 @@ test_futimens (int (*func) (int, struct timespec const *),
   /* Invalid arguments.  */
   errno = 0;
   ASSERT (func (AT_FDCWD, NULL) == -1);
+  ASSERT (errno == EBADF);
+  errno = 0;
+  ASSERT (func (-1, NULL) == -1);
   ASSERT (errno == EBADF);
   {
     struct timespec ts[2] = { { Y2K, UTIME_BOGUS_POS }, { Y2K, 0 } };
