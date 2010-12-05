@@ -3553,6 +3553,21 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   }
 
   {
+    size_t length;
+    char *result =
+      my_asnprintf (NULL, &length, "%.4000f %d", 1.0, 99);
+    size_t i;
+    ASSERT (result != NULL);
+    ASSERT (result[0] == '1');
+    ASSERT (result[1] == '.');
+    for (i = 0; i < 4000; i++)
+      ASSERT (result[2 + i] == '0');
+    ASSERT (strcmp (result + 2 + 4000, " 99") == 0);
+    ASSERT (length == strlen (result));
+    free (result);
+  }
+
+  {
     char input[5000];
     size_t length;
     char *result;
@@ -3656,6 +3671,19 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
       ASSERT (errno == EILSEQ);
     else
       free (result);
+  }
+#endif
+
+#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2)) && !defined __UCLIBC__
+  /* Test that the 'I' flag is supported.  */
+  {
+    size_t length;
+    char *result =
+      my_asnprintf (NULL, &length, "%Id %d", 1234567, 99);
+    ASSERT (result != NULL);
+    ASSERT (strcmp (result, "1234567 99") == 0);
+    ASSERT (length == strlen (result));
+    free (result);
   }
 #endif
 }
