@@ -1,5 +1,5 @@
-# mbrlen.m4 serial 3
-dnl Copyright (C) 2008, 2010 Free Software Foundation, Inc.
+# mbrlen.m4 serial 5
+dnl Copyright (C) 2008, 2010-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -56,6 +56,13 @@ changequote([,])dnl
           [AC_LANG_SOURCE([[
 #include <locale.h>
 #include <string.h>
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 int main ()
 {
@@ -107,9 +114,17 @@ changequote([,])dnl
           [AC_LANG_SOURCE([[
 #include <locale.h>
 #include <string.h>
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 int main ()
 {
+  int result = 0;
   /* This fails on Solaris.  */
   if (setlocale (LC_ALL, "$LOCALE_FR_UTF8") != NULL)
     {
@@ -121,7 +136,7 @@ int main ()
         {
           input[1] = '\0';
           if (mbrlen (input + 2, 5, &state) != 1)
-            return 1;
+            result |= 1;
         }
     }
   /* This fails on HP-UX 11.11.  */
@@ -135,10 +150,10 @@ int main ()
         {
           input[1] = '\0';
           if (mbrlen (input + 2, 5, &state) != 2)
-            return 1;
+            result |= 2;
         }
     }
-  return 0;
+  return result;
 }]])],
           [gl_cv_func_mbrlen_retval=yes],
           [gl_cv_func_mbrlen_retval=no],
@@ -173,6 +188,13 @@ changequote([,])dnl
           [AC_LANG_SOURCE([[
 #include <locale.h>
 #include <string.h>
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 int main ()
 {

@@ -1,5 +1,5 @@
 /* Determine name of the slave side of a pseudo-terminal.
-   Copyright (C) 1998, 2002, 2010 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2002, 2010-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ static int __ptsname_r (int fd, char *buf, size_t buflen);
 
 
 /* Static buffer for `ptsname'.  */
-static char buffer[sizeof (_PATH_TTY) + 2];
+static char buffer[64];
 
 
 /* Return the pathname of the pseudo terminal slave associated with

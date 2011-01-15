@@ -1,5 +1,5 @@
 /* fflush.c -- allow flushing input streams
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ clear_ungetc_buffer (FILE *fp)
       fp->_ungetc_count = 0;
       fp->_rcount = - fp->_rcount;
     }
-# elif defined _IOERR               /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw */
+# elif defined _IOERR               /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw, NonStop Kernel */
   /* Nothing to do.  */
 # else                              /* other implementations */
   fseeko (fp, 0, SEEK_CUR);

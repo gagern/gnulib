@@ -1,5 +1,5 @@
 /* Test of POSIX compatible vasnprintf() and asnprintf() functions.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -3563,6 +3563,21 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
     for (i = 0; i < 4000; i++)
       ASSERT (result[2 + i] == '0');
     ASSERT (strcmp (result + 2 + 4000, " 99") == 0);
+    ASSERT (length == strlen (result));
+    free (result);
+  }
+
+  {
+    size_t length;
+    char *result =
+      my_asnprintf (NULL, &length, "%.511f %d", 1.0, 99);
+    size_t i;
+    ASSERT (result != NULL);
+    ASSERT (result[0] == '1');
+    ASSERT (result[1] == '.');
+    for (i = 0; i < 511; i++)
+      ASSERT (result[2 + i] == '0');
+    ASSERT (strcmp (result + 2 + 511, " 99") == 0);
     ASSERT (length == strlen (result));
     free (result);
   }

@@ -1,5 +1,5 @@
-# stdio_h.m4 serial 31
-dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
+# stdio_h.m4 serial 32
+dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -95,6 +95,8 @@ AC_DEFUN([gl_STDIO_H_DEFAULTS],
   GNULIB_VSPRINTF_POSIX=0;       AC_SUBST([GNULIB_VSPRINTF_POSIX])
   dnl Assume proper GNU behavior unless another module says otherwise.
   HAVE_DECL_FPURGE=1;            AC_SUBST([HAVE_DECL_FPURGE])
+  HAVE_DECL_FSEEKO=1;            AC_SUBST([HAVE_DECL_FSEEKO])
+  HAVE_DECL_FTELLO=1;            AC_SUBST([HAVE_DECL_FTELLO])
   HAVE_DECL_GETDELIM=1;          AC_SUBST([HAVE_DECL_GETDELIM])
   HAVE_DECL_GETLINE=1;           AC_SUBST([HAVE_DECL_GETLINE])
   HAVE_DECL_OBSTACK_PRINTF=1;    AC_SUBST([HAVE_DECL_OBSTACK_PRINTF])

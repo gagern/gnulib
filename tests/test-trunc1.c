@@ -1,5 +1,5 @@
 /* Test of rounding towards zero.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,9 +33,7 @@ main ()
 {
   /* Zero.  */
   ASSERT (trunc (0.0) == 0.0);
-  ASSERT (!signbit (trunc (0.0)));
   ASSERT (trunc (minus_zerod) == 0.0);
-  ASSERT (!!signbit (minus_zerod) == !!signbit (trunc (minus_zerod)));
   /* Positive numbers.  */
   ASSERT (trunc (0.3) == 0.0);
   ASSERT (trunc (0.7) == 0.0);

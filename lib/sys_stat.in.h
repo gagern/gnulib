@@ -1,5 +1,5 @@
 /* Provide a more complete sys/stat header file.
-   Copyright (C) 2005-2010 Free Software Foundation, Inc.
+   Copyright (C) 2005-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -550,7 +550,8 @@ _GL_CXXALIAS_RPL (mknod, int, (char const *file, mode_t mode, dev_t dev));
 _GL_FUNCDECL_SYS (mknod, int, (char const *file, mode_t mode, dev_t dev)
                               _GL_ARG_NONNULL ((1)));
 #  endif
-_GL_CXXALIAS_SYS (mknod, int, (char const *file, mode_t mode, dev_t dev));
+/* Need to cast, because on OSF/1 5.1, the third parameter is '...'.  */
+_GL_CXXALIAS_SYS_CAST (mknod, int, (char const *file, mode_t mode, dev_t dev));
 # endif
 _GL_CXXALIASWARN (mknod);
 #elif defined GNULIB_POSIXCHECK

@@ -1,7 +1,7 @@
 # Detect some bugs in glibc's implementation of utimes.
-# serial 2
+# serial 3
 
-dnl Copyright (C) 2003-2005, 2009-2010 Free Software Foundation, Inc.
+dnl Copyright (C) 2003-2005, 2009-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -34,44 +34,96 @@ AC_DEFUN([gl_FUNC_UTIMES],
 #include <stdio.h>
 #include <utime.h>
 
+static int
+inorder (time_t a, time_t b, time_t c)
+{
+  return a <= b && b <= c;
+}
+
 int
 main ()
 {
-  static struct timeval timeval[2] = {{9, 10}, {999999, 999999}};
-  struct stat sbuf;
+  int result = 0;
   char const *file = "conftest.utimes";
-  FILE *f;
-  time_t now;
-  int fd;
+  static struct timeval timeval[2] = {{9, 10}, {999999, 999999}};
 
-  int ok = ((f = fopen (file, "w"))
-            && fclose (f) == 0
-            && utimes (file, timeval) == 0
-            && lstat (file, &sbuf) == 0
-            && sbuf.st_atime == timeval[0].tv_sec
-            && sbuf.st_mtime == timeval[1].tv_sec);
-  unlink (file);
-  if (!ok)
-    exit (1);
+  /* Test whether utimes() essentially works.  */
+  {
+    struct stat sbuf;
+    FILE *f = fopen (file, "w");
+    if (f == NULL)
+      result |= 1;
+    else if (fclose (f) != 0)
+      result |= 1;
+    else if (utimes (file, timeval) != 0)
+      result |= 2;
+    else if (lstat (file, &sbuf) != 0)
+      result |= 1;
+    else if (!(sbuf.st_atime == timeval[0].tv_sec
+               && sbuf.st_mtime == timeval[1].tv_sec))
+      result |= 4;
+    if (unlink (file) != 0)
+      result |= 1;
+  }
 
-  ok =
-    ((f = fopen (file, "w"))
-     && fclose (f) == 0
-     && time (&now) != (time_t)-1
-     && utimes (file, NULL) == 0
-     && lstat (file, &sbuf) == 0
-     && now - sbuf.st_atime <= 2
-     && now - sbuf.st_mtime <= 2);
-  unlink (file);
-  if (!ok)
-    exit (1);
+  /* Test whether utimes() with a NULL argument sets the file's timestamp
+     to the current time.  Use 'fstat' as well as 'time' to
+     determine the "current" time, to accommodate NFS file systems
+     if there is a time skew between the host and the NFS server.  */
+  {
+    int fd = open (file, O_WRONLY|O_CREAT, 0644);
+    if (fd < 0)
+      result |= 1;
+    else
+      {
+        time_t t0, t2;
+        struct stat st0, st1, st2;
+        if (time (&t0) == (time_t) -1)
+          result |= 1;
+        else if (fstat (fd, &st0) != 0)
+          result |= 1;
+        else if (utimes (file, timeval) != 0)
+          result |= 2;
+        else if (utimes (file, NULL) != 0)
+          result |= 8;
+        else if (fstat (fd, &st1) != 0)
+          result |= 1;
+        else if (write (fd, "\n", 1) != 1)
+          result |= 1;
+        else if (fstat (fd, &st2) != 0)
+          result |= 1;
+        else if (time (&t2) == (time_t) -1)
+          result |= 1;
+        else
+          {
+            int m_ok_POSIX = inorder (t0, st1.st_mtime, t2);
+            int m_ok_NFS = inorder (st0.st_mtime, st1.st_mtime, st2.st_mtime);
+            if (! (st1.st_atime == st1.st_mtime))
+              result |= 16;
+            if (! (m_ok_POSIX || m_ok_NFS))
+              result |= 32;
+          }
+        if (close (fd) != 0)
+          result |= 1;
+      }
+    if (unlink (file) != 0)
+      result |= 1;
+  }
 
-  ok = (0 <= (fd = open (file, O_WRONLY|O_CREAT, 0444))
-              && close (fd) == 0
-              && utimes (file, NULL) == 0);
-  unlink (file);
+  /* Test whether utimes() with a NULL argument works on read-only files.  */
+  {
+    int fd = open (file, O_WRONLY|O_CREAT, 0444);
+    if (fd < 0)
+      result |= 1;
+    else if (close (fd) != 0)
+      result |= 1;
+    else if (utimes (file, NULL) != 0)
+      result |= 64;
+    if (unlink (file) != 0)
+      result |= 1;
+  }
 
-  exit (!ok);
+  return result;
 }
   ]])],
        [gl_cv_func_working_utimes=yes],

@@ -1,7 +1,7 @@
 # acl.m4 - check for access control list (ACL) primitives
-# serial 11
+# serial 12
 
-# Copyright (C) 2002, 2004-2010 Free Software Foundation, Inc.
+# Copyright (C) 2002, 2004-2011 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -151,8 +151,10 @@ AC_DEFUN([gl_ACL_GET_FILE],
            #include <sys/acl.h>
            #include <errno.h>
           ]],
-          [[return !! (!acl_get_file (".", ACL_TYPE_ACCESS)
-                       && errno == ENOENT);]])],
+          [[if (!acl_get_file (".", ACL_TYPE_ACCESS) && errno == ENOENT)
+              return 1;
+            return 0;
+          ]])],
        [gl_cv_func_working_acl_get_file=yes],
        [gl_cv_func_working_acl_get_file=no],
        [gl_cv_func_working_acl_get_file=cross-compiling])])

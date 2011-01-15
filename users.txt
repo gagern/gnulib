@@ -62,6 +62,7 @@ The following packages appear to be using gnulib and gnulib-tool:
   prelude-manager https://trac.prelude-ids.org/browser/trunk/prelude-manager/
   pspp            http://git.sv.gnu.org/gitweb/?p=pspp.git
   radius          http://cvs.sv.gnu.org/viewcvs/radius/radius/
+  recutils        http://git.savannah.gnu.org/gitweb/?p=recutils.git
   sed             http://cvs.savannah.gnu.org/viewcvs/sed/?root=sed
   shishi          http://git.sv.gnu.org/gitweb/?p=shishi.git
   tar             http://cvs.sv.gnu.org/viewcvs/tar/tar/
@@ -85,7 +86,7 @@ Articles:
 
 -----
 
-Copyright (C) 2006-2010 Free Software Foundation, Inc.
+Copyright (C) 2006-2011 Free Software Foundation, Inc.
 
 This file is free documentation; the Free Software Foundation
 gives unlimited permission to copy and/or distribute it,

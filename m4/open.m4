@@ -1,5 +1,5 @@
-# open.m4 serial 9
-dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
+# open.m4 serial 11
+dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -30,17 +30,21 @@ AC_DEFUN([gl_FUNC_OPEN],
 #endif
 int main ()
 {
+  int result = 0;
 #if HAVE_LSTAT
-  if (open ("conftest.lnk/", O_RDONLY) != -1) return 2;
+  if (open ("conftest.lnk/", O_RDONLY) != -1)
+    result |= 1;
 #endif
-  return open ("conftest.sl/", O_CREAT, 0600) >= 0;
+  if (open ("conftest.sl/", O_CREAT, 0600) >= 0)
+    result |= 2;
+  return result;
 }]])],
             [gl_cv_func_open_slash=yes],
             [gl_cv_func_open_slash=no],
             [
 changequote(,)dnl
              case "$host_os" in
-               freebsd* | aix* | hpux* | solaris2.[0-9]*)
+               freebsd* | aix* | hpux* | solaris2.[0-9] | solaris2.[0-9].*)
                  gl_cv_func_open_slash="guessing no" ;;
                *)
                  gl_cv_func_open_slash="guessing yes" ;;

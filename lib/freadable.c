@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ freadable (FILE *fp)
   return (fp_->_flags & (__SRW | __SRD)) != 0;
 #elif defined __EMX__               /* emx+gcc */
   return (fp->_flags & (_IORW | _IOREAD)) != 0;
-#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw */
+#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw, NonStop Kernel */
   return (fp->_flag & (_IORW | _IOREAD)) != 0;
 #elif defined __QNX__               /* QNX */
   return (fp->_Mode & 0x1 /* _MOPENR */) != 0;

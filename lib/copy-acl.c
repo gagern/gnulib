@@ -1,6 +1,6 @@
 /* copy-acl.c - copy access control list from one file to another file
 
-   Copyright (C) 2002-2003, 2005-2010 Free Software Foundation, Inc.
+   Copyright (C) 2002-2003, 2005-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -358,7 +358,7 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
       if (ret < 0 && saved_errno == 0)
         {
           saved_errno = errno;
-          if ((errno == ENOSYS || errno == EOPNOTSUPP)
+          if ((errno == ENOSYS || errno == EOPNOTSUPP || errno == EINVAL)
               && !acl_nontrivial (count, entries))
             saved_errno = 0;
         }

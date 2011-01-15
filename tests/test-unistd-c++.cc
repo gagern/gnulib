@@ -1,5 +1,5 @@
 /* Test of <unistd.h> substitute in C++ mode.
-   Copyright (C) 2010 Free Software Foundation, Inc.
+   Copyright (C) 2010-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -127,6 +127,10 @@ SIGNATURE_CHECK (GNULIB_NAMESPACE::linkat, int,
 
 #if GNULIB_TEST_LSEEK
 SIGNATURE_CHECK (GNULIB_NAMESPACE::lseek, off_t, (int, off_t, int));
+#endif
+
+#if GNULIB_TEST_PIPE
+SIGNATURE_CHECK (GNULIB_NAMESPACE::pipe, int, (int[2]));
 #endif
 
 #if GNULIB_TEST_PIPE2

@@ -1,5 +1,5 @@
 /* Test of sigaction() function.
-   Copyright (C) 2008, 2009, 2010 Free Software Foundation, Inc.
+   Copyright (C) 2008-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,6 +33,12 @@ SIGNATURE_CHECK (sigaction, int, (int, struct sigaction const *,
 #endif
 #ifndef SA_ONSTACK
 # define SA_ONSTACK 0
+#endif
+#ifndef SA_RESETHAND
+# define SA_RESETHAND 0
+#endif
+#ifndef SA_RESTART
+# define SA_RESTART 0
 #endif
 #ifndef SA_SIGINFO
 # define SA_SIGINFO 0

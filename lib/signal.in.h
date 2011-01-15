@@ -1,6 +1,6 @@
 /* A GNU-like <signal.h>.
 
-   Copyright (C) 2006-2010 Free Software Foundation, Inc.
+   Copyright (C) 2006-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,6 +68,14 @@ typedef unsigned int sigset_t;
 #  define GNULIB_defined_SIGPIPE 1
 /* To actually use SIGPIPE, you also need the gnulib modules 'sigprocmask',
    'write', 'stdio'.  */
+# endif
+#endif
+
+
+/* Maximum signal number + 1.  */
+#ifndef NSIG
+# if defined __TANDEM
+#  define NSIG 32
 # endif
 #endif
 

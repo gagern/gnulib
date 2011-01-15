@@ -1,5 +1,5 @@
-# tsearch.m4 serial 4
-dnl Copyright (C) 2006-2010 Free Software Foundation, Inc.
+# tsearch.m4 serial 5
+dnl Copyright (C) 2006-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -25,13 +25,17 @@ cmp_fn (const void *a, const void *b)
 int
 main ()
 {
+  int result = 0;
   int x = 0;
   void *root = NULL;
-  if (!(tfind (&x, &root, cmp_fn) == NULL)) return 1;
+  if (!(tfind (&x, &root, cmp_fn) == NULL))
+    result |= 1;
   tsearch (&x, &root, cmp_fn);
-  if (!(tfind (&x, &root, cmp_fn) != NULL)) return 1;
-  if (!(tdelete (&x, &root, cmp_fn) != NULL)) return 1;
-  return 0;
+  if (!(tfind (&x, &root, cmp_fn) != NULL))
+    result |= 2;
+  if (!(tdelete (&x, &root, cmp_fn) != NULL))
+    result |= 4;
+  return result;
 }]])], [gl_cv_func_tdelete_works=yes], [gl_cv_func_tdelete_works=no],
             [case "$host_os" in
                openbsd*) gl_cv_func_tdelete_works="guessing no";;

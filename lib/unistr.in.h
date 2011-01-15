@@ -1,5 +1,5 @@
 /* Elementary Unicode string functions.
-   Copyright (C) 2001-2002, 2005-2010 Free Software Foundation, Inc.
+   Copyright (C) 2001-2002, 2005-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify it
    under the terms of the GNU Lesser General Public License as published
@@ -559,8 +559,15 @@ extern uint32_t *
 
 /* Compare S1 and S2.  */
 /* Similar to strcmp(), wcscmp().  */
+#ifdef __sun
+/* Avoid a collision with the u8_strcmp() function in Solaris 11 libc.  */
+extern int
+       u8_strcmp_gnu (const uint8_t *s1, const uint8_t *s2);
+# define u8_strcmp u8_strcmp_gnu
+#else
 extern int
        u8_strcmp (const uint8_t *s1, const uint8_t *s2);
+#endif
 extern int
        u16_strcmp (const uint16_t *s1, const uint16_t *s2);
 extern int

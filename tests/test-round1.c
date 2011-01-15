@@ -1,5 +1,5 @@
 /* Test of rounding to nearest, breaking ties away from zero.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,9 +35,7 @@ main ()
 {
   /* Zero.  */
   ASSERT (round (0.0) == 0.0);
-  ASSERT (!signbit (round (0.0)));
   ASSERT (round (minus_zerod) == 0.0);
-  ASSERT (!!signbit (minus_zerod) == !!signbit (round (minus_zerod)));
   /* Positive numbers.  */
   ASSERT (round (0.3) == 0.0);
   ASSERT (round (0.5) == 1.0);

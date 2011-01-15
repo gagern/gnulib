@@ -1,5 +1,5 @@
 /* Filtering of data through a subprocess.
-   Copyright (C) 2001-2003, 2008-2010 Free Software Foundation, Inc.
+   Copyright (C) 2001-2003, 2008-2011 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2009.
 
    This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #endif
 
 #include "error.h"
-#include "pipe.h"
+#include "spawn-pipe.h"
 #include "wait-process.h"
 #include "gettext.h"
 

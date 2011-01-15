@@ -1,5 +1,5 @@
 /* Macros for floating-point negative zero.
-   Copyright (C) 2010 Free Software Foundation, Inc.
+   Copyright (C) 2010-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,7 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/* Keep in sync with m4/minus-zero.m4!  */
+
 #include <float.h>
+
 
 /* minus_zerof represents the value -0.0f.  */
 
@@ -50,6 +53,7 @@ compute_minus_zerod (void)
 #else
 double minus_zerod = -0.0;
 #endif
+
 
 /* minus_zerol represents the value -0.0L.  */
 

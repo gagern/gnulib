@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ freading (FILE *fp)
   return (fp_->_flags & __SRD) != 0;
 #elif defined __EMX__               /* emx+gcc */
   return (fp->_flags & _IOREAD) != 0;
-#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw */
+#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw, NonStop Kernel */
 # if defined __sun                  /* Solaris */
   return (fp->_flag & _IOREAD) != 0 && (fp->_flag & _IOWRT) == 0;
 # else

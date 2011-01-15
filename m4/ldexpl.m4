@@ -1,5 +1,5 @@
-# ldexpl.m4 serial 8
-dnl Copyright (C) 2007-2010 Free Software Foundation, Inc.
+# ldexpl.m4 serial 10
+dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -7,6 +7,7 @@ dnl with or without modifications, as long as this notice is preserved.
 AC_DEFUN([gl_FUNC_LDEXPL],
 [
   AC_REQUIRE([gl_MATH_H_DEFAULTS])
+  AC_REQUIRE([gl_FUNC_ISNANL]) dnl for ISNANL_LIBM
   dnl Check whether it's declared.
   dnl MacOS X 10.3 has ldexpl() in libc but doesn't declare it in <math.h>.
   AC_CHECK_DECL([ldexpl], , [HAVE_DECL_LDEXPL=0], [#include <math.h>])
@@ -40,7 +41,7 @@ AC_DEFUN([gl_FUNC_LDEXPL],
       LIBS="$save_LIBS"
       case "$gl_cv_func_ldexpl_works" in
         *yes) gl_func_ldexpl=yes ;;
-        *)    gl_func_ldexpl=no; REPLACE_LDEXPL=1; LDEXPL_LIBM= ;;
+        *)    gl_func_ldexpl=no; REPLACE_LDEXPL=1 ;;
       esac
     else
       gl_func_ldexpl=no
@@ -52,6 +53,7 @@ AC_DEFUN([gl_FUNC_LDEXPL],
   fi
   if test $HAVE_DECL_LDEXPL = 0 || test $gl_func_ldexpl = no; then
     AC_LIBOBJ([ldexpl])
+    LDEXPL_LIBM="$ISNANL_LIBM"
   fi
   AC_SUBST([LDEXPL_LIBM])
 ])
@@ -87,11 +89,20 @@ AC_DEFUN([gl_FUNC_LDEXPL_WORKS],
 extern long double ldexpl (long double, int);
 int main()
 {
-  volatile long double x1 = 1.0;
-  volatile long double y1 = ldexpl (x1, -1);
-  volatile long double x2 = 1.73205L;
-  volatile long double y2 = ldexpl (x2, 0);
-  return (y1 != 0.5L) || (y2 != x2);
+  int result = 0;
+  {
+    volatile long double x = 1.0;
+    volatile long double y = ldexpl (x, -1);
+    if (y != 0.5L)
+      result |= 1;
+  }
+  {
+    volatile long double x = 1.73205L;
+    volatile long double y = ldexpl (x, 0);
+    if (y != x)
+      result |= 2;
+  }
+  return result;
 }]])],
         [gl_cv_func_ldexpl_works=yes],
         [gl_cv_func_ldexpl_works=no],

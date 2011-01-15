@@ -1,5 +1,5 @@
 /* Test of times function.
-   Copyright (C) 2008, 2009, 2010 Free Software Foundation, Inc.
+   Copyright (C) 2008-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -60,11 +60,11 @@ main (int argc, char *argv[])
     {
       printf ("clk_tck %ld\n", (long int) clk_tck);
 
-      printf ("t %ld\n", t);
-      printf ("tms.tms_utime %ldms\n", (tms.tms_utime * 1000) / clk_tck);
-      printf ("tms.tms_stime %ldms\n", (tms.tms_stime * 1000) / clk_tck);
-      printf ("tms.tms_cutime %ldms\n", (tms.tms_cutime * 1000) / clk_tck);
-      printf ("tms.tms_cstime %ldms\n", (tms.tms_cstime * 1000) / clk_tck);
+      printf ("t %ld\n", (long int) t);
+      printf ("tms.tms_utime %ldms\n", ((long int) tms.tms_utime * 1000) / clk_tck);
+      printf ("tms.tms_stime %ldms\n", ((long int) tms.tms_stime * 1000) / clk_tck);
+      printf ("tms.tms_cutime %ldms\n", ((long int) tms.tms_cutime * 1000) / clk_tck);
+      printf ("tms.tms_cstime %ldms\n", ((long int) tms.tms_cstime * 1000) / clk_tck);
     }
 
   if (argc > 1)
@@ -94,11 +94,11 @@ main (int argc, char *argv[])
     {
       printf ("clk_tck %ld\n", (long int) clk_tck);
 
-      printf ("t %ld\n", t);
-      printf ("tms.tms_utime %ldms\n", (tms.tms_utime * 1000) / clk_tck);
-      printf ("tms.tms_stime %ldms\n", (tms.tms_stime * 1000) / clk_tck);
-      printf ("tms.tms_cutime %ldms\n", (tms.tms_cutime * 1000) / clk_tck);
-      printf ("tms.tms_cstime %ldms\n", (tms.tms_cstime * 1000) / clk_tck);
+      printf ("t %ld\n", (long int) t);
+      printf ("tms.tms_utime %ldms\n", ((long int) tms.tms_utime * 1000) / clk_tck);
+      printf ("tms.tms_stime %ldms\n", ((long int) tms.tms_stime * 1000) / clk_tck);
+      printf ("tms.tms_cutime %ldms\n", ((long int) tms.tms_cutime * 1000) / clk_tck);
+      printf ("tms.tms_cstime %ldms\n", ((long int) tms.tms_cstime * 1000) / clk_tck);
     }
 
   return 0;

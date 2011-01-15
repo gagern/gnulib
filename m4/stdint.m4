@@ -1,5 +1,5 @@
-# stdint.m4 serial 35
-dnl Copyright (C) 2001-2010 Free Software Foundation, Inc.
+# stdint.m4 serial 36
+dnl Copyright (C) 2001-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -259,7 +259,7 @@ static const char *macro_values[] =
           || strncmp (value, "((int)"/*)*/, 6) == 0
           || strncmp (value, "((signed short)"/*)*/, 15) == 0
           || strncmp (value, "((signed char)"/*)*/, 14) == 0)
-        return 1;
+        return mv - macro_values + 1;
     }
   return 0;
 ]])],

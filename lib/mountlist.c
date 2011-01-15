@@ -1,6 +1,6 @@
 /* mountlist.c -- return a list of mounted file systems
 
-   Copyright (C) 1991-1992, 1997-2010 Free Software Foundation, Inc.
+   Copyright (C) 1991-1992, 1997-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -154,6 +154,31 @@
      || strcmp (Fs_type, "kernfs") == 0         \
      /* for Irix 6.5 */                         \
      || strcmp (Fs_type, "ignore") == 0)
+#endif
+
+#ifdef __CYGWIN__
+# include <windows.h>
+# define ME_REMOTE me_remote
+/* All cygwin mount points include `:' or start with `//'; so it
+   requires a native Windows call to determine remote disks.  */
+static bool
+me_remote (char const *fs_name, char const *fs_type _GL_UNUSED)
+{
+  if (fs_name[0] && fs_name[1] == ':')
+    {
+      char drive[4];
+      sprintf (drive, "%c:\\", fs_name[0]);
+      switch (GetDriveType (drive))
+        {
+        case DRIVE_REMOVABLE:
+        case DRIVE_FIXED:
+        case DRIVE_CDROM:
+        case DRIVE_RAMDISK:
+          return false;
+        }
+    }
+  return true;
+}
 #endif
 
 #ifndef ME_REMOTE

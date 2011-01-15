@@ -1,5 +1,5 @@
 /* Test of rounding towards positive infinity.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,9 +40,7 @@ main ()
 
   /* Zero.  */
   ASSERT (ceill (0.0L) == 0.0L);
-  ASSERT (!signbit (ceill (0.0L)));
   ASSERT (ceill (minus_zerol) == 0.0L);
-  ASSERT (!!signbit (minus_zerol) == !!signbit (ceill (minus_zerol)));
   /* Positive numbers.  */
   ASSERT (ceill (0.3L) == 1.0L);
   ASSERT (ceill (0.7L) == 1.0L);

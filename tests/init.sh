@@ -1,6 +1,6 @@
 # source this file; set up for tests
 
-# Copyright (C) 2009, 2010 Free Software Foundation, Inc.
+# Copyright (C) 2009-2011 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ fi
 
 # Eval this code in a subshell to determine a shell's suitability.
 # 10 - passes all tests; ok to use
-#  9 - ok, but enabling "set -x" corrupts application stderr; prefer higher score
+#  9 - ok, but enabling "set -x" corrupts app stderr; prefer higher score
 #  ? - not ok
 gl_shell_test_script_='
 test $(echo y) = y || exit 1
@@ -245,6 +245,9 @@ find_exe_basenames_()
     # below, just skip it.
     test "x$feb_file_" = "x$feb_dir_/*.exe" && test ! -f "$feb_file_" \
       && continue
+    # Exempt [.exe, since we can't create a function by that name, yet
+    # we can't invoke [ by PATH search anyways due to shell builtins.
+    test "x$feb_file_" = "x$feb_dir_/[.exe" && continue
     case $feb_file_ in
       *[!-a-zA-Z/0-9_.+]*) feb_fail_=1; break;;
       *) # Remove leading file name components as well as the .exe suffix.
@@ -272,7 +275,7 @@ create_exe_shims_()
   esac
 
   base_names_=`find_exe_basenames_ $1` \
-    || { echo "$0 (exe_shim): skipping directory: $1" 1>&2; return 1; }
+    || { echo "$0 (exe_shim): skipping directory: $1" 1>&2; return 0; }
 
   if test -n "$base_names_"; then
     for base_ in $base_names_; do
@@ -324,6 +327,7 @@ setup_()
   fi
 
   initial_cwd_=$PWD
+  fail=0
 
   pfx_=`testdir_prefix_`
   test_dir_=`mktempd_ "$initial_cwd_" "$pfx_-$ME_.XXXX"` \
@@ -413,10 +417,9 @@ mktempd_()
 
   case $template_ in
   *XXXX) ;;
-  *) fail_ "invalid template: $template_ (must have a suffix of at least 4 X's)";;
+  *) fail_ \
+       "invalid template: $template_ (must have a suffix of at least 4 X's)";;
   esac
-
-  fail=0
 
   # First, try to use mktemp.
   d=`unset TMPDIR; mktemp -d -t -p "$destdir_" "$template_" 2>/dev/null` \

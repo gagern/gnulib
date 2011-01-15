@@ -1,5 +1,5 @@
-# wcrtomb.m4 serial 6
-dnl Copyright (C) 2008-2010 Free Software Foundation, Inc.
+# wcrtomb.m4 serial 8
+dnl Copyright (C) 2008-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -43,32 +43,39 @@ changequote([,])dnl
             AC_RUN_IFELSE(
               [AC_LANG_SOURCE([[
 #include <locale.h>
-#include <stdio.h>
 #include <string.h>
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
 #include <wchar.h>
 int main ()
 {
+  int result = 0;
   if (setlocale (LC_ALL, "$LOCALE_FR") != NULL)
     {
       if (wcrtomb (NULL, 0, NULL) != 1)
-        return 1;
+        result |= 1;
     }
   if (setlocale (LC_ALL, "$LOCALE_FR_UTF8") != NULL)
     {
       if (wcrtomb (NULL, 0, NULL) != 1)
-        return 1;
+        result |= 2;
     }
   if (setlocale (LC_ALL, "$LOCALE_JA") != NULL)
     {
       if (wcrtomb (NULL, 0, NULL) != 1)
-        return 1;
+        result |= 4;
     }
   if (setlocale (LC_ALL, "$LOCALE_ZH_CN") != NULL)
     {
       if (wcrtomb (NULL, 0, NULL) != 1)
-        return 1;
+        result |= 8;
     }
-  return 0;
+  return result;
 }]])],
               [gl_cv_func_wcrtomb_retval=yes],
               [gl_cv_func_wcrtomb_retval=no],

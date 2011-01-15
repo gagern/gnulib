@@ -1,5 +1,5 @@
 /* Test of rounding towards negative infinity.
-   Copyright (C) 2007-2010 Free Software Foundation, Inc.
+   Copyright (C) 2007-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,9 +46,7 @@ main (int argc, char **argv _GL_UNUSED)
 
   /* Zero.  */
   ASSERT (my_floorf (0.0f) == 0.0f);
-  ASSERT (!signbit (my_floorf (0.0f)));
   ASSERT (my_floorf (minus_zerof) == 0.0f);
-  ASSERT (!!signbit (minus_zerof) == !!signbit (my_floorf (minus_zerof)));
   /* Positive numbers.  */
   ASSERT (my_floorf (0.3f) == 0.0f);
   ASSERT (my_floorf (0.7f) == 0.0f);

@@ -1,6 +1,6 @@
 /* floating point to accurate string
 
-   Copyright (C) 2010 Free Software Foundation, Inc.
+   Copyright (C) 2010-2011 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@
 /* On hosts where it's not known that snprintf works, use sprintf to
    implement the subset needed here.  Typically BUFSIZE is big enough
    and there's little or no performance hit.  */
-#if ! GNULIB_SNPRINTF_POSIX
+#if ! GNULIB_SNPRINTF
 # undef snprintf
 # define snprintf ftoastr_snprintf
 static int
