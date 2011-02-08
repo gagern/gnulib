@@ -1,3 +1,1186 @@
+2011-02-08  Jim Meyering  <meyering@redhat.com>
+
+	di-set: add "const" to a cast
+	* lib/di-set.c (di_set_insert): Cast hash_insert0 argument to
+	"(void const *)", not "(void *)".  Spotted by Bruno Haible.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	Rename module 'wctype' to 'wctype-h'.
+	* modules/wctype-h: Renamed from modules/wctype.
+	* modules/wctype: Simplyfy to a redirection to 'wctype-h'.
+	* modules/wctype-h-tests: Renamed from modules/wctype-tests.
+	(Files, Depends-on, Makefile.am): Update.
+	* modules/wctype-h-c++-tests: Renamed from modules/wctype-c++-tests.
+	(Files, Makefile.am): Update.
+	* tests/test-wctype-h.c: Renamed from tests/test-wctype.c.
+	* tests/test-wctype-h-c++.cc: Renamed from tests/test-wctype-c++.cc.
+	* doc/posix-headers/wctype.texi: Update.
+	* doc/posix-functions/iswalnum.texi: Update.
+	* doc/posix-functions/iswalpha.texi: Update.
+	* doc/posix-functions/iswblank.texi: Update.
+	* doc/posix-functions/iswcntrl.texi: Update.
+	* doc/posix-functions/iswdigit.texi: Update.
+	* doc/posix-functions/iswgraph.texi: Update.
+	* doc/posix-functions/iswlower.texi: Update.
+	* doc/posix-functions/iswprint.texi: Update.
+	* doc/posix-functions/iswpunct.texi: Update.
+	* doc/posix-functions/iswspace.texi: Update.
+	* doc/posix-functions/iswupper.texi: Update.
+	* doc/posix-functions/iswxdigit.texi: Update.
+	* doc/posix-functions/towlower.texi: Update.
+	* doc/posix-functions/towupper.texi: Update.
+	* NEWS: Mention the change.
+	* modules/fnmatch (Dependencies): Add wctype-h, remove wctype.
+	* modules/mbchar (Dependencies): Likewise.
+	* modules/mbswidth (Dependencies): Likewise.
+	* modules/quotearg (Dependencies): Likewise.
+	* modules/regex (Dependencies): Likewise.
+	* modules/wcscasecmp (Dependencies): Likewise.
+	* modules/wcsncasecmp (Dependencies): Likewise.
+	* modules/wcwidth (Dependencies): Likewise.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcswidth'.
+	* modules/wcswidth: New file.
+	* lib/wchar.in.h (wcswidth): New declaration.
+	* lib/wcswidth.c: New file.
+	* lib/wcswidth-impl.h: New file, from libutf8 with modifications.
+	* m4/wcswidth.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcswidth is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSWIDTH, HAVE_WCSWIDTH,
+	REPLACE_WCSWIDTH.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSWIDTH,
+	HAVE_WCSWIDTH, REPLACE_WCSWIDTH.
+	* tests/test-wchar-c++.cc: Test the declaration of wcswidth.
+	* doc/posix-functions/wcswidth.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcstok'.
+	* modules/wcstok: New file.
+	* lib/wchar.in.h (wcstok): New declaration.
+	* lib/wcstok.c: New file.
+	* lib/wcstok-impl.h: New file, from libutf8 with modifications.
+	* m4/wcstok.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcstok is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSTOK, HAVE_WCSTOK.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSTOK, HAVE_WCSTOK.
+	* tests/test-wchar-c++.cc: Test the declaration of wcstok.
+	* doc/posix-functions/wcstok.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsstr'.
+	* modules/wcsstr: New file.
+	* lib/wchar.in.h (wcsstr): New declaration.
+	* lib/wcsstr.c: New file.
+	* lib/wcsstr-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsstr.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsstr is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSSTR, HAVE_WCSSTR.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSSTR, HAVE_WCSSTR.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsstr.
+	* doc/posix-functions/wcsstr.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcspbrk'.
+	* modules/wcspbrk: New file.
+	* lib/wchar.in.h (wcspbrk): New declaration.
+	* lib/wcspbrk.c: New file.
+	* lib/wcspbrk-impl.h: New file, from libutf8 with modifications.
+	* m4/wcspbrk.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcspbrk is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSPBRK, HAVE_WCSPBRK.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSPBRK, HAVE_WCSPBRK.
+	* tests/test-wchar-c++.cc: Test the declaration of wcspbrk.
+	* doc/posix-functions/wcspbrk.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsspn'.
+	* modules/wcsspn: New file.
+	* lib/wchar.in.h (wcsspn): New declaration.
+	* lib/wcsspn.c: New file.
+	* lib/wcsspn-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsspn.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsspn is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSSPN, HAVE_WCSSPN.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSSPN, HAVE_WCSSPN.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsspn.
+	* doc/posix-functions/wcsspn.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcscspn'.
+	* modules/wcscspn: New file.
+	* lib/wchar.in.h (wcscspn): New declaration.
+	* lib/wcscspn.c: New file.
+	* lib/wcscspn-impl.h: New file, from libutf8 with modifications.
+	* m4/wcscspn.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcscspn is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCSPN, HAVE_WCSCSPN.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCSPN, HAVE_WCSCSPN.
+	* tests/test-wchar-c++.cc: Test the declaration of wcscspn.
+	* doc/posix-functions/wcscspn.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsrchr'.
+	* modules/wcsrchr: New file.
+	* lib/wchar.in.h (wcsrchr): New declaration.
+	* lib/wcsrchr.c: New file.
+	* lib/wcsrchr-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsrchr.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsrchr is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSRCHR, HAVE_WCSRCHR.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSRCHR, HAVE_WCSRCHR.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsrchr.
+	* doc/posix-functions/wcsrchr.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcschr'.
+	* modules/wcschr: New file.
+	* lib/wchar.in.h (wcschr): New declaration.
+	* lib/wcschr.c: New file.
+	* lib/wcschr-impl.h: New file, from libutf8 with modifications.
+	* m4/wcschr.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcschr is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCHR, HAVE_WCSCHR.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCHR, HAVE_WCSCHR.
+	* tests/test-wchar-c++.cc: Test the declaration of wcschr.
+	* doc/posix-functions/wcschr.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsdup'.
+	* modules/wcsdup: New file.
+	* lib/wchar.in.h (wcsdup): New declaration.
+	* lib/wcsdup.c: New file.
+	* lib/wcsdup-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsdup.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsdup is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSDUP, HAVE_WCSDUP.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSDUP, HAVE_WCSDUP.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsdup.
+	* doc/posix-functions/wcsdup.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsxfrm'.
+	* modules/wcsxfrm: New file.
+	* lib/wchar.in.h (wcsxfrm): New declaration.
+	* lib/wcsxfrm.c: New file.
+	* lib/wcsxfrm-impl.h: New file.
+	* m4/wcsxfrm.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsxfrm is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSXFRM, HAVE_WCSXFRM.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSXFRM, HAVE_WCSXFRM.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsxfrm.
+	* doc/posix-functions/wcsxfrm.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcscoll'.
+	* modules/wcscoll: New file.
+	* lib/wchar.in.h (wcscoll): New declaration.
+	* lib/wcscoll.c: New file.
+	* lib/wcscoll-impl.h: New file.
+	* m4/wcscoll.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcscoll is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCOLL, HAVE_WCSCOLL.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCOLL, HAVE_WCSCOLL.
+	* tests/test-wchar-c++.cc: Test the declaration of wcscoll.
+	* doc/posix-functions/wcscoll.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsncasecmp'.
+	* modules/wcsncasecmp: New file.
+	* lib/wchar.in.h (wcsncasecmp): New declaration.
+	* lib/wcsncasecmp.c: New file.
+	* lib/wcsncasecmp-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsncasecmp.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsncasecmp is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSNCASECMP, HAVE_WCSNCASECMP.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSNCASECMP,
+	HAVE_WCSNCASECMP.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsncasecmp.
+	* doc/posix-functions/wcsncasecmp.texi: Mention the new module.
+
+2011-02-06  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcscasecmp'.
+	* modules/wcscasecmp: New file.
+	* lib/wchar.in.h (wcscasecmp): New declaration.
+	* lib/wcscasecmp.c: New file.
+	* lib/wcscasecmp-impl.h: New file, from libutf8 with modifications.
+	* m4/wcscasecmp.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcscasecmp is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCASECMP, HAVE_WCSCASECMP.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCASECMP,
+	HAVE_WCSCASECMP.
+	* tests/test-wchar-c++.cc: Test the declaration of wcscasecmp.
+	* doc/posix-functions/wcscasecmp.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsncmp'.
+	* modules/wcsncmp: New file.
+	* lib/wchar.in.h (wcsncmp): New declaration.
+	* lib/wcsncmp.c: New file.
+	* lib/wcsncmp-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsncmp.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsncmp is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSNCMP, HAVE_WCSNCMP.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSNCMP, HAVE_WCSNCMP.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsncmp.
+	* doc/posix-functions/wcsncmp.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcscmp'.
+	* modules/wcscmp: New file.
+	* lib/wchar.in.h (wcscmp): New declaration.
+	* lib/wcscmp.c: New file.
+	* lib/wcscmp-impl.h: New file, from libutf8 with modifications.
+	* m4/wcscmp.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcscmp is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCMP, HAVE_WCSCMP.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCMP, HAVE_WCSCMP.
+	* tests/test-wchar-c++.cc: Test the declaration of wcscmp.
+	* doc/posix-functions/wcscmp.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsncat'.
+	* modules/wcsncat: New file.
+	* lib/wchar.in.h (wcsncat): New declaration.
+	* lib/wcsncat.c: New file.
+	* lib/wcsncat-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsncat.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsncat is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSNCAT, HAVE_WCSNCAT.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSNCAT, HAVE_WCSNCAT.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsncat.
+	* doc/posix-functions/wcsncat.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcscat'.
+	* modules/wcscat: New file.
+	* lib/wchar.in.h (wcscat): New declaration.
+	* lib/wcscat.c: New file.
+	* lib/wcscat-impl.h: New file, from libutf8 with modifications.
+	* m4/wcscat.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcscat is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCAT, HAVE_WCSCAT.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCAT, HAVE_WCSCAT.
+	* tests/test-wchar-c++.cc: Test the declaration of wcscat.
+	* doc/posix-functions/wcscat.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcpncpy'.
+	* modules/wcpncpy: New file.
+	* lib/wchar.in.h (wcpncpy): New declaration.
+	* lib/wcpncpy.c: New file.
+	* lib/wcpncpy-impl.h: New file, from libutf8 with modifications.
+	* m4/wcpncpy.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcpncpy is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCPNCPY, HAVE_WCPNCPY.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCPNCPY, HAVE_WCPNCPY.
+	* tests/test-wchar-c++.cc: Test the declaration of wcpncpy.
+	* doc/posix-functions/wcpncpy.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsncpy'.
+	* modules/wcsncpy: New file.
+	* lib/wchar.in.h (wcsncpy): New declaration.
+	* lib/wcsncpy.c: New file.
+	* lib/wcsncpy-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsncpy.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsncpy is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSNCPY, HAVE_WCSNCPY.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSNCPY, HAVE_WCSNCPY.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsncpy.
+	* doc/posix-functions/wcsncpy.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcpcpy'.
+	* modules/wcpcpy: New file.
+	* lib/wchar.in.h (wcpcpy): New declaration.
+	* lib/wcpcpy.c: New file.
+	* lib/wcpcpy-impl.h: New file, from libutf8 with modifications.
+	* m4/wcpcpy.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcpcpy is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCPCPY, HAVE_WCPCPY.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCPCPY, HAVE_WCPCPY.
+	* tests/test-wchar-c++.cc: Test the declaration of wcpcpy.
+	* doc/posix-functions/wcpcpy.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcscpy'.
+	* modules/wcscpy: New file.
+	* lib/wchar.in.h (wcscpy): New declaration.
+	* lib/wcscpy.c: New file.
+	* lib/wcscpy-impl.h: New file, from libutf8 with modifications.
+	* m4/wcscpy.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcscpy is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSCPY, HAVE_WCSCPY.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSCPY, HAVE_WCSCPY.
+	* tests/test-wchar-c++.cc: Test the declaration of wcscpy.
+	* doc/posix-functions/wcscpy.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcsnlen'.
+	* modules/wcsnlen: New file.
+	* lib/wchar.in.h (wcsnlen): New declaration.
+	* lib/wcsnlen.c: New file.
+	* lib/wcsnlen-impl.h: New file, from libutf8 with modifications.
+	* m4/wcsnlen.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcsnlen is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSNLEN, HAVE_WCSNLEN.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSNLEN, HAVE_WCSNLEN.
+	* tests/test-wchar-c++.cc: Test the declaration of wcsnlen.
+	* doc/posix-functions/wcsnlen.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wcslen'.
+	* modules/wcslen: New file.
+	* lib/wchar.in.h (wcslen): New declaration.
+	* lib/wcslen.c: New file.
+	* lib/wcslen-impl.h: New file, from libutf8 with modifications.
+	* m4/wcslen.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wcslen is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WCSLEN, HAVE_WCSLEN.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WCSLEN, HAVE_WCSLEN.
+	* tests/test-wchar-c++.cc: Test the declaration of wcslen.
+	* doc/posix-functions/wcslen.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wmemset'.
+	* modules/wmemset: New file.
+	* lib/wchar.in.h (wmemset): New declaration.
+	* lib/wmemset.c: New file.
+	* lib/wmemset-impl.h: New file, from libutf8 with modifications.
+	* m4/wmemset.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wmemset is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WMEMSET, HAVE_WMEMSET.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WMEMSET, HAVE_WMEMSET.
+	* tests/test-wchar-c++.cc: Test the declaration of wmemset.
+	* doc/posix-functions/wmemset.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wmemmove'.
+	* modules/wmemmove: New file.
+	* lib/wchar.in.h (wmemmove): New declaration.
+	* lib/wmemmove.c: New file.
+	* lib/wmemmove-impl.h: New file, from libutf8 with modifications.
+	* m4/wmemmove.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wmemmove is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WMEMMOVE, HAVE_WMEMMOVE.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WMEMMOVE,
+	HAVE_WMEMMOVE.
+	* tests/test-wchar-c++.cc: Test the declaration of wmemmove.
+	* doc/posix-functions/wmemmove.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wmemcpy'.
+	* modules/wmemcpy: New file.
+	* lib/wchar.in.h (wmemcpy): New declaration.
+	* lib/wmemcpy.c: New file.
+	* lib/wmemcpy-impl.h: New file, from libutf8 with modifications.
+	* m4/wmemcpy.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wmemcpy is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WMEMCPY, HAVE_WMEMCPY.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WMEMCPY, HAVE_WMEMCPY.
+	* tests/test-wchar-c++.cc: Test the declaration of wmemcpy.
+	* doc/posix-functions/wmemcpy.texi: Mention the new module.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wmemcmp'.
+	* modules/wmemcmp: New file.
+	* lib/wchar.in.h (wmemcmp): New declaration.
+	* lib/wmemcmp.c: New file.
+	* lib/wmemcmp-impl.h: New file, from libutf8 with modifications.
+	* m4/wmemcmp.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wmemcmp is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WMEMCMP, HAVE_WMEMCMP.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WMEMCMP, HAVE_WMEMCMP.
+	* tests/test-wchar-c++.cc: Test the declaration of wmemcmp.
+	* doc/posix-functions/wmemcmp.texi: Mention the new module.
+
+2011-02-07  Jim Meyering  <meyering@redhat.com>
+
+	di-set, ino-map: new modules, from coreutils
+	* lib/di-set.c: New file.
+	* lib/di-set.h: Likewise.
+	* lib/ino-map.c: Likewise.
+	* lib/ino-map.h: Likewise.
+	* modules/di-set: Likewise.
+	* modules/di-set-tests: Likewise.
+	* modules/ino-map: Likewise.
+	* modules/ino-map-tests: Likewise.
+	* tests/test-di-set.c: Likewise.
+	* tests/test-ino-map.c: Likewise.
+
+2011-02-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	getloadavg: merge minor changes from Emacs
+
+	* lib/getloadavg.c (getloadavg_initialized): More-accurate comment.
+	(getloadavg): Use memset, not bzero.
+
+	2008-07-25  Chong Yidong  <cyd@stupidchicken.com>
+	* lib/getloadavg.c (nl): Rename to name_list to avoid ncurses.h
+	clash (bug#86).
+
+2010-11-14  Bruno Haible  <bruno@clisp.org>
+
+	Allow multiple gnulib generated replacements to coexist.
+	* lib/getopt.in.h (struct option): Avoid identical redefinition.
+	* lib/inttypes.in.h (imaxdiv_t): Likewise.
+	* lib/langinfo.in.h (nl_item): Likewise.
+	* lib/math.in.h (_NaN, NAN): Likewise.
+	* lib/netdb.in.h (struct addrinfo): Likewise.
+	* lib/poll.in.h (struct pollfd, nfds_t): Likewise.
+	* lib/pthread.in.h (pthread_t, pthread_attr_t, pthread_barrier_t,
+	pthread_barrierattr_t, pthread_cond_t, pthread_condattr_t,
+	pthread_key_t, pthread_mutex_t, pthread_mutexattr_t, pthread_once_t,
+	pthread_rwlock_t, pthread_rwlockattr_t, pthread_cond_destroy,
+	pthread_cond_init, pthread_cond_signal, pthread_cond_wait,
+	pthread_create, pthread_exit, pthread_join, pthread_mutexattr_destroy,
+	pthread_mutexattr_init, pthread_mutexattr_settype,
+	pthread_mutex_destroy, pthread_mutex_init, pthread_mutex_lock,
+	pthread_mutex_trylock, pthread_mutex_unlock, pthread_spinlock_t,
+	pthread_spin_init, pthread_spin_destroy, pthread_spin_lock,
+	pthread_spin_trylock, pthread_spin_unlock): Likewise.
+	* lib/sched.in.h (struct sched_param): Likewise.
+	* lib/se-selinux.in.h (security_class_t, security_context_t,
+	is_selinux_enabled, getcon, freecon, getfscreatecon, setfscreatecon,
+	matchpathcon, getfilecon, lgetfilecon, fgetfilecon, setfilecon,
+	lsetfilecon, fsetfilecon, security_check_context,
+	security_check_context_raw, setexeccon, matchpathcon_init_prefix):
+	Likewise.
+	* lib/search.in.h (VISIT, _gl_search_compar_fn, _gl_search_action_fn):
+	Likewise.
+	* lib/signal.in.h (sig_atomic_t, sigset_t, verify_NSIG_constraint,
+	_gl_function_taking_int_returning_void_t, union sigval,
+	struct siginfo_t, siginfo_t, struct sigaction): Likewise.
+	* lib/spawn.in.h (posix_spawnattr_t, posix_spawn_file_actions_t,
+	verify_POSIX_SPAWN_USEVFORK_no_overlap): Likewise.
+	* lib/stdint.in.h (gl_int8_t, gl_uint8_t, gl_int16_t, gl_uint16_t,
+	gl_int32_t, gl_uint32_t, gl_int64_t, gl_uint64_t, int_least8_t,
+	uint_least8_t, int_least16_t, uint_least16_t, int_least32_t,
+	uint_least32_t, int_least64_t, uint_least64_t, gl_int_fast8_t,
+	gl_uint_fast8_t, gl_int_fast16_t, gl_uint_fast16_t, gl_int_fast32_t,
+	gl_uint_fast32_t, int_fast64_t, uint_fast64_t, gl_intptr_t,
+	gl_uintptr_t, intmax_t, uintmax_t, _verify_intmax_size): Likewise.
+	* lib/stdio.in.h (rpl_fseek, rpl_ftell): Likewise.
+	* lib/sys_socket.in.h (sa_family_t, struct sockaddr_storage,
+	socklen_t, rpl_fd_isset): Likewise.
+	* lib/sys_stat.in.h (rpl_mkdir): Likewise.
+	* lib/sys_time.in.h (struct timeval): Likewise.
+	* lib/sys_times.in.h (struct tms): Likewise.
+	* lib/sys_utsname.in.h (struct utsname):
+	* lib/time.in.h (struct timespec, __time_t_must_be_integral): Likewise.
+	* lib/unistd.in.h (getpagesize): Likewise.
+	* lib/wchar.in.h (mbstate_t): Likewise.
+	* lib/wctype.in.h (iswalnum, iswalpha, iswblank, iswcntrl, iswdigit,
+	iswgraph, iswlower, iswprint, iswpunct, iswspace, iswupper, iswxdigit,
+	towlower, towupper): Likewise.
+	Reported by Sam Steingold <sds@gnu.org>.
+
+2011-02-05  Eric Blake  <eblake@redhat.com>
+
+	unsetenv: work around Haiku issues
+	* m4/setenv.m4 (gl_FUNC_UNSETENV): Also detect Haiku issue.
+	* doc/posix-functions/unsetenv.texi (unsetenv): Document it.
+
+2010-12-30  Bruce Korb  <bkorb@gnu.org>
+
+	libposix: avoid calling error() within libposix
+	* lib/openat-die.c: remove error module stuff when GNULIB_LIBPOSIX
+	is defined.
+
+2011-02-05  Eric Blake  <eblake@redhat.com>
+
+	strerror_r-posix: port to cygwin
+	* lib/strerror_r.c (strerror_r) [__CYGWIN__]: Add cygwin
+	implementation.
+	* m4/strerror_r.m4 (gl_FUNC_STRERROR_R): Adjust comment.
+	* tests/test-strerror_r.c (main): Fix test.
+	* doc/posix-functions/strerror_r.texi (strerror_r): Document the
+	issue.
+
+2011-02-05  Bruno Haible  <bruno@clisp.org>
+
+	New module 'wmemchr'.
+	* modules/wmemchr: New file.
+	* lib/wchar.in.h (wmemchr): New declaration.
+	* lib/wmemchr.c: New file.
+	* lib/wmemchr-impl.h: New file, from libutf8 with modifications.
+	* m4/wmemchr.m4: New file.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Test whether wmemchr is declared.
+	(gl_WCHAR_H_DEFAULTS): Initialize GNULIB_WMEMCHR, HAVE_WMEMCHR.
+	* modules/wchar (Makefile.am): Substitute GNULIB_WMEMCHR, HAVE_WMEMCHR.
+	* tests/test-wchar-c++.cc: Test the declaration of wmemchr.
+	* doc/posix-functions/wmemchr.texi: Mention the new module.
+
+2011-02-04  Eric Blake  <eblake@redhat.com>
+
+	fdopendir: detect FreeBSD bug
+	* m4/fdopendir.m4 (gl_FUNC_FDOPENDIR): Detect bug.
+	* doc/posix-functions/fdopendir.texi (fdopendir): Document it.
+
+2011-02-04  Paul Eggert  <eggert@cs.ucla.edu>
+
+	stdbool: do not define HAVE_STDBOOL_H
+	* m4/stdbool.m4 (AC_CHECK_HEADER_STDBOOL): Renamed from
+	AC_HEADER_STDBOOL.  All uses changed.  Do not define
+	HAVE_STDBOOL_H, as gnulib does not need this.  This change is
+	imported from the latest Autoconf git.  It was motivated by Emacs,
+	which uses gnulib but does not need HAVE_STDBOOL_H.
+
+2011-02-04  Bruno Haible  <bruno@clisp.org>
+
+	wcsnrtombs: Prepare for new module wwcsnrtombs.
+	* lib/wcsnrtombs-impl.h: New file, extracted from lib/wcsnrtombs.c.
+	* lib/wcsnrtombs.c: Include it.
+	* modules/wcsnrtombs (Files): Add lib/wcsnrtombs-impl.h.
+
+	wcsrtombs: Prepare for new module wwcsrtombs.
+	* lib/wcsrtombs-impl.h: New file, extracted from lib/wcsrtombs.c.
+	* lib/wcsrtombs.c: Include it.
+	* modules/wcsrtombs (Files): Add lib/wcsrtombs-impl.h.
+
+	mbsnrtowcs: Prepare for new module mbsnrtowwcs.
+	* lib/mbsnrtowcs-impl.h: New file, extracted from lib/mbsnrtowcs.c.
+	* lib/mbsnrtowcs.c: Include it.
+	* modules/mbsnrtowcs (Files): Add lib/mbsnrtowcs-impl.h.
+
+	mbsrtowcs: Prepare for new module mbsrtowwcs.
+	* lib/mbsrtowcs-impl.h: New file, extracted from lib/mbsrtowcs.c.
+	* lib/mbsrtowcs.c: Include it.
+	* modules/mbsrtowcs (Files): Add lib/mbsrtowcs-impl.h.
+
+2011-02-04  Bruno Haible  <bruno@clisp.org>
+
+	vasnprintf: Reduce use of malloc for small format strings.
+	* lib/printf-args.h (N_DIRECT_ALLOC_ARGUMENTS): New macro.
+	(arguments): Add room for the first 7 arguments.
+	* lib/printf-parse.h (N_DIRECT_ALLOC_DIRECTIVES): New macro.
+	(char_directives, u8_directives, u16_directives, u32_directives): Add
+	room for the first 7 directives.
+	* lib/printf-parse.c: Include <string.h>.
+	(PRINTF_PARSE): Change memory handling code so that it uses the first
+	7 preallocated elements in an 'arguments' or 'DIRECTIVES' struct.
+	* lib/vasnprintf.c (VASNPRINTF): Update memory handling code.
+	Reported by Pádraig Brady <P@draigbrady.com>.
+
+2011-01-31  Eric Blake  <eblake@redhat.com>
+
+	dup2: work around Haiku bug
+	* m4/dup2.m4 (gl_FUNC_DUP2): Test for bug.
+	* lib/dup2.c (rpl_dup2) [!WIN32]: Add workaround.
+	* doc/posix-functions/dup2.texi (dup2): Document the bug.
+	* tests/test-dup2.c (main): Enhance test.
+
+2011-01-31  Simon Josefsson  <simon@josefsson.org>
+
+	doc: off_t is not available in eglibc 2.11.2 stdio.h.
+	* doc/posix-headers/stdio.texi (stdio.h): Mention that off_t isn't
+	declared by eglibc 2.11.2.
+	* lib/stdio.in.h: Likewise.
+
+2011-01-31  Eric Blake  <eblake@redhat.com>
+
+	ignore-value: add missing test dependency
+	* tests/test-ignore-value.c: Revert previous change; stdio.h
+	provides off_t.
+	* modules/ignore-value-tests (Depends-on): Add missing dependency.
+
+2011-01-30  Paul Eggert  <eggert@cs.ucla.edu>
+
+	mktime: clarify long_int width checking
+	* lib/mktime.c (long_int_is_wide_enough): Move this assertion to
+	the top level, to make it clearer that the assumption about
+	long_int width is being checked.  See
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00554.html>.
+
+2011-01-30  Simon Josefsson  <simon@josefsson.org>
+
+	ignore-value: Fix self-test.
+	* tests/test-ignore-value.c: Include sys/types.h for off_t.
+
+2011-01-29  Paul Eggert  <eggert@cs.ucla.edu>
+
+	TYPE_MAXIMUM: avoid theoretically undefined behavior
+	* lib/intprops.h (TYPE_MINIMUM, TYPE_MAXIMUM): Do not shift a
+	negative number, which the C Standard says has undefined behavior.
+	In practice this is not a problem, but might as well do it by the book.
+	Reported by Rich Felker and Eric Blake; see
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00493.html>.
+	* lib/strtol.c (TYPE_MINIMUM, TYPE_MAXIMUM): Likewise.
+	* m4/mktime.m4 (AC_FUNC_MKTIME): Likewise.
+	* m4/nanosleep.m4 (gl_FUNC_NANOSLEEP): Likewise.
+	* m4/parse-datetime.m4 (gl_PARSE_DATETIME): Likewise.
+	* m4/stdint.m4 (gl_STDINT_H): Likewise.
+	* lib/mktime.c (TYPE_MAXIMUM): Redo slightly to match the others.
+
+	mktime: #undef mktime before #defining it
+	* lib/mktime.c (mktime) [DEBUG]: #undef mktime before #defining it.
+
+	mktime: systematically normalize tm_isdst comparisons
+	* lib/mktime.c (isdst_differ): New function.
+	(__mktime_internal): Use it systematically for all isdst comparisons.
+	This completes the fix for libc BZ #6723, and removes the need for
+	normalizing tm_isdst.  See
+	<http://sourceware.org/bugzilla/show_bug.cgi?id=6723>
+	(not_equal_tm) [DEBUG]: Use isdst_differ here, too.
+
+	mktime: fix some integer overflow issues and sidestep the rest
+
+	This was prompted by a bug report by Benjamin Lindner for MinGW
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00472.html>.
+	His bug is due to signed integer overflow (0 - INT_MIN), and I
+	I scanned through mktime.c looking for other integer overflow
+	problems, fixing all the bugs I found.
+
+	Although the C Standard says the resulting code is still not safe
+	in the presence of integer overflow, in practice it should be good
+	enough for all real-world two's-complement implementations, except
+	for debugging environments that deliberately trap on integer
+	overflow (e.g., gcc -ftrapv).
+
+	* lib/mktime.c (WRAPV): New macro.
+	(SHR): Also check that long_int and time_t shift right in the
+	usual way, before using the fast-but-unportable method.
+	(TYPE_ONES_COMPLEMENT, TYPE_SIGNED_MAGNITUDE): Remove, no longer
+	used.  The code already assumed two's complement, so there's
+	no need to test for alternatives.  All uses removed.
+	(TYPE_MAXIMUM): Don't rely here on overflow behavior not defined by
+	the C standard.  Problem reported by Rich Felker in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00488.html>.
+	(twos_complement_arithmetic): Also check long_int and time_t.
+	(time_t_avg, time_t_add_ok, time_t_int_add_ok): New functions.
+	(guess_time_tm, ranged_convert, __mktime_internal): Use them.
+	(__mktime_internal): Avoid integer overflow with unary subtraction
+	in two instances where -1 - X is an adequate replacement for -X,
+	since the calculations are approximate.
+
+2011-01-29  Eric Blake  <eblake@redhat.com>
+
+	mktime: avoid infinite loop
+	* m4/mktime.m4 (AC_FUNC_MKTIME): Avoid overflow on possibly-signed
+	type; behavior is still undefined but portable to all known targets.
+	Reported by Rich Felker.
+
+2011-01-29  Simon Josefsson  <simon@josefsson.org>
+
+	rename, unlink, same-inode: Relicense.
+	* modules/rename (License): Relax from LGPLv3+ to LGPLv2+.
+	* modules/unlink (License): Likewise.
+	* modules/same-inode (License): Likewise.
+
+2011-01-28  Paul Eggert  <eggert@cs.ucla.edu>
+
+	mktime: avoid problems on NetBSD 5 / i386
+	* lib/mktime.c (long_int): New type.  This works around a problem
+	on NetBSD 5 / i386, where 'long int' and 'int' are both 32 bits
+	but time_t is 64 bits, and where I expect the existing code is
+	wrong in some cases.
+	(leapyear, ydhms_diff, guess_time_tm, __mktime_internal): Use it.
+	(ydhms_diff): Bring back the compile-time check for wide-enough
+	year and yday.
+
+	mktime: fix misspelling in comment
+	* lib/mktime.c (__mktime_internal): Fix misspelling in comment.
+	This merges all recent glibc changes of importance.
+
+2011-01-28  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
+
+	move-if-change: cope with concurrent mv of identical file.
+	* build-aux/move-if-change (CMPPROG): Accept environment
+	variable as an override for `cmp'.
+	(usage): Document CMPPROG.
+	Adjust comparison to drop stdout.  Cope with failure of mv if
+	the target file exists and is identical to the source, for
+	parallel builds.
+	Report from H.J. Lu against binutils in PR binutils/12283.
+
+2011-01-28  Bruce Korb  <bkorb@gnu.org>
+
+	* users.txt: Mention sharutils.
+
+2011-01-28  Simon Josefsson  <simon@josefsson.org>
+
+	* users.txt: Mention OATH Toolkit.
+
+2011-01-27  Bruno Haible  <bruno@clisp.org>
+
+	Prepare for supporting FreeBSD 10.
+	* build-aux/config.libpath: Remove handling of freebsd1*.
+
+2011-01-27  Gerald Pfeifer  <gerald@pfeifer.com>  (tiny change)
+
+	Prepare for supporting FreeBSD 10.
+	* build-aux/config.rpath: Remove handling of freebsd1* which soon would
+	match FreeBSD 10.0.
+
+2011-01-27  Bruno Haible  <bruno@clisp.org>
+
+	vma-iter, get-rusage-as: Add OpenBSD support.
+	* modules/vma-iter (configure.ac): Test for mquery.
+	* lib/vma-iter.h (VMA_ITERATE_SUPPORTED): Define also on OpenBSD.
+	* lib/vma-iter.c: Include <sys/mman.h>.
+	(vma_iterate): Add an implementation based on mquery().
+	* lib/resource-ext.h (get_rusage_as): Update comments.
+	* lib/get-rusage-as.c: Likewise.
+	* lib/get-rusage-data.c: Likewise.
+
+2011-01-26  Karl Berry  <karl@gnu.org>
+
+	* doc/Makefile (lang_env, makeinfo_prog, manual_opts): new
+	variables to make it easier to override the makeinfo program used.
+
+2011-01-26  Eric Blake  <eblake@redhat.com>
+
+	fcntl: work around Haiku F_DUPFD bugs
+	* m4/fcntl.m4 (gl_FUNC_FCNTL): Also catch Haiku errno bug.
+	* lib/fcntl.c (rpl_fcntl) [F_DUPFD]: Work around Haiku losing
+	cloexec bit on duplication.
+	* doc/posix-functions/fcntl.texi (fcntl): Document the bug.
+
+2011-01-26  Bruno Haible  <bruno@clisp.org>
+
+	Enable memory leak tests on AIX.
+	* tests/test-dprintf-posix2.c (main): Don't skip the test on AIX.
+	* tests/test-fprintf-posix3.c (main): Likewise.
+
+2011-01-26  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'get-rusage-data'.
+	* modules/get-rusage-data-tests: New file.
+	* tests/test-get-rusage-data.c: New file.
+
+	New module 'get-rusage-data'.
+	* lib/resource-ext.h (get_rusage_data): New declaration.
+	* lib/get-rusage-data.c: New file.
+	* modules/get-rusage-data: New file.
+
+2011-01-25  Bruno Haible  <bruno@clisp.org>
+
+	get-rusage-as: Allow for easier testing.
+	* lib/resource-ext.h (get_rusage_as): Add comment.
+	* lib/get-rusage-as.c (get_rusage_as_via_setrlimit): Define always.
+	(main): New function for interactive testing.
+
+2011-01-25  Bruno Haible  <bruno@clisp.org>
+
+	vma-iter: Treat Haiku like BeOS.
+	* lib/vma-iter.h (VMA_ITERATE_SUPPORTED): Define on Haiku as well.
+	* lib/vma-iter.c (vma_iterate) [Haiku]: Use the BeOS API.
+
+2011-01-25  Eric Blake  <eblake@redhat.com>
+
+	c-stack: fix regression on cygwin when libsigsegv is present
+	* lib/c-stack.c (die): Don't flatten error if sigsegv is present.
+
+2011-01-24  Bruno Haible  <bruno@clisp.org>
+
+	vma-iter: Avoid empty intervals.
+	* lib/vma-iter.c (vma_iterate) [IRIX, OSF/1]: Don't call the callback
+	on an empty interval.
+
+2011-01-24  Jim Meyering  <meyering@redhat.com>
+
+	u64: remove unnecessary #include
+	* lib/u64.h: Don't include <stddef.h>.  It was not used.
+
+2011-01-23  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Allow the user to avoid the GNULIB_TEST_* macros.
+	* m4/gnulib-common.m4 (gl_ASSERT_NO_GNULIB_POSIXCHECK): New macro.
+
+2011-01-23  Bruno Haible  <bruno@clisp.org>
+
+	New module 'vma-iter'.
+	* lib/vma-iter.h: New file.
+	* lib/vma-iter.c: New file, based on lib/get-rusage-as.c.
+	* modules/vma-iter: New file.
+	* lib/get-rusage-as.c: Include vma-iter.h. Don't include system headers
+	for get_rusage_as_via_iterator.
+	(vma_iterate_callback): New function.
+	(get_rusage_as_via_iterator): Rewritten to use vma_iterate.
+	* modules/get-rusage-as (Depends-on): Add vma-iter.
+
+2011-01-23  Bruno Haible  <bruno@clisp.org>
+
+	uninorm: Tweak includes.
+	* lib/uninorm/normalize-internal.h: Don't include <stddef.h>.
+	Reported by Jim Meyering.
+
+2011-01-23  Bruno Haible  <bruno@clisp.org>
+
+	get-rusage-as: Improve on NetBSD.
+	* lib/get-rusage-as.c (get_rusage_as_via_iterator): On NetBSD, use
+	/proc, like on FreeBSD.
+
+2011-01-23  Jim Meyering  <meyering@redhat.com>
+
+	xreadlink.h: remove unnecessary #include
+	* lib/xreadlink.h: Don't include <stddef.h>.  It was not used.
+
+	maint.mk: add syntax-check rule: detect unnecessary #include <stddef.h>
+	* top/maint.mk (sc_prohibit_stddef_without_use): New rule.
+
+2011-01-23  Bruno Haible  <bruno@clisp.org>
+
+	get-rusage-as: Fix bug.
+	* lib/get-rusage-as.c (get_rusage_as_via_setrlimit): Restore the
+	original limit when aborting the first loop.
+
+2011-01-23  Bruno Haible  <bruno@clisp.org>
+
+	wctype: Ensure valid C syntax.
+	* m4/wctype_h.m4 (gl_WCTYPE_H): Invoke gl_CHECK_NEXT_HEADERS
+	unconditionally, instead of gl_NEXT_HEADERS conditionally.
+
+2011-01-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	getopt: omit HAVE_OPTRESET, HAVE_GETOPT_CLIP from config.h
+	* m4/getopt.m4 (gl_GETOPT_CHECK_HEADERS): Do not put the
+	symbols HAVE_OPTRESET and HAVE_GETOPT_CLIP into config.h,
+	as they are needed only for configure's test case.
+	This removes two unnecessary symbols from config.h.
+
+	gl_CHECK_NEXT_HEADERS implies AC_CHECK_HEADERS_ONCE
+	* m4/include_next.m4 (gl_CHECK_HEXT_HEADERS): Document this.
+	* m4/getopt.m4 (gl_GETOPT_CHECK_HEADERS): Don't bother to invoke
+	AC_CHECK_HEADERS_ONCE on a header that we also invoke
+	gl_CHECK_NEXT_HEADERS on, since the latter invokes the former.
+	* m4/netdb_h.m4 (gl_HEADER_NETDB): Likewise.
+	* m4/pthread.m4 (gl_PTHREAD_CHECK): Likewise.
+	* m4/sched_h.m4 (gl_SCHED_H): Likewise.
+	* m4/search_h.m4 (gl_SEARCH_H): Likewise.
+	* m4/spawn_h.m4 (gl_SPAWN_H): Likewise.
+	* m4/sys_file_h.m4 (gl_HEADER_SYS_FILE_H): Likewise.
+	* m4/sys_select_h.m4 (gl_HEADER_SYS_SELECT): Likewise.
+	* m4/sys_times_h.m4 (gl_SYS_TIMES_H): Likewise.
+	* m4/sys_utsname_h.m4 (gl_SYS_UTSNAME_H): Likewise.
+	* m4/termios_h.m4 (gl_TERMIOS_H): Likewise.
+	* m4/unistd_h.m4 (gl_UNISTD_H): Likewise.
+	* m4/wchar_h.m4 (gl_WCHAR_H): Likewise.
+	* m4/wctype_h.m4 (gl_WCTYPE_H): Likewise.
+
+2011-01-21  Eric Blake  <eblake@redhat.com>
+
+	maintainer-makefile: work with older git for submodule check
+	* top/maint.mk (public-submodule-commit): Rewrite to avoid
+	merge-base --independent, which Ubuntu 10.04 git 1.7.0.4 lacks.
+	Reported by Matthias Bolte.
+
+	bootstrap: minor portability fixes
+	* build-aux/bootstrap (me): Use $me instead of $0 in functions.
+	(usage): Omit leading capital and trailing . on help phrases, per
+	GNU Coding Standards.
+	(check_versions, top level): Prefix messages with script name.
+
+2011-01-21  Benjamin Lindner  <bjmldn@gmail.com>  (tiny change)
+
+	bootstrap: support --no-git option
+	* build-aux/bootstrap: Add --no-git option, to be used when
+	--gnulib-srcdir points to the exact desired checkout.
+
+2011-01-21  Eric Blake  <eblake@redhat.com>
+
+	strerror_r-posix: work with glibc 2.13
+	* lib/strerror_r.c (strerror_r): Fix return type.
+
+2011-01-21  Pádraig Brady  <P@draigBrady.com>
+            Bruno Haible  <bruno@clisp.org>
+
+	uN_strstr: New unit tests.
+	* modules/unistr/u8-strstr-tests: New file.
+	* modules/unistr/u16-strstr-tests: New file.
+	* modules/unistr/u32-strstr-tests: New file.
+	* tests/unistr/test-u-strstr.h: New file, based on tests/test-strstr.c.
+	* tests/unistr/test-u8-strstr.c: New file.
+	* tests/unistr/test-u16-strstr.c: New file.
+	* tests/unistr/test-u32-strstr.c: New file.
+
+2011-01-21  Pádraig Brady  <P@draigBrady.com>
+            Bruno Haible  <bruno@clisp.org>
+
+	Make uN_strstr functions O(n) worst-case.
+	* lib/unistr/u-strstr.h (FUNC): In the 8-bit case, use strstr. In the
+	16-bit and 32-bit unit cases, use the unibyte algorithm from
+	lib/mbsstr.c.
+	* lib/unistr/u8-strstr.c: Include <string.h>.
+	(UNIT_IS_UINT8_T): New macro.
+	* lib/unistr/u16-strstr.c: Include malloca.h and str-kmp.h.
+	(U_STRLEN, U_STRNLEN): New macros.
+	* lib/unistr/u32-strstr.c: Include malloca.h and str-kmp.h.
+	(U_STRLEN, U_STRNLEN): New macros.
+	* modules/unistr/u8-strstr (Depends-on): Add strstr.
+	(configure.ac): Update required libunistring version.
+	* modules/unistr/u16-strstr (Files): Add lib/str-kmp.h.
+	(Depends-on): Add unistr/u16-strlen, unistr/u16-strnlen, stdbool,
+	malloca.
+	(configure.ac): Update required libunistring version.
+	* modules/unistr/u32-strstr (Files): Add lib/str-kmp.h.
+	(Depends-on): Add unistr/u32-strlen, unistr/u32-strnlen, stdbool,
+	malloca.
+	(configure.ac): Update required libunistring version.
+
+2011-01-21  Pádraig Brady  <P@draigBrady.com>
+            Bruno Haible  <bruno@clisp.org>
+
+	Prepare for faster uN_strstr functions.
+	* lib/str-kmp.h: Support definable UNITs.
+	(knuth_morris_pratt): Renamed from knuth_morris_pratt_unibyte. Add
+	needle_len argument.
+	* lib/mbsstr.c (mbsstr): Adjust for the changed str-kmp.h.
+	* lib/mbscasestr.c (mbscasestr): Likewise.
+
+2011-01-21  Pádraig Brady <P@draigBrady.com>
+
+	malloca-tests: make faster by unsetting MALLOC_PERTURB_
+	* tests/test-malloca.c (main): Unset the environment variable
+	to greatly speed up the test.
+	* tests/init.sh: Don't say that MALLOC_PERTURB_ is cheap.
+	* modules/malloca-tests: Depend on unsetenv.
+
+2011-01-21  Pádraig Brady <P@draigBrady.com>
+
+	ignore-value: remove stdint dependency
+	* lib/ignore-value.h: Remove <stdint.h>
+	* modules/ignore-value: Remove stdint dependency.
+
+2011-01-21  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: adjust variable name to be consistent with other gl_ vars
+	* top/maint.mk (gl_public_submodule_commit): Rename the variable
+	to be lower case.
+
+2011-01-20  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: make "check" depend on public-submodule-commit by default
+	* top/maint.mk (GL_PUBLIC_SUBMODULE_COMMIT): New overridable variable.
+
+2011-01-20  Bruno Haible  <bruno@clisp.org>
+
+	mbfile, mbiter: Complete change from 2008-12-21.
+	* m4/mbfile.m4 (gl_MBFILE): Don't require AC_FUNC_MBRTOWC.
+	* m4/mbiter.m4 (gl_MBITER): Likewise.
+
+2011-01-20  Jim Meyering  <meyering@redhat.com>
+
+	init.sh: insert space between each function name and "()"
+	* tests/init.sh: Make it a little easier to see that a function's
+	name is "warn_", and not "warn" when looking at the first part of
+	its definition: "warn_ ()".  Suggested by Ralf Wildenhues.
+
+2011-01-20  Jim Meyering  <meyering@redhat.com>
+
+	mountlist: clean up code formatting
+	* lib/mountlist.c (read_file_system_list): Split a long line,
+	correct bracing style, use NULL in place of "(struct statfs *)0",
+	don't parenthesize return value, add spaces around "=" and after
+	";-in-for-stmt".
+
+2011-01-14  Markus Duft <mduft@gentoo.org>
+
+	mountlist: add support for Interix
+	* lib/mountlist.c (read_file_system_list) [MOUNTED_INTERIX_STATVFS]:
+	Apply statvfs to all entries of /dev/fs.
+	* m4/ls-mntd-fs.m4 (gl_LIST_MOUNTED_FILE_SYSTEMS): Check for statvfs,
+	and if found, AC_DEFINE MOUNTED_INTERIX_STATVFS.
+
+2011-01-20  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: improve the public-submodule-commit rule
+	* top/maint.mk (public-submodule-commit): Prefix with $(AM_V_GEN),
+	to suppress printing of its commands... unless V=1.
+	Add git submodule's --quiet option to suppress printing of e.g.,
+	"Entering gnulib" output.
+	"cd" into $(srcdir) before running git submodule.
+
+2011-01-20  Bruno Haible  <bruno@clisp.org>
+
+	include_next: Fix bug introduced on 2011-01-18.
+	* m4/include_next.m4 (gl_NEXT_HEADERS_INTERNAL): New macro, extracted
+	from gl_CHECK_NEXT_HEADERS and gl_NEXT_HEADERS. Omit test of
+	ac_cv_header_... variable if the second argument is not 'check'.
+	(gl_CHECK_NEXT_HEADERS, gl_NEXT_HEADERS): Invoke
+	gl_NEXT_HEADERS_INTERNAL.
+
+2011-01-20  Bruno Haible  <bruno@clisp.org>
+
+	Allow the user to avoid the GNULIB_TEST_* macros.
+	* m4/gnulib-common.m4 (gl_ASSERT_NO_GNULIB_TESTS): New macro.
+	Suggested by Paul Eggert.
+
+2011-01-14  Jim Meyering  <meyering@redhat.com>
+
+	bootstrap: avoid failure when there is no .gitmodules file
+	": ${gnulib_path=gnulib}" fails to set $gnulib_path when that variable
+	has been assigned to, even when its value is the empty string.
+	* build-aux/bootstrap (gnulib_path): Test explicitly for an empty
+	"$gnulib_path", rather than using ${gnulib_path=gnulib}.
+	Reported by John W. Eaton <jwe@gnu.org>.
+
+2011-01-19  Paul Eggert  <eggert@cs.ucla.edu>
+
+	assume <ctype.h>, ..., <time.h> exist
+	For years gnulib has been assuming the existence of the headers
+	<ctime.h>, <errno.h>, <fcntl.h>, <locale.h>, <signal.h>,
+	<stdio.h>, <stdlib.h>, <string.h>, and <time.h>.  Omit checks for
+	them, since they don't appear to be needed.
+	* README (Portability guidelines): Document this.
+	* lib/flock.c: Assume <fcntl.h> exists.
+	* lib/regex_internal.h: Assume <locale.h> exists.
+	* m4/ctype.m4 (gl_CTYPE_H): Assume <ctype.h> exists.
+	* m4/errno_h.m4 (gl_HEADER_ERRNO_H): Assume <errno.h> exists.
+	* m4/fcntl_h.m4 (gl_FCNTL_H): Assume <fcntl.h> exists.
+	* m4/flock.m4 (gl_PREREQ_FLOCK): Likewise.
+	* m4/locale_h.m4 (gl_LOCALE_H): Assume <locale.h> exists.
+	* m4/regex.m4 (gl_REGEX): Likewise.
+	* m4/signal_h.m4 (gl_SIGNAL_H): Assume <signal.h> exists.
+	* m4/stdio_h.m4 (gl_STDIO_H): Assume <stdio.h> exists.
+	* m4/stdlib_h.m4 (gl_STDLIB_H): Assume <stdlib.h> exists.
+	* m4/string_h.m4 (gl_STRING_H): Assume <string.h> exists.
+	* tests/test-argp.c: Likewise.
+	* m4/time_h.m4 (gl_HEADER_TIME_H_BODY): Assume <time.h> exists.
+
+	multiarch: remove AA_APPLE_UNIVERSAL_BUILD
+	* m4/multiarch.m4 (gl_MULTIARCH): Don't AC_DEFINE
+	AA_APPLE_UNIVERSAL_BUILD.  See
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00247.html>.
+	* NEWS: Document this.
+
+2011-01-19  Eric Blake  <eblake@redhat.com>
+
+	c-stack: assume stack overflow if SA_SIGINFO unsupported
+	* lib/c-stack.c (SIGACTION_WORKS): Rename...
+	(SIGINFO_WORKS): ...since gnulib module guarantees that (most) of
+	sigaction will work.
+	(die): Assume stack overflow if siginfo doesn't work, to let Haiku
+	behavior match Linux.
+	* tests/test-c-stack.c (main): Prefer NULL for pointers.
+
+	stdbool-tests: accomodate Haiku
+	* tests/test-stdbool.c: Haiku's gcc 2.95 lacks native _Bool.
+
+	binary-io: fix O_TEXT on Haiku
+	* modules/binary-io (Depends-on): Add fcntl-h.
+	* lib/binary-io.h (O_TEXT): Rely on replacement <fcntl.h> rather
+	than blindly undefining O_TEXT.
+	Reported by Scott McCreary.
+
+2011-01-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	include_next: do not check for standard headers like stddef.h
+
+	I found this problem when modifying Emacs to use gnulib.
+	I noticed that it added HAVE_STDDEF_H to config.h, even though
+	gnulib always assumes <stddef.h> exists as per README and this
+	symbol is unnecessary.
+	* m4/include_next.m4 (gl_NEXT_HEADERS): New macro, which does not
+	use AC_CHECK_HEADERS_ONCE, but which otherwise contains what
+	gl_CHECK_NEXT_HEADERS used to contain.  This makes 'configure' run
+	faster for headers like stddef.h that are known to exist.
+	(gl_CHECK_NEXT_HEADERS): Use it.
+	* m4/float_h.m4 (gl_FLOAT_H): For float.h, use gl_NEXT_HEADERS
+	rather than gl_CHECK_NEXT_HEADERS.
+	* m4/stdarg.m4 (gl_STDARG_H): Likewise, for stdarg.h.
+	* m4/stddef_h.m4 (gl_STDDEF_H): Likewise, for stddef.h.
+
+2011-01-18  Eric Blake  <eblake@redhat.com>
+
+	ansi-c++-opt: skip C++ dependency style if C++ is unused
+	* m4/ansi-c++.m4 (gl_PROG_ANSI_CXX): Avoid full-blown dependency
+	tests when we know C++ compilation is not desired.
+	Reported by Scott McCreary.
+
+2011-01-18  Bruno Haible  <bruno@clisp.org>
+
+	*printf-posix: Avoid test failures. Make tests work on MacOS X, Cygwin.
+	* tests/test-fprintf-posix3.c: Include "resource-ext.h".
+	(main): Perform test also when getrlimit and setrlimit don't exist or
+	when setrlimit of RLIMIT_DATA fails (like on Cygwin). Instead of
+	limiting the address space size using setrlimit, compare the address
+	space size before and after the the test.
+	* tests/test-dprintf-posix2.c: Likewise.
+	* tests/test-fprintf-posix3.sh: Update skip messages.
+	* tests/test-dprintf-posix2.sh: Likewise.
+	* modules/fprintf-posix-tests (Depends-on): Add get-rusage-as.
+	* modules/dprintf-posix-tests (Depends-on): Likewise.
+	Reported by Bruce Korb <bkorb@gnu.org> and
+	Gary V. Vaughan <gary@gnu.org>.
+
+2011-01-18  Bruno Haible  <bruno@clisp.org>
+
+	get-rusage-as: Improvement for Cygwin.
+	* lib/get-rusage-as.c (get_rusage_as_via_iterator): On Windows, ignore
+	areas that are merely reserved.
+
+2011-01-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	strftime: remove dependencies on multibyte modules
+
+	strftime depended on mbrlen, mbsinit, and wchar, but these modules
+	are needed only if ! MULTIBYTE_IS_FORMAT_SAFE, and that is true
+	only if __osf__ is defined, and I suspect OSF doesn't need these
+	other modules.  If my guess is wrong, we'll need to come up with a
+	variant of strftime that doesn't need the multibyte modules.
+
+	I discovered this problem when attempting modify Emacs to use the
+	strftime module.  With the previous gnulib, this caused Emacs to
+	need 31 new files, ranging from lib/config.charset to
+	m4/wint_t.m4.  This was overkill and I expect would be offputting
+	to the Emacs maintainers.  After this change, only 6 new files are
+	needed, namely strftime.[ch], srtftime.m4, stdbool.in.h,
+	stdbool.m4, and tm_gmtoff.m4.
+
+	* lib/strftime.c (MULTIBYTE_IS_FORMAT_SAFE): Define to 1 always.
+	Suggested by Bruno Haible in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00238.html>.
+	* m4/strftime.m4 (gl_FUNC_STRFTIME): Do not require AC_TYPE_MBSTATE_T,
+	and do not check for wchar.h.
+	* modules/strftime (Files): Remove m4/mbstate_t.m4.
+	(Depends-on): Remove mbrlen, mbsinit, wchar.
+
+2011-01-18  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'get-rusage-as'.
+	* modules/get-rusage-as-tests: New file.
+	* tests/test-get-rusage-as.c: New file.
+
+	New module 'get-rusage-as'.
+	* modules/get-rusage-as: New file.
+	* lib/resource-ext.h: New file.
+	* lib/get-rusage-as.c: New file.
+
+2011-01-17  Eric Blake  <eblake@redhat.com>
+
+	sigaction: relax license from LGPLv3+ to LGPLv2+
+	* modules/sigaction (License): Relax to LGPLv2+.
+
 2011-01-14  Bruno Haible  <bruno@clisp.org>
 
 	filemode: Make function declarations usable in C++ mode.
@@ -42,6 +1225,8 @@
 	indirectly on xalloc.  This change causes the openat substitute
 	to fall back on save_cwd when memory is tight, and for save_cwd to
 	fail instead of dying when memory is tight, but that's good enough.
+	Problem and initial idea for fix reported by Bastien Roucaries in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-01/msg00170.html>.
 
 	* lib/openat-proc.c: Include stdlib.h (for malloc), not
 	xalloc.h (for xmalloc).
