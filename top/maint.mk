@@ -683,6 +683,7 @@ gl_extract_significant_defines_ = \
 	@gen_h=$(gl_generated_headers_);				\
 	(cd $(gnulib_dir)/lib;						\
 	  for f in *.in.h $(gl_other_headers_); do			\
+	    test -e $$f &&						\
 	    perl -lne '$(gl_extract_significant_defines_)' $$f;		\
 	  done;								\
 	) | sort -u							\
