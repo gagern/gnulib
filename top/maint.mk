@@ -137,11 +137,13 @@ sc_m_rules_ = $(patsubst %, %.m, $(syntax-check-rules))
 $(sc_m_rules_):
 	@echo $(patsubst sc_%.m, %, $@)
 	@date +%s.%N > .sc-start-$(basename $@)
+	@echo -ne '\e[31m'
 
 # Compute and print the elapsed time for each syntax-check rule.
 sc_z_rules_ = $(patsubst %, %.z, $(syntax-check-rules))
 .PHONY: $(sc_z_rules_)
 $(sc_z_rules_): %.z: %
+	@echo -ne '\e[0m'
 	@end=$$(date +%s.%N);						\
 	start=$$(cat .sc-start-$*);					\
 	rm -f .sc-start-$*;						\
