@@ -285,6 +285,28 @@ sc_space_tab:
 	halt='found SPACE-TAB sequence; remove the SPACE'		\
 	  $(_sc_search_regexp)
 
+INDENT_STYLE ?= -gnu
+
+sc_indent:
+ifneq ($(strip $(INDENT_STYLE)),)
+	@fail=0;							\
+	for file in $$($(VC_LIST_EXCEPT)); do				\
+	  case $$file in						\
+	    *.c|*.h)							\
+	      if ! indent $(INDENT_STYLE) -st "$$file" |		\
+		   diff -u --label "$$file" -p "$$file" -; then		\
+		fail=1;							\
+	      fi							\
+	      ;;							\
+	  esac								\
+	done;								\
+	test $$fail = 1 &&						\
+	  { echo '$(ME): the above changes should be applied'		\
+	    'in order to unify the coding style' 1>&2; exit 1; } || :
+else
+	@:
+endif
+
 # Don't use *scanf or the old ato* functions in `real' code.
 # They provide no error checking mechanism.
 # Instead, use strto* functions.
@@ -1131,8 +1153,8 @@ refresh-po:
 INDENT_SOURCES ?= $(C_SOURCES)
 .PHONY: indent
 indent:
-	indent $(INDENT_SOURCES)
-	indent $(INDENT_SOURCES)
+	indent $(INDENT_STYLE) $(INDENT_SOURCES)
+	indent $(INDENT_STYLE) $(INDENT_SOURCES)
 
 # If you want to set UPDATE_COPYRIGHT_* environment variables,
 # put the assignments in this variable.
