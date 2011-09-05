@@ -200,7 +200,7 @@ static void
 day_of_the_week (struct tm *tm)
 {
   /* We know that January 1st 1970 was a Thursday (= 4).  Compute the
-     the difference between this data in the one on TM and so determine
+     difference between this data in the one on TM and so determine
      the weekday.  */
   int corr_year = 1900 + tm->tm_year - (tm->tm_mon < 2);
   int wday = (-473
@@ -251,7 +251,9 @@ __strptime_internal (rp, fmt, tm, decided, era_cnt LOCALE_PARAM)
   int have_mon, have_mday;
   int have_uweek, have_wweek;
   int week_no;
+#ifdef _NL_CURRENT
   size_t num_eras;
+#endif
   struct era_entry *era;
 
   have_I = is_pm = 0;
@@ -408,7 +410,9 @@ __strptime_internal (rp, fmt, tm, decided, era_cnt LOCALE_PARAM)
           break;
         case 'C':
           /* Match century number.  */
+#ifdef _NL_CURRENT
         match_century:
+#endif
           get_number (0, 99, 2);
           century = val;
           want_xday = 1;
@@ -644,7 +648,9 @@ __strptime_internal (rp, fmt, tm, decided, era_cnt LOCALE_PARAM)
           have_wday = 1;
           break;
         case 'y':
+#ifdef _NL_CURRENT
         match_year_in_century:
+#endif
           /* Match year within century.  */
           get_number (0, 99, 2);
           /* The "Year 2000: The Millennium Rollover" paper suggests that

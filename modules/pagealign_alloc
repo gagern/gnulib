@@ -9,10 +9,10 @@ m4/pagealign_alloc.m4
 
 Depends-on:
 error
-exit
 extensions
 getpagesize
 gettext-h
+stdlib
 xalloc
 unistd
 
@@ -20,6 +20,7 @@ configure.ac:
 gl_PAGEALIGN_ALLOC
 
 Makefile.am:
+lib_SOURCES += pagealign_alloc.c
 
 Include:
 "pagealign_alloc.h"

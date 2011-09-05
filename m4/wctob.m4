@@ -1,4 +1,4 @@
-# wctob.m4 serial 7
+# wctob.m4 serial 9
 dnl Copyright (C) 2008-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -10,11 +10,10 @@ AC_DEFUN([gl_FUNC_WCTOB],
 
   AC_CHECK_FUNCS_ONCE([wctob])
   if test $ac_cv_func_wctob = no; then
+    HAVE_WCTOB=0
     HAVE_DECL_WCTOB=0
-    gl_REPLACE_WCHAR_H
-    AC_LIBOBJ([wctob])
-    gl_PREREQ_WCTOB
   else
+    HAVE_WCTOB=1
 
     dnl Solaris 9 has the wctob() function but it does not work.
     dnl Cygwin 1.7.2 has the wctob() function but it clobbers caller-owned
@@ -102,11 +101,7 @@ int main ()
       *yes) ;;
       *) REPLACE_WCTOB=1 ;;
     esac
-    if test $REPLACE_WCTOB = 1; then
-      gl_REPLACE_WCHAR_H
-      AC_LIBOBJ([wctob])
-      gl_PREREQ_WCTOB
-    else
+    if test $REPLACE_WCTOB = 0; then
 
       dnl IRIX 6.5 has the wctob() function but does not declare it.
       AC_CHECK_DECLS([wctob], [], [], [
@@ -121,7 +116,6 @@ int main ()
 ])
       if test $ac_cv_have_decl_wctob != yes; then
         HAVE_DECL_WCTOB=0
-        gl_REPLACE_WCHAR_H
       fi
     fi
   fi

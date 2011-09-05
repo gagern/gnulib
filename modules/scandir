@@ -8,9 +8,14 @@ m4/scandir.m4
 Depends-on:
 dirent
 extensions
+largefile
 
 configure.ac:
 gl_FUNC_SCANDIR
+if test $HAVE_SCANDIR = 0; then
+  AC_LIBOBJ([scandir])
+  gl_PREREQ_SCANDIR
+fi
 gl_DIRENT_MODULE_INDICATOR([scandir])
 
 Makefile.am:

@@ -9,10 +9,14 @@ m4/unlockpt.m4
 Depends-on:
 stdlib
 extensions
-ptsname
+ptsname         [test $HAVE_UNLOCKPT = 0]
 
 configure.ac:
 gl_FUNC_UNLOCKPT
+if test $HAVE_UNLOCKPT = 0; then
+  AC_LIBOBJ([unlockpt])
+  gl_PREREQ_UNLOCKPT
+fi
 gl_STDLIB_MODULE_INDICATOR([unlockpt])
 
 Makefile.am:

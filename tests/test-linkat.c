@@ -34,7 +34,6 @@ SIGNATURE_CHECK (linkat, int, (int, char const *, int, char const *, int));
 #include "areadlink.h"
 #include "filenamecat.h"
 #include "same-inode.h"
-#include "xgetcwd.h"
 #include "ignore-value.h"
 #include "macros.h"
 
@@ -119,7 +118,8 @@ main (void)
   ASSERT (mkdir (BASE "sub1", 0700) == 0);
   ASSERT (mkdir (BASE "sub2", 0700) == 0);
   ASSERT (close (creat (BASE "00", 0600)) == 0);
-  cwd = xgetcwd ();
+  cwd = getcwd (NULL, 0);
+  ASSERT (cwd);
 
   dfd = open (BASE "sub1", O_RDONLY);
   ASSERT (0 <= dfd);
@@ -140,9 +140,11 @@ main (void)
   for (i = 0; i < 32; i++)
     {
       int fd1 = (i & 8) ? dfd : AT_FDCWD;
-      char *file1 = file_name_concat ((i & 4) ? ".." : cwd, BASE "xx", NULL);
+      char *file1 = mfile_name_concat ((i & 4) ? ".." : cwd, BASE "xx", NULL);
       int fd2 = (i & 2) ? dfd : AT_FDCWD;
-      char *file2 = file_name_concat ((i & 1) ? ".." : cwd, BASE "xx", NULL);
+      char *file2 = mfile_name_concat ((i & 1) ? ".." : cwd, BASE "xx", NULL);
+      ASSERT (file1);
+      ASSERT (file2);
       flag = (i & 0x10 ? AT_SYMLINK_FOLLOW : 0);
 
       ASSERT (sprintf (strchr (file1, '\0') - 2, "%02d", i) == 2);
@@ -199,11 +201,13 @@ main (void)
   errno = 0;
   ASSERT (linkat (dfd, BASE "link1/", dfd, BASE "sub1",
                   AT_SYMLINK_FOLLOW) == -1);
-  ASSERT (errno == EEXIST || errno == EPERM || errno == EACCES);
+  ASSERT (errno == EEXIST || errno == EPERM || errno == EACCES
+          || errno == EINVAL);
   errno = 0;
   ASSERT (linkat (dfd, BASE "link1", dfd, BASE "sub1/",
                   AT_SYMLINK_FOLLOW) == -1);
-  ASSERT (errno == EEXIST || errno == EPERM || errno == EACCES);
+  ASSERT (errno == EEXIST || errno == EPERM || errno == EACCES
+          || errno == EINVAL);
   errno = 0;
   ASSERT (linkat (dfd, BASE "link1", dfd, BASE "link2", 0) == -1);
   ASSERT (errno == EEXIST);
@@ -248,21 +252,21 @@ main (void)
   errno = 0;
   ASSERT (linkat (dfd, BASE "link2/", dfd, BASE "link5",
                   AT_SYMLINK_FOLLOW) == -1);
-  ASSERT (errno == ENOTDIR);
+  ASSERT (errno == ENOTDIR || errno == EINVAL);
   errno = 0;
   ASSERT (linkat (dfd, BASE "link3/", dfd, BASE "link5", 0) == -1);
   ASSERT (errno == ELOOP);
   errno = 0;
   ASSERT (linkat (dfd, BASE "link3/", dfd, BASE "link5",
                   AT_SYMLINK_FOLLOW) == -1);
-  ASSERT (errno == ELOOP);
+  ASSERT (errno == ELOOP || errno == EINVAL);
   errno = 0;
   ASSERT (linkat (dfd, BASE "link4/", dfd, BASE "link5", 0) == -1);
   ASSERT (errno == ENOENT);
   errno = 0;
   ASSERT (linkat (dfd, BASE "link4/", dfd, BASE "link5",
                   AT_SYMLINK_FOLLOW) == -1);
-  ASSERT (errno == ENOENT);
+  ASSERT (errno == ENOENT || errno == EINVAL);
 
   /* Check for hard links to symlinks.  */
   ASSERT (linkat (dfd, BASE "link1", dfd, BASE "link5", 0) == 0);

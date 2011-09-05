@@ -25,22 +25,12 @@
 extern "C" {
 # endif
 
-# ifndef __attribute__
-#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)
-#   define __attribute__(x)
-#  endif
-# endif
-
-# ifndef ATTRIBUTE_NORETURN
-#  define ATTRIBUTE_NORETURN __attribute__ ((__noreturn__))
-# endif
-
 /* This function is always triggered when memory is exhausted.
    It must be defined by the application, either explicitly
    or by using gnulib's xalloc-die module.  This is the
    function to call when one wants the program to die because of a
    memory allocation failure.  */
-extern void xalloc_die (void) ATTRIBUTE_NORETURN;
+extern _Noreturn void xalloc_die (void);
 
 char *xmemdup0 (void const *p, size_t s);
 

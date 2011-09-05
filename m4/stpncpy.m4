@@ -1,4 +1,4 @@
-# stpncpy.m4 serial 13
+# stpncpy.m4 serial 15
 dnl Copyright (C) 2002-2003, 2005-2007, 2009-2011 Free Software Foundation,
 dnl Inc.
 dnl This file is free software; the Free Software Foundation
@@ -35,7 +35,11 @@ AC_DEFUN([gl_FUNC_STPNCPY],
 #include <string.h> /* for strcpy */
 /* The stpncpy prototype is missing in <string.h> on AIX 4.  */
 #if !HAVE_DECL_STPNCPY
-extern char *stpncpy (char *dest, const char *src, size_t n);
+extern
+# ifdef __cplusplus
+"C"
+# endif
+char *stpncpy (char *dest, const char *src, size_t n);
 #endif
 int main ()
 {
@@ -78,13 +82,9 @@ int main ()
         [Define if you have the stpncpy() function and it works.])
     else
       REPLACE_STPNCPY=1
-      AC_LIBOBJ([stpncpy])
-      gl_PREREQ_STPNCPY
     fi
   else
     HAVE_STPNCPY=0
-    AC_LIBOBJ([stpncpy])
-    gl_PREREQ_STPNCPY
   fi
 ])
 

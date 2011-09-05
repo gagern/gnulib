@@ -7,12 +7,17 @@ lib/fsusage.c
 m4/fsusage.m4
 
 Depends-on:
-full-read
+largefile
 stdbool
 stdint
+full-read       [test $gl_cv_fs_space = yes]
 
 configure.ac:
 gl_FSUSAGE
+if test $gl_cv_fs_space = yes; then
+  AC_LIBOBJ([fsusage])
+  gl_PREREQ_FSUSAGE_EXTRA
+fi
 
 Makefile.am:
 

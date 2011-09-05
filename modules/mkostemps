@@ -7,12 +7,16 @@ lib/mkostemps.c
 m4/mkostemps.m4
 
 Depends-on:
-extensions
 stdlib
-tempname
+extensions
+largefile
+tempname        [test $HAVE_MKOSTEMPS = 0]
 
 configure.ac:
 gl_FUNC_MKOSTEMPS
+if test $HAVE_MKOSTEMPS = 0; then
+  AC_LIBOBJ([mkostemps])
+fi
 gl_MODULE_INDICATOR([mkostemps])
 gl_STDLIB_MODULE_INDICATOR([mkostemps])
 

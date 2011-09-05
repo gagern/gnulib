@@ -6,12 +6,15 @@ lib/usleep.c
 m4/usleep.m4
 
 Depends-on:
-extensions
-sleep
 unistd
+extensions
+sleep           [test $HAVE_USLEEP = 0 || test $REPLACE_USLEEP = 1]
 
 configure.ac:
 gl_FUNC_USLEEP
+if test $HAVE_USLEEP = 0 || test $REPLACE_USLEEP = 1; then
+  AC_LIBOBJ([usleep])
+fi
 gl_UNISTD_MODULE_INDICATOR([usleep])
 
 Makefile.am:

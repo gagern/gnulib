@@ -1,4 +1,4 @@
-# roundf.m4 serial 10
+# roundf.m4 serial 13
 dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -66,12 +66,18 @@ int main()
 #include <math.h>
 ]gl_FLOAT_MINUS_ZERO_CODE[
 ]gl_FLOAT_SIGNBIT_CODE[
-int main()
+static float dummy (float f) { return 0; }
+int main (int argc, char *argv[])
 {
+  float (*my_roundf) (float) = argc ? roundf : dummy;
+  int result = 0;
   /* Test whether roundf (-0.0f) is -0.0f.  */
-  if (signbitf (minus_zerof) && !signbitf (roundf (minus_zerof)))
-    return 1;
-  return 0;
+  if (signbitf (minus_zerof) && !signbitf (my_roundf (minus_zerof)))
+    result |= 1;
+  /* Test whether roundf (-0.3f) is -0.0f.  */
+  if (signbitf (-0.3f) && !signbitf (my_roundf (-0.3f)))
+    result |= 2;
+  return result;
 }
               ]])],
               [gl_cv_func_roundf_ieee=yes],
@@ -89,7 +95,7 @@ int main()
     HAVE_DECL_ROUNDF=0
   fi
   if test $HAVE_DECL_ROUNDF = 0 || test $REPLACE_ROUNDF = 1; then
-    AC_LIBOBJ([roundf])
+    dnl Find libraries needed to link lib/roundf.c.
     AC_CHECK_DECLS([ceilf, floorf], , , [#include <math.h>])
     if test "$ac_cv_have_decl_floorf" = yes \
        && test "$ac_cv_have_decl_ceilf" = yes; then

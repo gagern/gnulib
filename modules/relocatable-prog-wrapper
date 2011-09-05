@@ -10,6 +10,10 @@ lib/progname.c
 lib/progreloc.c
 lib/areadlink.h
 lib/areadlink.c
+lib/careadlinkat.h
+lib/careadlinkat.c
+lib/allocator.h
+lib/allocator.c
 lib/readlink.c
 lib/canonicalize-lgpl.c
 lib/malloca.h
@@ -17,7 +21,6 @@ lib/malloca.c
 lib/relocatable.h
 lib/relocatable.c
 lib/setenv.c
-lib/strerror.c
 lib/c-ctype.h
 lib/c-ctype.c
 m4/malloca.m4
@@ -28,7 +31,6 @@ m4/longlong.m4
 m4/readlink.m4
 m4/relocatable-lib.m4
 m4/setenv.m4
-m4/strerror.m4
 
 Depends-on:
 alloca-opt
@@ -48,9 +50,8 @@ configure.ac:
 gl_FUNC_READLINK_SEPARATE
 gl_CANONICALIZE_LGPL_SEPARATE
 gl_MALLOCA
-gl_RELOCATABLE_LIBRARY_SEPARATE
+gl_RELOCATABLE_LIBRARY
 gl_FUNC_SETENV_SEPARATE
-gl_FUNC_STRERROR_SEPARATE
 
 Makefile.am:
 

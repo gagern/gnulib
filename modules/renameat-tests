@@ -7,8 +7,7 @@ tests/macros.h
 Depends-on:
 ignore-value
 filenamecat
-progname
-xgetcwd
+getcwd-lgpl
 
 configure.ac:
 

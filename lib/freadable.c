@@ -33,6 +33,8 @@ freadable (FILE *fp)
   return (fp_->_flags & (__SRW | __SRD)) != 0;
 #elif defined __EMX__               /* emx+gcc */
   return (fp->_flags & (_IORW | _IOREAD)) != 0;
+#elif defined __minix               /* Minix */
+  return (fp->_flags & _IOREAD) != 0;
 #elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw, NonStop Kernel */
   return (fp->_flag & (_IORW | _IOREAD)) != 0;
 #elif defined __QNX__               /* QNX */
@@ -40,6 +42,6 @@ freadable (FILE *fp)
 #elif defined __MINT__              /* Atari FreeMiNT */
   return fp->__mode.__read;
 #else
- #error "Please port gnulib freadable.c to your platform! Look at the definition of fopen, fdopen on your system, then report this to bug-gnulib."
+# error "Please port gnulib freadable.c to your platform! Look at the definition of fopen, fdopen on your system, then report this to bug-gnulib."
 #endif
 }

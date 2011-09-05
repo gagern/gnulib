@@ -7,17 +7,23 @@ lib/renameat.c
 m4/renameat.m4
 
 Depends-on:
+stdio
 extensions
 fcntl-h
-filenamecat-lgpl
-openat
-rename
-same-inode
-stdio
-stpcpy
+dosname          [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
+filenamecat-lgpl [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
+getcwd-lgpl      [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
+openat           [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
+rename           [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
+same-inode       [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
+save-cwd         [test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1]
 
 configure.ac:
 gl_FUNC_RENAMEAT
+if test $HAVE_RENAMEAT = 0 || test $REPLACE_RENAMEAT = 1; then
+  AC_LIBOBJ([renameat])
+  AC_LIBOBJ([at-func2])
+fi
 gl_STDIO_MODULE_INDICATOR([renameat])
 
 Makefile.am:

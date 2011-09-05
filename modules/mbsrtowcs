@@ -14,12 +14,17 @@ m4/codeset.m4
 
 Depends-on:
 wchar
-mbrtowc
-strnlen1
 extensions
+mbrtowc         [test $HAVE_MBSRTOWCS = 0 || test $REPLACE_MBSRTOWCS = 1]
+strnlen1        [test $HAVE_MBSRTOWCS = 0 || test $REPLACE_MBSRTOWCS = 1]
 
 configure.ac:
 gl_FUNC_MBSRTOWCS
+if test $HAVE_MBSRTOWCS = 0 || test $REPLACE_MBSRTOWCS = 1; then
+  AC_LIBOBJ([mbsrtowcs])
+  AC_LIBOBJ([mbsrtowcs-state])
+  gl_PREREQ_MBSRTOWCS
+fi
 gl_WCHAR_MODULE_INDICATOR([mbsrtowcs])
 
 Makefile.am:

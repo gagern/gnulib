@@ -7,12 +7,17 @@ m4/tmpfile.m4
 
 Depends-on:
 stdio
-pathmax
-tempname
-tmpdir
+largefile
+pathmax         [test $REPLACE_TMPFILE = 1]
+tempname        [test $REPLACE_TMPFILE = 1]
+tmpdir          [test $REPLACE_TMPFILE = 1]
 
 configure.ac:
 gl_FUNC_TMPFILE
+if test $REPLACE_TMPFILE = 1; then
+  AC_LIBOBJ([tmpfile])
+  gl_PREREQ_TMPFILE
+fi
 gl_STDIO_MODULE_INDICATOR([tmpfile])
 
 Makefile.am:
@@ -21,7 +26,7 @@ Include:
 <stdio.h>
 
 License:
-GPL
+LGPL
 
 Maintainer:
 Ben Pfaff

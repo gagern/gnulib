@@ -1,15 +1,24 @@
 Description:
 strtoul() function: convert string to 'unsigned long'.
 
+Status:
+obsolete
+
+Notice:
+This module is obsolete.
+
 Files:
+lib/strtol.c
 lib/strtoul.c
 m4/strtoul.m4
 
 Depends-on:
-strtol
 
 configure.ac:
 gl_FUNC_STRTOUL
+if test $ac_cv_func_strtoul = no; then
+  AC_LIBOBJ([strtoul])
+fi
 
 Makefile.am:
 
@@ -21,4 +30,3 @@ LGPL
 
 Maintainer:
 glibc
-

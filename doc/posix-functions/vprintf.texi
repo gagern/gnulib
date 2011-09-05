@@ -4,7 +4,7 @@
 
 POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/functions/vprintf.html}
 
-Gnulib module: vprintf-posix or stdio, sigpipe
+Gnulib module: vprintf-posix or stdio, nonblocking, sigpipe
 
 Portability problems fixed by Gnulib module @code{vprintf-posix}:
 @itemize
@@ -53,7 +53,7 @@ MacOS X 10.5, FreeBSD 6.0, NetBSD 5.0, AIX 5.2, IRIX 6.5, OSF/1 5.1, Solaris 11 
 @item
 This function does not support precisions larger than 512 or 1024 in integer,
 floating-point and pointer output on some platforms:
-Solaris 10/x86, mingw, BeOS.
+AIX 7.1, Solaris 10/x86, mingw, BeOS.
 @item
 This function mishandles large floating point precisions
 (for example, formatting 1.0 with @samp{"%.511f"})
@@ -62,6 +62,15 @@ Solaris 10.
 @item
 This function can crash in out-of-memory conditions on some platforms:
 MacOS X 10.3, FreeBSD 6.0, NetBSD 5.0.
+@end itemize
+
+Portability problems fixed by Gnulib module @code{stdio} or @code{vprintf-posix}, together with module @code{nonblocking}:
+@itemize
+@item
+When writing to a non-blocking pipe whose buffer is full, this function fails
+with @code{errno} being set to @code{ENOSPC} instead of @code{EAGAIN} on some
+platforms:
+mingw.
 @end itemize
 
 Portability problems fixed by Gnulib module @code{stdio} or @code{vprintf-posix}, together with module @code{sigpipe}:
@@ -74,4 +83,8 @@ mingw.
 
 Portability problems not fixed by Gnulib:
 @itemize
+@item
+Attempting to write to a read-only stream fails with @code{EOF} but
+does not set the error flag for @code{ferror} on some platforms:
+glibc 2.13, cygwin 1.7.9.
 @end itemize

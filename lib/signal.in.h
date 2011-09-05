@@ -20,31 +20,55 @@
 #endif
 @PRAGMA_COLUMNS@
 
-#if defined __need_sig_atomic_t || defined __need_sigset_t
-/* Special invocation convention inside glibc header files.  */
+#if defined __need_sig_atomic_t || defined __need_sigset_t || defined _GL_ALREADY_INCLUDING_SIGNAL_H || (defined _SIGNAL_H && !defined __SIZEOF_PTHREAD_MUTEX_T)
+/* Special invocation convention:
+   - Inside glibc header files.
+   - On glibc systems we have a sequence of nested includes
+     <signal.h> -> <ucontext.h> -> <signal.h>.
+     In this situation, the functions are not yet declared, therefore we cannot
+     provide the C++ aliases.
+   - On glibc systems with GCC 4.3 we have a sequence of nested includes
+     <csignal> -> </usr/include/signal.h> -> <sys/ucontext.h> -> <signal.h>.
+     In this situation, some of the functions are not yet declared, therefore
+     we cannot provide the C++ aliases.  */
 
 # @INCLUDE_NEXT@ @NEXT_SIGNAL_H@
 
 #else
 /* Normal invocation convention.  */
 
-#ifndef _GL_SIGNAL_H
+#ifndef _@GUARD_PREFIX@_SIGNAL_H
+
+#define _GL_ALREADY_INCLUDING_SIGNAL_H
+
+/* Define pid_t, uid_t.
+   Also, mingw defines sigset_t not in <signal.h>, but in <sys/types.h>.
+   On Solaris 10, <signal.h> includes <sys/types.h>, which eventually includes
+   us; so include <sys/types.h> now, before the second inclusion guard.  */
+#include <sys/types.h>
 
 /* The include_next requires a split double-inclusion guard.  */
 #@INCLUDE_NEXT@ @NEXT_SIGNAL_H@
 
-#ifndef _GL_SIGNAL_H
-#define _GL_SIGNAL_H
+#undef _GL_ALREADY_INCLUDING_SIGNAL_H
+
+#ifndef _@GUARD_PREFIX@_SIGNAL_H
+#define _@GUARD_PREFIX@_SIGNAL_H
+
+/* MacOS X 10.3, FreeBSD 6.4, OpenBSD 3.8, OSF/1 4.0, Solaris 2.6 declare
+   pthread_sigmask in <pthread.h>, not in <signal.h>.
+   But avoid namespace pollution on glibc systems.*/
+#if (@GNULIB_PTHREAD_SIGMASK@ || defined GNULIB_POSIXCHECK) \
+    && ((defined __APPLE__ && defined __MACH__) || defined __FreeBSD__ || defined __OpenBSD__ || defined __osf__ || defined __sun) \
+    && ! defined __GLIBC__
+# include <pthread.h>
+#endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
 /* The definition of _GL_ARG_NONNULL is copied here.  */
 
 /* The definition of _GL_WARN_ON_USE is copied here.  */
-
-/* Define pid_t, uid_t.
-   Also, mingw defines sigset_t not in <signal.h>, but in <sys/types.h>.  */
-#include <sys/types.h>
 
 /* On AIX, sig_atomic_t already includes volatile.  C99 requires that
    'volatile sig_atomic_t' ignore the extra modifier, but C89 did not.
@@ -66,6 +90,20 @@ typedef unsigned int sigset_t;
 # endif
 #endif
 
+/* Define sighandler_t, the type of signal handlers.  A GNU extension.  */
+#if !@HAVE_SIGHANDLER_T@
+# ifdef __cplusplus
+extern "C" {
+# endif
+# if !GNULIB_defined_sighandler_t
+typedef void (*sighandler_t) (int);
+#  define GNULIB_defined_sighandler_t 1
+# endif
+# ifdef __cplusplus
+}
+# endif
+#endif
+
 
 #if @GNULIB_SIGNAL_H_SIGPIPE@
 # ifndef SIGPIPE
@@ -82,6 +120,34 @@ typedef unsigned int sigset_t;
 #ifndef NSIG
 # if defined __TANDEM
 #  define NSIG 32
+# endif
+#endif
+
+
+#if @GNULIB_PTHREAD_SIGMASK@
+# if @REPLACE_PTHREAD_SIGMASK@
+#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
+#   undef pthread_sigmask
+#   define pthread_sigmask rpl_pthread_sigmask
+#  endif
+_GL_FUNCDECL_RPL (pthread_sigmask, int,
+                  (int how, const sigset_t *new_mask, sigset_t *old_mask));
+_GL_CXXALIAS_RPL (pthread_sigmask, int,
+                  (int how, const sigset_t *new_mask, sigset_t *old_mask));
+# else
+#  if !@HAVE_PTHREAD_SIGMASK@
+_GL_FUNCDECL_SYS (pthread_sigmask, int,
+                  (int how, const sigset_t *new_mask, sigset_t *old_mask));
+#  endif
+_GL_CXXALIAS_SYS (pthread_sigmask, int,
+                  (int how, const sigset_t *new_mask, sigset_t *old_mask));
+# endif
+_GL_CXXALIASWARN (pthread_sigmask);
+#elif defined GNULIB_POSIXCHECK
+# undef pthread_sigmask
+# if HAVE_RAW_DECL_PTHREAD_SIGMASK
+_GL_WARN_ON_USE (pthread_sigmask, "pthread_sigmask is not portable - "
+                 "use gnulib module pthread_sigmask for portability");
 # endif
 #endif
 
@@ -357,6 +423,6 @@ _GL_WARN_ON_USE (sigaction, "sigaction is unportable - "
 #endif
 
 
-#endif /* _GL_SIGNAL_H */
-#endif /* _GL_SIGNAL_H */
+#endif /* _@GUARD_PREFIX@_SIGNAL_H */
+#endif /* _@GUARD_PREFIX@_SIGNAL_H */
 #endif

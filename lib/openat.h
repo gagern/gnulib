@@ -27,16 +27,6 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-#ifndef __attribute__
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)
-#  define __attribute__(x) /* empty */
-# endif
-#endif
-
-#ifndef ATTRIBUTE_NORETURN
-# define ATTRIBUTE_NORETURN __attribute__ ((__noreturn__))
-#endif
-
 #if !HAVE_OPENAT
 
 int openat_permissive (int fd, char const *file, int flags, mode_t mode,
@@ -51,8 +41,8 @@ bool openat_needs_fchdir (void);
 
 #endif
 
-void openat_restore_fail (int) ATTRIBUTE_NORETURN;
-void openat_save_fail (int) ATTRIBUTE_NORETURN;
+_Noreturn void openat_restore_fail (int);
+_Noreturn void openat_save_fail (int);
 
 /* Using these function names makes application code
    slightly more readable than it would be with

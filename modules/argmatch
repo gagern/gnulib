@@ -4,23 +4,22 @@ Search for an exact or abbreviated match of a string in an array of strings.
 Files:
 lib/argmatch.h
 lib/argmatch.c
-m4/argmatch.m4
 
 Depends-on:
 gettext-h
 error
 quotearg
 quote
-exit
 exitfail
 verify
 stdbool
+stdlib
 memcmp
 
 configure.ac:
-gl_ARGMATCH
 
 Makefile.am:
+lib_SOURCES += argmatch.c
 
 Include:
 "argmatch.h"

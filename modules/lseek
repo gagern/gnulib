@@ -7,9 +7,13 @@ m4/lseek.m4
 
 Depends-on:
 unistd
+largefile
 
 configure.ac:
 gl_FUNC_LSEEK
+if test $REPLACE_LSEEK = 1; then
+  AC_LIBOBJ([lseek])
+fi
 gl_UNISTD_MODULE_INDICATOR([lseek])
 
 Makefile.am:

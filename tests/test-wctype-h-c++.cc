@@ -26,7 +26,9 @@
 
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswalnum, int, (wint_t));
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswalpha, int, (wint_t));
+#if GNULIB_TEST_ISWBLANK
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswblank, int, (wint_t));
+#endif
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswcntrl, int, (wint_t));
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswdigit, int, (wint_t));
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswgraph, int, (wint_t));
@@ -37,8 +39,24 @@ SIGNATURE_CHECK (GNULIB_NAMESPACE::iswspace, int, (wint_t));
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswupper, int, (wint_t));
 SIGNATURE_CHECK (GNULIB_NAMESPACE::iswxdigit, int, (wint_t));
 
+#if GNULIB_TEST_WCTYPE
+SIGNATURE_CHECK (GNULIB_NAMESPACE::wctype, wctype_t, (const char *));
+#endif
+
+#if GNULIB_TEST_ISWCTYPE
+SIGNATURE_CHECK (GNULIB_NAMESPACE::iswctype, int, (wint_t, wctype_t));
+#endif
+
 SIGNATURE_CHECK (GNULIB_NAMESPACE::towlower, wint_t, (wint_t));
 SIGNATURE_CHECK (GNULIB_NAMESPACE::towupper, wint_t, (wint_t));
+
+#if GNULIB_TEST_WCTRANS
+SIGNATURE_CHECK (GNULIB_NAMESPACE::wctrans, wctrans_t, (const char *));
+#endif
+
+#if GNULIB_TEST_TOWCTRANS
+SIGNATURE_CHECK (GNULIB_NAMESPACE::towctrans, wint_t, (wint_t, wctrans_t));
+#endif
 
 
 int

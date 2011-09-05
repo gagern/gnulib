@@ -7,10 +7,9 @@ tests/macros.h
 Depends-on:
 ignore-value
 areadlink-with-size
-filenamecat
-progname
+filenamecat-lgpl
+getcwd-lgpl
 same-inode
-xgetcwd
 
 configure.ac:
 

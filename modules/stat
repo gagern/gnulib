@@ -3,15 +3,21 @@ stat() function: query file information
 
 Files:
 lib/stat.c
-m4/dos.m4
 m4/stat.m4
 
 Depends-on:
-stdbool
 sys_stat
+largefile
+dosname         [test $REPLACE_STAT = 1]
+stdbool         [test $REPLACE_STAT = 1]
+verify          [test $REPLACE_STAT = 1]
 
 configure.ac:
 gl_FUNC_STAT
+if test $REPLACE_STAT = 1; then
+  AC_LIBOBJ([stat])
+  gl_PREREQ_STAT
+fi
 gl_SYS_STAT_MODULE_INDICATOR([stat])
 
 Makefile.am:

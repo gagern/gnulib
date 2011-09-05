@@ -1,4 +1,4 @@
-# pthread.m4
+# pthread.m4 serial 2
 dnl Copyright (C) 2009-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -30,14 +30,18 @@ AC_DEFUN([gl_PTHREAD_CHECK],
       test $ac_cv_type_pthread_t != yes ||
       test $ac_cv_type_pthread_spinlock_t != yes; then
      PTHREAD_H='pthread.h'
+   else
+     PTHREAD_H=
    fi
+   AC_SUBST([PTHREAD_H])
+   AM_CONDITIONAL([GL_GENERATE_PTHREAD_H], [test -n "$PTHREAD_H"])
 
    LIB_PTHREAD=
    if test $ac_cv_header_pthread_h = yes; then
      gl_saved_libs=$LIBS
-     AC_SEARCH_LIBS([pthread_create], [pthread],
-       [if test "$ac_cv_search_pthread_create" != "none required"; then
-          LIB_PTHREAD="$ac_cv_search_pthread_create"
+     AC_SEARCH_LIBS([pthread_join], [pthread],
+       [if test "$ac_cv_search_pthread_join" != "none required"; then
+          LIB_PTHREAD="$ac_cv_search_pthread_join"
         fi])
      LIBS="$gl_saved_libs"
    fi
@@ -53,5 +57,4 @@ AC_DEFUN([gl_PTHREAD_DEFAULTS],
   HAVE_PTHREAD_H=1;              AC_SUBST([HAVE_PTHREAD_H])
   HAVE_PTHREAD_T=1;              AC_SUBST([HAVE_PTHREAD_T])
   HAVE_PTHREAD_SPINLOCK_T=1;     AC_SUBST([HAVE_PTHREAD_SPINLOCK_T])
-  PTHREAD_H='';                  AC_SUBST([PTHREAD_H])
 ])

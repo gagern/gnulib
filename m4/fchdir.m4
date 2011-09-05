@@ -1,4 +1,4 @@
-# fchdir.m4 serial 15
+# fchdir.m4 serial 17
 dnl Copyright (C) 2006-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -15,9 +15,8 @@ AC_DEFUN([gl_FUNC_FCHDIR],
     HAVE_DECL_FCHDIR=0
   fi
 
-  AC_CHECK_FUNCS_ONCE([fchdir])
-  if test $ac_cv_func_fchdir = no; then
-    HAVE_FCHDIR=0
+  AC_REQUIRE([gl_TEST_FCHDIR])
+  if test $HAVE_FCHDIR = 0; then
     AC_LIBOBJ([fchdir])
     gl_PREREQ_FCHDIR
     AC_DEFINE([REPLACE_FCHDIR], [1],
@@ -28,12 +27,6 @@ AC_DEFUN([gl_FUNC_FCHDIR],
     REPLACE_OPENDIR=1
     REPLACE_CLOSEDIR=1
     REPLACE_DUP=1
-    gl_REPLACE_OPEN
-    gl_REPLACE_CLOSE
-    gl_REPLACE_DUP2
-    dnl dup3 is already unconditionally replaced
-    gl_REPLACE_FCNTL
-    gl_REPLACE_DIRENT_H
     AC_CACHE_CHECK([whether open can visit directories],
       [gl_cv_func_open_directory_works],
       [AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <fcntl.h>
@@ -46,6 +39,16 @@ AC_DEFUN([gl_FUNC_FCHDIR],
 work around the inability to open a directory.])
       REPLACE_FSTAT=1
     fi
+  fi
+])
+
+# Determine whether to use the overrides in lib/fchdir.c.
+AC_DEFUN([gl_TEST_FCHDIR],
+[
+  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])
+  AC_CHECK_FUNCS_ONCE([fchdir])
+  if test $ac_cv_func_fchdir = no; then
+    HAVE_FCHDIR=0
   fi
 ])
 

@@ -80,7 +80,7 @@
    POSIX says that only '0' through '9' are digits.  Prefer ISDIGIT to
    isdigit unless it's important to use the locale's definition
    of `digit' even when the host does not conform to POSIX.  */
-#define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
+# define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
 
 /* Return true if STR represents an unsigned decimal integer.  */
 
@@ -254,7 +254,7 @@ parse_user_spec (char const *spec, uid_t *uid, gid_t *gid,
   if (!colon && error_msg)
     {
       /* If there's no colon but there is a dot, and if looking up the
-         whole spec failed (i.e., the spec is not a owner name that
+         whole spec failed (i.e., the spec is not an owner name that
          includes a dot), then try again, but interpret the dot as a
          separator.  This is a compatible extension to POSIX, since
          the POSIX-required behavior is always tried first.  */

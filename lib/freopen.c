@@ -16,10 +16,13 @@
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
 
+/* If the user's config.h happens to include <stdio.h>, let it include only
+   the system's <stdio.h> here, so that orig_freopen doesn't recurse to
+   rpl_freopen.  */
+#define __need_FILE
 #include <config.h>
 
 /* Get the original definition of freopen.  It might be defined as a macro.  */
-#define __need_FILE
 #include <stdio.h>
 #undef __need_FILE
 
@@ -38,7 +41,7 @@ FILE *
 rpl_freopen (const char *filename, const char *mode, FILE *stream)
 {
 #if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
-  if (strcmp (filename, "/dev/null") == 0)
+  if (filename != NULL && strcmp (filename, "/dev/null") == 0)
     filename = "NUL";
 #endif
 

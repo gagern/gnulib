@@ -108,6 +108,7 @@ Resources:
 * Benefits::
 * Library vs Reusable Code::
 * Portability and Application Code::
+* Target Platforms::
 * Modules::
 * Various Kinds of Modules::
 * Collaborative Development::
@@ -396,6 +397,17 @@ Tests modules can depend on non-tests modules.  Non-tests modules should not
 depend on tests modules. (Recall that tests modules are built in a separate
 directory.)
 
+Each listed required module may be declared a conditional dependency.  This
+is indicated by placing the condition for the dependency on the same line,
+enclosed in brackets, after the name of the required module.  The condition
+is a shell expression that is run after the module's @code{configure.ac}
+statements.  For example:
+@smallexample
+strtoull   [test $ac_cv_func_strtoumax = no]
+@end smallexample
+
+Lines starting with @code{#} are recognized as comments and are ignored.
+
 @item configure.ac-early
 This field contains @file{configure.ac} stuff (Autoconf macro invocations and
 shell statements) that are logically placed early in the @file{configure.ac}
@@ -540,7 +552,7 @@ used here.  It contains a convenient @code{ASSERT} macro.
 
 The body of the test, then, contains many @code{ASSERT} invocations.  When
 a test fails, the @code{ASSERT} macro prints the line number of the failing
-statement, thus giving you as a developer a idea which part of the test
+statement, thus giving you, the developer, an idea of which part of the test
 failed, even when you don't have access to the machine where the test failed
 and the reporting user cannot run a debugger.
 
@@ -3793,6 +3805,7 @@ not worked around by Gnulib.
 * fstab.h::
 * fts.h::
 * getopt.h::
+* gshadow.h::
 * ieee754.h::
 * ifaddrs.h::
 * libintl.h::
@@ -3826,6 +3839,7 @@ not worked around by Gnulib.
 @include glibc-headers/fstab.texi
 @include glibc-headers/fts.texi
 @include glibc-headers/getopt.texi
+@include glibc-headers/gshadow.texi
 @include glibc-headers/ieee754.texi
 @include glibc-headers/ifaddrs.texi
 @include glibc-headers/libintl.texi
@@ -3879,6 +3893,7 @@ This list of functions is sorted according to the header that declares them.
 * Glibc glob.h::
 * Glibc gnu/libc-version.h::
 * Glibc grp.h::
+* Glibc gshadow.h::
 * Glibc ifaddrs.h::
 * Glibc libintl.h::
 * Glibc link.h::
@@ -3952,6 +3967,7 @@ This list of functions is sorted according to the header that declares them.
 * Glibc sys/sysmacros.h::
 * Glibc sys/time.h::
 * Glibc sys/timex.h::
+* Glibc sys/uio.h::
 * Glibc sys/ustat.h::
 * Glibc sys/vlimit.h::
 * Glibc sys/vm86.h::
@@ -4388,6 +4404,35 @@ This list of functions is sorted according to the header that declares them.
 @include glibc-functions/putgrent.texi
 @include glibc-functions/setgroups.texi
 
+@node Glibc gshadow.h
+@section Glibc @code{<gshadow.h>}
+
+@menu
+* endsgent::
+* fgetsgent::
+* fgetsgent_r::
+* getsgent::
+* getsgent_r::
+* getsgnam::
+* getsgnam_r::
+* putsgent::
+* setsgent::
+* sgetsgent::
+* sgetsgent_r::
+@end menu
+
+@include glibc-functions/endsgent.texi
+@include glibc-functions/fgetsgent.texi
+@include glibc-functions/fgetsgent_r.texi
+@include glibc-functions/getsgent.texi
+@include glibc-functions/getsgent_r.texi
+@include glibc-functions/getsgnam.texi
+@include glibc-functions/getsgnam_r.texi
+@include glibc-functions/putsgent.texi
+@include glibc-functions/setsgent.texi
+@include glibc-functions/sgetsgent.texi
+@include glibc-functions/sgetsgent_r.texi
+
 @c @node Glibc iconv.h
 @c @section Glibc Extensions to @code{<iconv.h>}
 
@@ -4464,6 +4509,7 @@ This list of functions is sorted according to the header that declares them.
 * mallinfo::
 * malloc_get_state::
 * malloc_set_state::
+* malloc_info::
 * malloc_stats::
 * malloc_trim::
 * malloc_usable_size::
@@ -4475,6 +4521,7 @@ This list of functions is sorted according to the header that declares them.
 @include glibc-functions/mallinfo.texi
 @include glibc-functions/malloc_get_state.texi
 @include glibc-functions/malloc_set_state.texi
+@include glibc-functions/malloc_info.texi
 @include glibc-functions/malloc_stats.texi
 @include glibc-functions/malloc_trim.texi
 @include glibc-functions/malloc_usable_size.texi
@@ -4775,28 +4822,58 @@ This list of functions is sorted according to the header that declares them.
 * printf_size::
 * printf_size_info::
 * register_printf_function::
+* register_printf_modifier::
+* register_printf_specifier::
+* register_printf_type::
 @end menu
 
 @include glibc-functions/parse_printf_format.texi
 @include glibc-functions/printf_size.texi
 @include glibc-functions/printf_size_info.texi
 @include glibc-functions/register_printf_function.texi
+@include glibc-functions/register_printf_modifier.texi
+@include glibc-functions/register_printf_specifier.texi
+@include glibc-functions/register_printf_type.texi
 
 @node Glibc pthread.h
 @section Glibc Extensions to @code{<pthread.h>}
 
 @menu
+* pthread_attr_getaffinity_np::
+* pthread_attr_setaffinity_np::
+* pthread_getaffinity_np::
 * pthread_getattr_np::
+* pthread_getname_np::
 * pthread_kill_other_threads_np::
+* pthread_mutex_consistent_np::
+* pthread_mutexattr_getrobust_np::
+* pthread_mutexattr_setrobust_np::
 * pthread_rwlockattr_getkind_np::
 * pthread_rwlockattr_setkind_np::
+* pthread_setaffinity_np::
+* pthread_setname_np::
+* pthread_sigqueue::
+* pthread_timedjoin_np::
+* pthread_tryjoin_np::
 * pthread_yield::
 @end menu
 
+@include glibc-functions/pthread_attr_getaffinity_np.texi
+@include glibc-functions/pthread_attr_setaffinity_np.texi
+@include glibc-functions/pthread_getaffinity_np.texi
 @include glibc-functions/pthread_getattr_np.texi
+@include glibc-functions/pthread_getname_np.texi
 @include glibc-functions/pthread_kill_other_threads_np.texi
+@include glibc-functions/pthread_mutex_consistent_np.texi
+@include glibc-functions/pthread_mutexattr_getrobust_np.texi
+@include glibc-functions/pthread_mutexattr_setrobust_np.texi
 @include glibc-functions/pthread_rwlockattr_getkind_np.texi
 @include glibc-functions/pthread_rwlockattr_setkind_np.texi
+@include glibc-functions/pthread_setaffinity_np.texi
+@include glibc-functions/pthread_setname_np.texi
+@include glibc-functions/pthread_sigqueue.texi
+@include glibc-functions/pthread_timedjoin_np.texi
+@include glibc-functions/pthread_tryjoin_np.texi
 @include glibc-functions/pthread_yield.texi
 
 @node Glibc pty.h
@@ -5726,6 +5803,8 @@ This list of functions is sorted according to the header that declares them.
 * qfcvt::
 * qfcvt_r::
 * qgcvt::
+* qsort_r::
+* quick_exit::
 * random_r::
 * rpmatch::
 * seed48_r::
@@ -5769,6 +5848,8 @@ This list of functions is sorted according to the header that declares them.
 @include glibc-functions/qfcvt.texi
 @include glibc-functions/qfcvt_r.texi
 @include glibc-functions/qgcvt.texi
+@include glibc-functions/qsort_r.texi
+@include glibc-functions/quick_exit.texi
 @include glibc-functions/random_r.texi
 @include glibc-functions/rpmatch.texi
 @include glibc-functions/seed48_r.texi
@@ -6155,8 +6236,16 @@ This list of functions is sorted according to the header that declares them.
 @c @node Glibc sys/types.h
 @c @section Glibc Extensions to @code{<sys/types.h>}
 
-@c @node Glibc sys/uio.h
-@c @section Glibc Extensions to @code{<sys/uio.h>}
+@node Glibc sys/uio.h
+@section Glibc Extensions to @code{<sys/uio.h>}
+
+@menu
+* preadv::
+* pwritev::
+@end menu
+
+@include glibc-functions/preadv.texi
+@include glibc-functions/pwritev.texi
 
 @c @node Glibc sys/un.h
 @c @section Glibc Extensions to @code{<sys/un.h>}
@@ -6340,6 +6429,7 @@ This list of functions is sorted according to the header that declares them.
 * setresgid::
 * setresuid::
 * setusershell::
+* syncfs::
 * syscall::
 * ttyslot::
 * vhangup::
@@ -6373,6 +6463,7 @@ This list of functions is sorted according to the header that declares them.
 @include glibc-functions/setresgid.texi
 @include glibc-functions/setresuid.texi
 @include glibc-functions/setusershell.texi
+@include glibc-functions/syncfs.texi
 @include glibc-functions/syscall.texi
 @include glibc-functions/ttyslot.texi
 @include glibc-functions/vhangup.texi
@@ -6486,6 +6577,8 @@ This list of functions is sorted according to the header that declares them.
 * alloca::
 * alloca-opt::
 * Safe Allocation Macros::
+* Compile-time Assertions::
+* Integer Properties::
 * String Functions in C Locale::
 * Quoting::
 * error and progname::
@@ -6500,6 +6593,7 @@ This list of functions is sorted according to the header that declares them.
 * warnings::
 * manywarnings::
 * Running self-tests under valgrind::
+* stat-size::
 @end menu
 
 @node alloca
@@ -6513,6 +6607,10 @@ This list of functions is sorted according to the header that declares them.
 @include alloca-opt.texi
 
 @include safe-alloc.texi
+
+@include verify.texi
+
+@include intprops.texi
 
 @node String Functions in C Locale
 @section Character and String Functions in C Locale
@@ -6591,6 +6689,9 @@ ASCII characters.
 @include manywarnings.texi
 
 @include valgrind-tests.texi
+
+@include stat-size.texi
+
 
 @node Regular expressions
 @chapter Regular expressions

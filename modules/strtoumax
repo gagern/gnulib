@@ -2,18 +2,23 @@ Description:
 strtoumax() function: convert string to 'uintmax_t'.
 
 Files:
+lib/strtoimax.c
 lib/strtoumax.c
 m4/longlong.m4
 m4/strtoumax.m4
 
 Depends-on:
-strtoimax
-strtoull
-inttypes
-stdint
+inttypes-incomplete
+verify          [test $ac_cv_func_strtoumax = no]
+stdint          [test $ac_cv_func_strtoumax = no]
+strtoull        [test $ac_cv_func_strtoumax = no && test $ac_cv_type_unsigned_long_long_int = yes]
 
 configure.ac:
 gl_FUNC_STRTOUMAX
+if test $ac_cv_func_strtoumax = no; then
+  AC_LIBOBJ([strtoumax])
+  gl_PREREQ_STRTOUMAX
+fi
 gl_INTTYPES_MODULE_INDICATOR([strtoumax])
 
 Makefile.am:
@@ -22,7 +27,7 @@ Include:
 <inttypes.h>
 
 License:
-GPL
+LGPL
 
 Maintainer:
 Paul Eggert

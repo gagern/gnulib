@@ -1,4 +1,4 @@
-# roundl.m4 serial 8
+# roundl.m4 serial 11
 dnl Copyright (C) 2007, 2009-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -31,12 +31,18 @@ AC_DEFUN([gl_FUNC_ROUNDL],
 #include <math.h>
 ]gl_LONG_DOUBLE_MINUS_ZERO_CODE[
 ]gl_LONG_DOUBLE_SIGNBIT_CODE[
-int main()
+static long double dummy (long double f) { return 0; }
+int main (int argc, char *argv[])
 {
+  long double (*my_roundl) (long double) = argc ? roundl : dummy;
+  int result = 0;
   /* Test whether roundl (-0.0L) is -0.0L.  */
-  if (signbitl (minus_zerol) && !signbitl (roundl (minus_zerol)))
-    return 1;
-  return 0;
+  if (signbitl (minus_zerol) && !signbitl (my_roundl (minus_zerol)))
+    result |= 1;
+  /* Test whether roundl (-0.3L) is -0.0L.  */
+  if (signbitl (-0.3L) && !signbitl (my_roundl (-0.3L)))
+    result |= 2;
+  return result;
 }
               ]])],
               [gl_cv_func_roundl_ieee=yes],
@@ -54,7 +60,7 @@ int main()
     HAVE_DECL_ROUNDL=0
   fi
   if test $HAVE_DECL_ROUNDL = 0 || test $REPLACE_ROUNDL = 1; then
-    AC_LIBOBJ([roundl])
+    dnl Find libraries needed to link lib/roundl.c.
     AC_CHECK_DECLS([ceill, floorl], , , [#include <math.h>])
     if test "$ac_cv_have_decl_floorl" = yes \
        && test "$ac_cv_have_decl_ceill" = yes; then

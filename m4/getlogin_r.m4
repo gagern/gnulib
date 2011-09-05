@@ -1,4 +1,4 @@
-#serial 9
+#serial 11
 
 # Copyright (C) 2005-2007, 2009-2011 Free Software Foundation, Inc.
 #
@@ -50,7 +50,11 @@ changequote([,])dnl
 #include <stddef.h>
 #include <unistd.h>
 #if !HAVE_DECL_GETLOGIN_R
-extern int getlogin_r (char *, size_t);
+extern
+# ifdef __cplusplus
+"C"
+# endif
+int getlogin_r (char *, size_t);
 #endif
 int
 main (void)
@@ -75,10 +79,6 @@ main (void)
       *yes) ;;
       *) REPLACE_GETLOGIN_R=1 ;;
     esac
-  fi
-  if test $HAVE_GETLOGIN_R = 0 || test $REPLACE_GETLOGIN_R = 1; then
-    AC_LIBOBJ([getlogin_r])
-    gl_PREREQ_GETLOGIN_R
   fi
 ])
 

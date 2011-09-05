@@ -1,21 +1,20 @@
 Description:
-Parametrizable hash table.
+Parameterizable hash table.
 
 Files:
 lib/hash.c
 lib/hash.h
-m4/hash.m4
 
 Depends-on:
 bitrotate
 stdbool
 stdint
-xalloc
+xalloc-oversized
 
 configure.ac:
-gl_HASH
 
 Makefile.am:
+lib_SOURCES += hash.c
 
 Include:
 "hash.h"

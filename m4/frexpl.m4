@@ -1,4 +1,4 @@
-# frexpl.m4 serial 13
+# frexpl.m4 serial 16
 dnl Copyright (C) 2007-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -50,9 +50,6 @@ AC_DEFUN([gl_FUNC_FREXPL],
         [Define if the frexpl() function is available.])
     fi
   fi
-  if test $HAVE_DECL_FREXPL = 0 || test $gl_func_frexpl = no; then
-    AC_LIBOBJ([frexpl])
-  fi
   AC_SUBST([FREXPL_LIBM])
 ])
 
@@ -79,9 +76,6 @@ AC_DEFUN([gl_FUNC_FREXPL_NO_LIBM],
       AC_DEFINE([HAVE_FREXPL_IN_LIBC], [1],
         [Define if the frexpl() function is available in libc.])
     fi
-  fi
-  if test $HAVE_DECL_FREXPL = 0 || test $gl_func_frexpl_no_libm = no; then
-    AC_LIBOBJ([frexpl])
   fi
 ])
 
@@ -121,7 +115,25 @@ AC_DEFUN([gl_FUNC_FREXPL_WORKS],
 # undef LDBL_MIN_EXP
 # define LDBL_MIN_EXP    (-16381)
 #endif
-extern long double frexpl (long double, int *);
+#if defined __i386__ && defined __FreeBSD__
+# undef LDBL_MIN_EXP
+# define LDBL_MIN_EXP    (-16381)
+#endif
+#if (defined _ARCH_PPC || defined _POWER) && defined _AIX && (LDBL_MANT_DIG == 106) && defined __GNUC__
+# undef LDBL_MIN_EXP
+# define LDBL_MIN_EXP DBL_MIN_EXP
+#endif
+#if defined __sgi && (LDBL_MANT_DIG >= 106)
+# if defined __GNUC__
+#  undef LDBL_MIN_EXP
+#  define LDBL_MIN_EXP DBL_MIN_EXP
+# endif
+#endif
+extern
+#ifdef __cplusplus
+"C"
+#endif
+long double frexpl (long double, int *);
 int main()
 {
   int result = 0;

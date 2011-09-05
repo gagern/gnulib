@@ -1,4 +1,4 @@
-# serial 6
+# serial 8
 
 # Copyright (C) 2009-2011 Free Software Foundation, Inc.
 #
@@ -9,7 +9,6 @@
 AC_DEFUN([gl_FUNC_STAT],
 [
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
-  AC_REQUIRE([gl_AC_DOS])
   AC_REQUIRE([gl_SYS_STAT_H_DEFAULTS])
   AC_CHECK_FUNCS_ONCE([lstat])
   dnl mingw is the only known platform where stat(".") and stat("./") differ
@@ -59,9 +58,11 @@ AC_DEFUN([gl_FUNC_STAT],
       AC_DEFINE([REPLACE_FUNC_STAT_FILE], [1], [Define to 1 if stat needs
         help when passed a file name with a trailing slash]);;
   esac
-  if test $REPLACE_STAT = 1; then
-    AC_LIBOBJ([stat])
-    dnl Prerequisites of lib/stat.c.
-    AC_REQUIRE([AC_C_INLINE])
-  fi
+])
+
+# Prerequisites of lib/stat.c.
+AC_DEFUN([gl_PREREQ_STAT],
+[
+  AC_REQUIRE([AC_C_INLINE])
+  :
 ])

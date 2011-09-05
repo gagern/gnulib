@@ -1604,7 +1604,6 @@ func_all_modules ()
 
   func_begin_table
   func_module stdlib
-  func_module exit
   func_module strtol
   func_module strtoul
   func_module memcmp
@@ -1627,6 +1626,7 @@ func_all_modules ()
   func_module atexit
   func_module strtod
   func_module strerror
+  func_module strerror-override
   func_module mktime
   func_end_table
 
@@ -1736,6 +1736,9 @@ func_all_modules ()
 
   func_begin_table
   func_module count-one-bits
+  func_module ffs
+  func_module ffsl
+  func_module ffsll
   func_module gcd
   func_module minmax
   func_end_table
@@ -1790,6 +1793,7 @@ func_all_modules ()
   func_module strcasestr-simple
   func_module strchrnul
   func_module streq
+  func_module strerror_r-posix
   func_module strnlen
   func_module strnlen1
   func_module strndup
@@ -1835,6 +1839,7 @@ func_all_modules ()
   func_echo "$element"
 
   func_begin_table
+  func_module mktime-internal
   func_module parse-datetime
   func_module timegm
   func_module tzset
@@ -2009,7 +2014,7 @@ func_all_modules ()
   func_module func
   func_module inline
   func_module longlong
-  func_module unused-parameter
+  func_module snippet/unused-parameter
   func_module va-args
   func_module vararrays
   func_end_table
@@ -2303,6 +2308,17 @@ func_all_modules ()
   func_module mbfile
   func_end_table
 
+  element="Support for systems lacking draft ISO C 1X"
+  func_section_wrap c1x_sup
+  func_wrap H2
+  func_echo "$element"
+
+  element="Core language properties"
+  element=`printf "%s" "$element" | sed -e "$sed_lt" -e "$sed_gt"`
+  func_section_wrap c1x_core_properties
+  func_wrap H3
+  func_echo "$element"
+
   element="Support for obsolete systems lacking POSIX:2008"
   func_section_wrap posix_sup_obsolete
   func_wrap H2
@@ -2353,6 +2369,7 @@ func_all_modules ()
   func_module futimens
   func_module getaddrinfo
   func_module getcwd
+  func_module getcwd-lgpl
   func_module getgroups
   func_module gethostname
   func_module getlogin
@@ -2416,6 +2433,7 @@ func_all_modules ()
   func_module posix_spawnp
   func_module pread
   func_module printf-posix
+  func_module pselect
   func_module pthread
   func_module ptsname
   func_module pwrite
@@ -2448,6 +2466,7 @@ func_all_modules ()
   func_module times
   func_module timespec
   func_module nanosleep
+  func_module pthread_sigmask
   func_module regex
   func_module rename
   func_module renameat
@@ -2464,6 +2483,7 @@ func_all_modules ()
   func_module sys_stat
   func_module sys_time
   func_module sys_times
+  func_module sys_uio
   func_module sys_utsname
   func_module sys_wait
   func_module tsearch
@@ -2498,6 +2518,7 @@ func_all_modules ()
   func_module link-follow
   func_module rename-dest-slash
   func_module rmdir-errno
+  func_module timer-time
   func_module unlink-busy
   func_module winsz-ioctl
   func_module winsz-termios
@@ -2583,6 +2604,7 @@ func_all_modules ()
   func_module filenamecat-lgpl
   func_module fts
   func_module isdir
+  func_module largefile
   func_module lchmod
   func_module lchown
   func_module mkancesdirs
@@ -3417,7 +3439,7 @@ func_all_modules ()
 
   func_begin_table
   func_module absolute-header
-  func_module arg-nonnull
+  func_module snippet/arg-nonnull
   func_module config-h
   func_module configmake
   func_module dummy
@@ -3429,7 +3451,7 @@ func_all_modules ()
   func_module lib-ignore
   func_module lib-msvc-compat
   func_module lib-symbol-versions
-  func_module link-warning
+  func_module snippet/link-warning
   func_module manywarnings
   func_module no-c++
   func_module relocatable-lib
@@ -3437,7 +3459,7 @@ func_all_modules ()
   func_module relocatable-prog
   func_module relocatable-prog-wrapper
   func_module relocatable-script
-  func_module warn-on-use
+  func_module snippet/warn-on-use
   func_module warnings
   func_end_table
 
@@ -3474,6 +3496,7 @@ func_all_modules ()
   func_module gnupload
   func_module maintainer-makefile
   func_module mktempd
+  func_module readme-release
   func_module update-copyright
   func_module useless-if-before-free
   func_module vc-list-files

@@ -3,15 +3,18 @@ rmdir() function: delete a directory.
 
 Files:
 lib/rmdir.c
-m4/dos.m4
 m4/rmdir.m4
 
 Depends-on:
-sys_stat
 unistd
+dosname         [test $REPLACE_RMDIR = 1]
+sys_stat        [test $REPLACE_RMDIR = 1]
 
 configure.ac:
 gl_FUNC_RMDIR
+if test $REPLACE_RMDIR = 1; then
+  AC_LIBOBJ([rmdir])
+fi
 gl_UNISTD_MODULE_INDICATOR([rmdir])
 
 Makefile.am:

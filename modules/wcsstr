@@ -8,10 +8,13 @@ m4/wcsstr.m4
 
 Depends-on:
 wchar
-wcschr
+wcschr          [test $HAVE_WCSSTR = 0]
 
 configure.ac:
 gl_FUNC_WCSSTR
+if test $HAVE_WCSSTR = 0; then
+  AC_LIBOBJ([wcsstr])
+fi
 gl_WCHAR_MODULE_INDICATOR([wcsstr])
 
 Makefile.am:

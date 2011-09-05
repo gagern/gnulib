@@ -6,10 +6,10 @@ lib/math.in.h
 m4/math_h.m4
 
 Depends-on:
-arg-nonnull
-c++defs
 include_next
-warn-on-use
+snippet/arg-nonnull
+snippet/c++defs
+snippet/warn-on-use
 
 configure.ac:
 gl_MATH_H
@@ -19,46 +19,48 @@ BUILT_SOURCES += math.h
 
 # We need the following in order to create <math.h> when the system
 # doesn't have one that works with the given compiler.
-math.h: math.in.h $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
+math.h: math.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
 	$(AM_V_GEN)rm -f $@-t $@ && \
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
-	  sed -e 's|@''INCLUDE_NEXT_AS_FIRST_DIRECTIVE''@|$(INCLUDE_NEXT_AS_FIRST_DIRECTIVE)|g' \
+	  sed -e 's|@''GUARD_PREFIX''@|${gl_include_guard_prefix}|g' \
+	      -e 's|@''INCLUDE_NEXT_AS_FIRST_DIRECTIVE''@|$(INCLUDE_NEXT_AS_FIRST_DIRECTIVE)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_AS_FIRST_DIRECTIVE_MATH_H''@|$(NEXT_AS_FIRST_DIRECTIVE_MATH_H)|g' \
-	      -e 's|@''GNULIB_ACOSL''@|$(GNULIB_ACOSL)|g' \
-	      -e 's|@''GNULIB_ASINL''@|$(GNULIB_ASINL)|g' \
-	      -e 's|@''GNULIB_ATANL''@|$(GNULIB_ATANL)|g' \
-	      -e 's|@''GNULIB_CEIL''@|$(GNULIB_CEIL)|g' \
-	      -e 's|@''GNULIB_CEILF''@|$(GNULIB_CEILF)|g' \
-	      -e 's|@''GNULIB_CEILL''@|$(GNULIB_CEILL)|g' \
-	      -e 's|@''GNULIB_COSL''@|$(GNULIB_COSL)|g' \
-	      -e 's|@''GNULIB_EXPL''@|$(GNULIB_EXPL)|g' \
-	      -e 's|@''GNULIB_FLOOR''@|$(GNULIB_FLOOR)|g' \
-	      -e 's|@''GNULIB_FLOORF''@|$(GNULIB_FLOORF)|g' \
-	      -e 's|@''GNULIB_FLOORL''@|$(GNULIB_FLOORL)|g' \
-	      -e 's|@''GNULIB_FREXP''@|$(GNULIB_FREXP)|g' \
-	      -e 's|@''GNULIB_FREXPL''@|$(GNULIB_FREXPL)|g' \
-	      -e 's|@''GNULIB_ISFINITE''@|$(GNULIB_ISFINITE)|g' \
-	      -e 's|@''GNULIB_ISINF''@|$(GNULIB_ISINF)|g' \
-	      -e 's|@''GNULIB_ISNAN''@|$(GNULIB_ISNAN)|g' \
-	      -e 's|@''GNULIB_ISNANF''@|$(GNULIB_ISNANF)|g' \
-	      -e 's|@''GNULIB_ISNAND''@|$(GNULIB_ISNAND)|g' \
-	      -e 's|@''GNULIB_ISNANL''@|$(GNULIB_ISNANL)|g' \
-	      -e 's|@''GNULIB_LDEXPL''@|$(GNULIB_LDEXPL)|g' \
-	      -e 's|@''GNULIB_LOGB''@|$(GNULIB_LOGB)|g' \
-	      -e 's|@''GNULIB_LOGL''@|$(GNULIB_LOGL)|g' \
-	      -e 's|@''GNULIB_ROUND''@|$(GNULIB_ROUND)|g' \
-	      -e 's|@''GNULIB_ROUNDF''@|$(GNULIB_ROUNDF)|g' \
-	      -e 's|@''GNULIB_ROUNDL''@|$(GNULIB_ROUNDL)|g' \
-	      -e 's|@''GNULIB_SIGNBIT''@|$(GNULIB_SIGNBIT)|g' \
-	      -e 's|@''GNULIB_SINL''@|$(GNULIB_SINL)|g' \
-	      -e 's|@''GNULIB_SQRTL''@|$(GNULIB_SQRTL)|g' \
-	      -e 's|@''GNULIB_TANL''@|$(GNULIB_TANL)|g' \
-	      -e 's|@''GNULIB_TRUNC''@|$(GNULIB_TRUNC)|g' \
-	      -e 's|@''GNULIB_TRUNCF''@|$(GNULIB_TRUNCF)|g' \
-	      -e 's|@''GNULIB_TRUNCL''@|$(GNULIB_TRUNCL)|g' \
-	      -e 's|@''HAVE_ACOSL''@|$(HAVE_ACOSL)|g' \
+	      -e 's/@''GNULIB_ACOSL''@/$(GNULIB_ACOSL)/g' \
+	      -e 's/@''GNULIB_ASINL''@/$(GNULIB_ASINL)/g' \
+	      -e 's/@''GNULIB_ATANL''@/$(GNULIB_ATANL)/g' \
+	      -e 's/@''GNULIB_CEIL''@/$(GNULIB_CEIL)/g' \
+	      -e 's/@''GNULIB_CEILF''@/$(GNULIB_CEILF)/g' \
+	      -e 's/@''GNULIB_CEILL''@/$(GNULIB_CEILL)/g' \
+	      -e 's/@''GNULIB_COSL''@/$(GNULIB_COSL)/g' \
+	      -e 's/@''GNULIB_EXPL''@/$(GNULIB_EXPL)/g' \
+	      -e 's/@''GNULIB_FLOOR''@/$(GNULIB_FLOOR)/g' \
+	      -e 's/@''GNULIB_FLOORF''@/$(GNULIB_FLOORF)/g' \
+	      -e 's/@''GNULIB_FLOORL''@/$(GNULIB_FLOORL)/g' \
+	      -e 's/@''GNULIB_FREXP''@/$(GNULIB_FREXP)/g' \
+	      -e 's/@''GNULIB_FREXPL''@/$(GNULIB_FREXPL)/g' \
+	      -e 's/@''GNULIB_ISFINITE''@/$(GNULIB_ISFINITE)/g' \
+	      -e 's/@''GNULIB_ISINF''@/$(GNULIB_ISINF)/g' \
+	      -e 's/@''GNULIB_ISNAN''@/$(GNULIB_ISNAN)/g' \
+	      -e 's/@''GNULIB_ISNANF''@/$(GNULIB_ISNANF)/g' \
+	      -e 's/@''GNULIB_ISNAND''@/$(GNULIB_ISNAND)/g' \
+	      -e 's/@''GNULIB_ISNANL''@/$(GNULIB_ISNANL)/g' \
+	      -e 's/@''GNULIB_LDEXPL''@/$(GNULIB_LDEXPL)/g' \
+	      -e 's/@''GNULIB_LOGB''@/$(GNULIB_LOGB)/g' \
+	      -e 's/@''GNULIB_LOGL''@/$(GNULIB_LOGL)/g' \
+	      -e 's/@''GNULIB_ROUND''@/$(GNULIB_ROUND)/g' \
+	      -e 's/@''GNULIB_ROUNDF''@/$(GNULIB_ROUNDF)/g' \
+	      -e 's/@''GNULIB_ROUNDL''@/$(GNULIB_ROUNDL)/g' \
+	      -e 's/@''GNULIB_SIGNBIT''@/$(GNULIB_SIGNBIT)/g' \
+	      -e 's/@''GNULIB_SINL''@/$(GNULIB_SINL)/g' \
+	      -e 's/@''GNULIB_SQRTL''@/$(GNULIB_SQRTL)/g' \
+	      -e 's/@''GNULIB_TANL''@/$(GNULIB_TANL)/g' \
+	      -e 's/@''GNULIB_TRUNC''@/$(GNULIB_TRUNC)/g' \
+	      -e 's/@''GNULIB_TRUNCF''@/$(GNULIB_TRUNCF)/g' \
+	      -e 's/@''GNULIB_TRUNCL''@/$(GNULIB_TRUNCL)/g' \
+	      < $(srcdir)/math.in.h | \
+	  sed -e 's|@''HAVE_ACOSL''@|$(HAVE_ACOSL)|g' \
 	      -e 's|@''HAVE_ASINL''@|$(HAVE_ASINL)|g' \
 	      -e 's|@''HAVE_ATANL''@|$(HAVE_ATANL)|g' \
 	      -e 's|@''HAVE_COSL''@|$(HAVE_COSL)|g' \
@@ -92,7 +94,8 @@ math.h: math.in.h $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
 	      -e 's|@''HAVE_DECL_TRUNC''@|$(HAVE_DECL_TRUNC)|g' \
 	      -e 's|@''HAVE_DECL_TRUNCF''@|$(HAVE_DECL_TRUNCF)|g' \
 	      -e 's|@''HAVE_DECL_TRUNCL''@|$(HAVE_DECL_TRUNCL)|g' \
-	      -e 's|@''REPLACE_CEIL''@|$(REPLACE_CEIL)|g' \
+	  | \
+	  sed -e 's|@''REPLACE_CEIL''@|$(REPLACE_CEIL)|g' \
 	      -e 's|@''REPLACE_CEILF''@|$(REPLACE_CEILF)|g' \
 	      -e 's|@''REPLACE_CEILL''@|$(REPLACE_CEILL)|g' \
 	      -e 's|@''REPLACE_FLOOR''@|$(REPLACE_FLOOR)|g' \
@@ -116,8 +119,7 @@ math.h: math.in.h $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
 	      -e 's|@''REPLACE_TRUNCL''@|$(REPLACE_TRUNCL)|g' \
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
-	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/math.in.h; \
+	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)'; \
 	} > $@-t && \
 	mv $@-t $@
 MOSTLYCLEANFILES += math.h math.h-t

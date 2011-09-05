@@ -16,9 +16,10 @@ tests/signature.h
 tests/macros.h
 
 Depends-on:
+getcwd-lgpl
 ignore-value
 mgetgroups
-pathmax
+progname
 usleep
 stat-time
 symlink

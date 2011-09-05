@@ -67,6 +67,7 @@
 
 # include <stddef.h>
 # include <sys/types.h>
+# include <dirent.h>
 # include <sys/stat.h>
 # include "i-ring.h"
 
@@ -142,7 +143,9 @@ typedef struct {
      dirent.d_type data.  */
 # define FTS_DEFER_STAT         0x0400
 
-# define FTS_OPTIONMASK 0x07ff          /* valid user option mask */
+# define FTS_NOATIME    0x0800          /* use O_NOATIME during traversal */
+
+# define FTS_OPTIONMASK 0x0fff          /* valid user option mask */
 
 # define FTS_NAMEONLY   0x1000          /* (private) child names only */
 # define FTS_STOP       0x2000          /* (private) unrecoverable error */
@@ -189,6 +192,9 @@ typedef struct _ftsent {
         struct _ftsent *fts_cycle;      /* cycle node */
         struct _ftsent *fts_parent;     /* parent directory */
         struct _ftsent *fts_link;       /* next file in directory */
+        DIR *fts_dirp;                  /* Dir pointer for any directory
+                                           containing more entries than we
+                                           read at one time.  */
         long fts_number;                /* local numeric value */
         void *fts_pointer;              /* local address value */
         char *fts_accpath;              /* access file name */

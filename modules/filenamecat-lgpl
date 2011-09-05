@@ -13,12 +13,13 @@ configure.ac:
 gl_FILE_NAME_CONCAT_LGPL
 
 Makefile.am:
+lib_SOURCES += filenamecat-lgpl.c
 
 Include:
 "filenamecat.h"
 
 License:
-GPL
+LGPLv2+
 
 Maintainer:
 Jim Meyering

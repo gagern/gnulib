@@ -91,6 +91,11 @@ fpurge (FILE *fp)
   fp->_wcount = 0;
   fp->_ungetc_count = 0;
   return 0;
+# elif defined __minix              /* Minix */
+  fp->_ptr = fp->_buf;
+  if (fp->_ptr != NULL)
+    fp->_count = 0;
+  return 0;
 # elif defined _IOERR               /* AIX, HP-UX, IRIX, OSF/1, Solaris, OpenServer, mingw, NonStop Kernel */
   fp->_ptr = fp->_base;
   if (fp->_ptr != NULL)
@@ -130,7 +135,7 @@ fpurge (FILE *fp)
   fp->__put_limit = fp->__buffer;
   return 0;
 # else
- #error "Please port gnulib fpurge.c to your platform! Look at the definitions of fflush, setvbuf and ungetc on your system, then report this to bug-gnulib."
+#  error "Please port gnulib fpurge.c to your platform! Look at the definitions of fflush, setvbuf and ungetc on your system, then report this to bug-gnulib."
 # endif
 
 #endif

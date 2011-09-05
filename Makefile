@@ -1,9 +1,15 @@
-# Makefile for gnulib central.
+# GNU Makefile for gnulib central.
 # Copyright (C) 2006, 2009-2011 Free Software Foundation, Inc.
 #
 # Copying and distribution of this file, with or without modification,
 # in any medium, are permitted without royalty provided the copyright
 # notice and this notice are preserved.
+
+# This Makefile requires the use of GNU make.  Some targets require
+# that you have tools like git, makeinfo and cppi installed.
+
+# Required for the use of <(...) below.
+SHELL=/bin/bash
 
 # Produce some files that are not stored in the repository.
 all:
@@ -12,11 +18,12 @@ all:
 info html dvi pdf:
 	cd doc && $(MAKE) $@ && $(MAKE) mostlyclean
 
+# Collect the names of rules starting with `sc_'.
+syntax-check-rules := $(sort $(shell sed -n 's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p'\
+			Makefile))
+
 # Perform some platform independent checks on the gnulib code.
-check: \
-  sc_prohibit_augmenting_PATH_via_TESTS_ENVIRONMENT			\
-  sc_pragma_columns							\
-  sc_prefer_ac_check_funcs_once
+check: $(syntax-check-rules)
 
 sc_prefer_ac_check_funcs_once:
 	if test -d .git; then						\
@@ -25,12 +32,57 @@ sc_prefer_ac_check_funcs_once:
 		   in modules/ 1>&2; exit 1; } || :			\
 	else :; fi
 
+sc_prohibit_leading_TABs:
+	if test -d .git; then						\
+	  git grep -l '^ *	' lib m4 tests				\
+            | grep -Ev '^lib/reg|Makefile|test-update-copyright'	\
+            | grep .							\
+	    && { printf '*** %s\n' 'indent with spaces, not TABs;'	\
+		 1>&2; exit 1; } || :					\
+	else :; fi
+
 sc_prohibit_augmenting_PATH_via_TESTS_ENVIRONMENT:
 	if test -d .git; then						\
 	  url=http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/22874;	\
 	  git grep '^[	 ]*TESTS_ENVIRONMENT += PATH=' modules		\
 	    && { printf '%s\n' 'Do not augment PATH via TESTS_ENVIRONMENT;' \
 		 "  see <$$url>" 1>&2; exit 1; } || :			\
+	else :; fi
+
+# Files in m4/ that (exceptionally) may use AC_LIBOBJ.
+# Do not include their ".m4" suffix.
+allow_AC_LIBOBJ =	\
+  close			\
+  dprintf		\
+  dup2			\
+  faccessat		\
+  fchdir		\
+  fclose		\
+  fcntl			\
+  fprintf-posix		\
+  open			\
+  printf-posix-rpl	\
+  snprintf		\
+  sprintf-posix		\
+  stdio_h		\
+  vasnprintf		\
+  vasprintf		\
+  vdprintf		\
+  vfprintf-posix	\
+  vprintf-posix		\
+  vsnprintf		\
+  vsprintf-posix
+
+allow_AC_LIBOBJ_or := $(shell echo $(allow_AC_LIBOBJ) | tr -s ' ' '|')
+
+sc_prohibit_AC_LIBOBJ_in_m4:
+	url=http://article.gmane.org/gmane.comp.lib.gnulib.bugs/26995;	\
+	if test -d .git; then						\
+	  git ls-files m4						\
+	     | grep -Ev '^m4/($(allow_AC_LIBOBJ_or))\.m4$$'		\
+	     | xargs grep '^ *AC_LIBOBJ('				\
+	    && { printf '%s\n' 'Do not use AC_LIBOBJ in m4/*.m4;'	\
+		 "see <$$url>"; exit 1; } || :;				\
 	else :; fi
 
 sc_pragma_columns:
@@ -44,6 +96,26 @@ sc_pragma_columns:
 		   'without also using @PRAGMA_COLUMNS@' 1>&2;		\
 		 exit 1; } || :;					\
 	else :; fi
+
+# Verify that certain (for now, only Jim Meyering and Eric Blake's)
+# *.c files are consistently cpp indented.
+sc_cpp_indent_check:
+	./gnulib-tool --extract-filelist \
+            $$(cd ./modules; grep -ilrE '(meyering|blake)' .) \
+          | sort -u \
+          | grep '\.c$$' \
+          | grep -vE '/(stdio-(read|write)|getloadavg)\.c$$' \
+          | xargs cppi -c
+
+# Ensure that the list of symbols checked for by the
+# sc_prohibit_intprops_without_use rule match those in the actual file.
+# Extract the symbols from the .h file and compare with the list of
+# symbols extracted from the rule in maint.mk.
+sc_check_sym_list:
+	i=lib/intprops.h; \
+	diff -u <(perl -lne '/^# *define ([A-Z]\w+)\(/ and print $$1' $$i|fmt) \
+	  <(sed -n /^_intprops_name/,/^_intprops_syms_re/p top/maint.mk \
+            |sed '/^_/d;s/^  //;s/	*\\$$//')
 
 # Regenerate some files that are stored in the repository.
 regen: MODULES.html

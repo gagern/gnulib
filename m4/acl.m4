@@ -1,5 +1,5 @@
 # acl.m4 - check for access control list (ACL) primitives
-# serial 12
+# serial 13
 
 # Copyright (C) 2002, 2004-2011 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
@@ -33,7 +33,7 @@ AC_DEFUN([gl_FUNC_ACL],
            AC_CHECK_FUNCS(
              [acl_get_file acl_get_fd acl_set_file acl_set_fd \
               acl_free acl_from_mode acl_from_text \
-              acl_delete_def_file acl_extended_file \
+              acl_delete_def_file acl_extended_file acl_extended_file_nofollow \
               acl_delete_fd_np acl_delete_file_np \
               acl_copy_ext_native acl_create_entry_np \
               acl_to_short_text acl_free_text])
@@ -94,6 +94,8 @@ int type = ACL_TYPE_EXTENDED;]])],
         if test $ac_cv_func_getacl = yes; then
           use_acl=1
         fi
+        dnl Test for HP-UX 11.11 API.
+        AC_CHECK_HEADERS([aclv.h], [], [], [#include <sys/types.h>])
       fi
 
       dnl Test for AIX API (AIX 5.3 or newer).

@@ -6,12 +6,17 @@ lib/mkstemp.c
 m4/mkstemp.m4
 
 Depends-on:
-extensions
 stdlib
-tempname
+extensions
+largefile
+tempname        [test $HAVE_MKSTEMP = 0 || test $REPLACE_MKSTEMP = 1]
 
 configure.ac:
 gl_FUNC_MKSTEMP
+if test $HAVE_MKSTEMP = 0 || test $REPLACE_MKSTEMP = 1; then
+  AC_LIBOBJ([mkstemp])
+  gl_PREREQ_MKSTEMP
+fi
 gl_STDLIB_MODULE_INDICATOR([mkstemp])
 
 Makefile.am:

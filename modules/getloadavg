@@ -6,22 +6,26 @@ lib/getloadavg.c
 m4/getloadavg.m4
 
 Depends-on:
-c-strtod
-cloexec
 extensions
-fcntl-safer
 intprops
 stdbool
 stdlib
 
 configure.ac:
-gl_GETLOADAVG([$gl_source_base])
+gl_GETLOADAVG
+if test $HAVE_GETLOADAVG = 0; then
+  AC_LIBOBJ([getloadavg])
+  gl_PREREQ_GETLOADAVG
+fi
 gl_STDLIB_MODULE_INDICATOR([getloadavg])
 
 Makefile.am:
 
 Include:
 <stdlib.h>
+
+Link:
+$(GETLOADAVG_LIBS)
 
 License:
 GPL

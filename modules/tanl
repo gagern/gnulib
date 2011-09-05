@@ -10,13 +10,17 @@ m4/tanl.m4
 Depends-on:
 math
 extensions
-float
-isnanl
-floor
-floorl
+float           [test $HAVE_TANL = 0]
+isnanl          [test $HAVE_TANL = 0]
+floor           [test $HAVE_TANL = 0]
+floorl          [test $HAVE_TANL = 0]
 
 configure.ac:
 gl_FUNC_TANL
+if test $HAVE_TANL = 0; then
+  AC_LIBOBJ([tanl])
+  AC_LIBOBJ([trigl])
+fi
 gl_MATH_MODULE_INDICATOR([tanl])
 
 Makefile.am:
@@ -28,7 +32,7 @@ Link:
 $(TANL_LIBM)
 
 License:
-GPL
+LGPL
 
 Maintainer:
 Paolo Bonzini

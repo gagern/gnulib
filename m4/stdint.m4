@@ -1,4 +1,4 @@
-# stdint.m4 serial 37
+# stdint.m4 serial 41
 dnl Copyright (C) 2001-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -7,7 +7,7 @@ dnl with or without modifications, as long as this notice is preserved.
 dnl From Paul Eggert and Bruno Haible.
 dnl Test whether <stdint.h> is supported or must be substituted.
 
-AC_DEFUN([gl_STDINT_H],
+AC_DEFUN_ONCE([gl_STDINT_H],
 [
   AC_PREREQ([2.59])dnl
 
@@ -26,6 +26,15 @@ AC_DEFUN([gl_STDINT_H],
     HAVE_UNSIGNED_LONG_LONG_INT=0
   fi
   AC_SUBST([HAVE_UNSIGNED_LONG_LONG_INT])
+
+  dnl Check for <wchar.h>, in the same way as gl_WCHAR_H does.
+  AC_CHECK_HEADERS_ONCE([wchar.h])
+  if test $ac_cv_header_wchar_h = yes; then
+    HAVE_WCHAR_H=1
+  else
+    HAVE_WCHAR_H=0
+  fi
+  AC_SUBST([HAVE_WCHAR_H])
 
   dnl Check for <inttypes.h>.
   dnl AC_INCLUDES_DEFAULT defines $ac_cv_header_inttypes_h.
@@ -292,14 +301,11 @@ static const char *macro_values[] =
     fi
     AC_SUBST([HAVE_SYS_BITYPES_H])
 
-    dnl Check for <wchar.h> (missing in Linux uClibc when built without wide
-    dnl character support).
-    AC_CHECK_HEADERS_ONCE([wchar.h])
-
     gl_STDINT_TYPE_PROPERTIES
     STDINT_H=stdint.h
   fi
   AC_SUBST([STDINT_H])
+  AM_CONDITIONAL([GL_GENERATE_STDINT_H], [test -n "$STDINT_H"])
 ])
 
 dnl gl_STDINT_BITSIZEOF(TYPES, INCLUDES)

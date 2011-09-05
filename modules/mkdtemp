@@ -6,12 +6,16 @@ lib/mkdtemp.c
 m4/mkdtemp.m4
 
 Depends-on:
-stdint
 stdlib
-tempname
+stdint          [test $HAVE_MKDTEMP = 0]
+tempname        [test $HAVE_MKDTEMP = 0]
 
 configure.ac:
-gt_FUNC_MKDTEMP
+gl_FUNC_MKDTEMP
+if test $HAVE_MKDTEMP = 0; then
+  AC_LIBOBJ([mkdtemp])
+  gl_PREREQ_MKDTEMP
+fi
 gl_STDLIB_MODULE_INDICATOR([mkdtemp])
 
 Makefile.am:

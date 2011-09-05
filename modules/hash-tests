@@ -5,13 +5,10 @@ tests/macros.h
 Depends-on:
 hash-pjw
 inttostr
-progname
 stdbool
-xalloc
 
 configure.ac:
 
 Makefile.am:
 TESTS += test-hash
 check_PROGRAMS += test-hash
-test_hash_LDADD = $(LDADD) @LIBINTL@

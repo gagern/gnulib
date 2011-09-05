@@ -6,17 +6,20 @@ lib/rename.c
 m4/rename.m4
 
 Depends-on:
-canonicalize-lgpl
-dirname-lgpl
-lstat
-rmdir
-same-inode
-stdbool
 stdio
-strdup
+canonicalize-lgpl [test $REPLACE_RENAME = 1]
+dirname-lgpl      [test $REPLACE_RENAME = 1]
+lstat             [test $REPLACE_RENAME = 1]
+rmdir             [test $REPLACE_RENAME = 1]
+same-inode        [test $REPLACE_RENAME = 1]
+stdbool           [test $REPLACE_RENAME = 1]
+strdup            [test $REPLACE_RENAME = 1]
 
 configure.ac:
 gl_FUNC_RENAME
+if test $REPLACE_RENAME = 1; then
+  AC_LIBOBJ([rename])
+fi
 gl_STDIO_MODULE_INDICATOR([rename])
 
 Makefile.am:

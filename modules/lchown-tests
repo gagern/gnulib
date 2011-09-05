@@ -8,7 +8,6 @@ tests/macros.h
 Depends-on:
 ignore-value
 mgetgroups
-progname
 usleep
 stat-time
 stdbool
@@ -20,4 +19,3 @@ AC_CHECK_FUNCS_ONCE([getegid])
 Makefile.am:
 TESTS += test-lchown
 check_PROGRAMS += test-lchown
-test_lchown_LDADD = $(LDADD) @LIBINTL@

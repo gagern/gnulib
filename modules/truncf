@@ -9,10 +9,13 @@ m4/truncf.m4
 Depends-on:
 math
 extensions
-float
+float           [test $HAVE_DECL_TRUNCF = 0 || test $REPLACE_TRUNCF = 1]
 
 configure.ac:
 gl_FUNC_TRUNCF
+if test $HAVE_DECL_TRUNCF = 0 || test $REPLACE_TRUNCF = 1; then
+  AC_LIBOBJ([truncf])
+fi
 gl_MATH_MODULE_INDICATOR([truncf])
 
 Makefile.am:

@@ -10,11 +10,15 @@ Portability problems fixed by either Gnulib module @code{ceilf} or @code{ceilf-i
 @itemize
 @item
 This function is missing on some platforms:
-AIX 5.1, HP-UX 11, Solaris 9.
+Minix 3.1.8, AIX 5.1, HP-UX 11, Solaris 9.
 @end itemize
 
 Portability problems fixed by Gnulib module @code{ceilf-ieee}:
 @itemize
+@item
+This function returns a positive zero for an argument between -1 and 0
+on some platforms:
+MacOS X 10.5, AIX 7.1, OSF/1 5.1.
 @item
 This function returns a positive zero for a minus zero argument
 on some platforms:

@@ -1,4 +1,4 @@
-#serial 3
+#serial 5
 
 # Copyright (C) 2006-2007, 2009-2011 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
@@ -9,9 +9,6 @@
 # it as a public API, and provide it on systems that are lacking.
 AC_DEFUN([gl_FUNC_GEN_TEMPNAME],
 [
-  AC_REQUIRE([AC_SYS_LARGEFILE])
-
-  AC_LIBOBJ([tempname])
   gl_PREREQ_TEMPNAME
 ])
 

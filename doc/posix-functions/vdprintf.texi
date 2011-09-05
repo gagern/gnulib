@@ -10,7 +10,7 @@ Portability problems fixed by either Gnulib module @code{vdprintf} or @code{vdpr
 @itemize
 @item
 This function is missing on some platforms:
-MacOS X 10.5, FreeBSD 6.0, NetBSD 5.0, OpenBSD 3.8, AIX 5.1, HP-UX 11,
+MacOS X 10.5, FreeBSD 6.0, NetBSD 5.0, OpenBSD 3.8, Minix 3.1.8, AIX 5.1, HP-UX 11,
 IRIX 6.5, OSF/1 5.1, Solaris 11 2010-11, Cygwin 1.5.x, mingw, Interix 3.5.
 @end itemize
 
@@ -37,9 +37,13 @@ BeOS.
 @item
 This function does not support precisions larger than 512 or 1024 in integer,
 floating-point and pointer output on some platforms:
-BeOS.
+AIX 7.1, BeOS.
 @end itemize
 
 Portability problems not fixed by Gnulib:
 @itemize
+@item
+On some platforms, this function does not set @code{errno} or the
+stream error indicator on attempts to write to a read-only stream:
+Cygwin 1.7.9.
 @end itemize

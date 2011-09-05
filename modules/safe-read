@@ -7,12 +7,14 @@ lib/safe-read.c
 m4/safe-read.m4
 
 Depends-on:
+read
 ssize_t
 
 configure.ac:
-gl_SAFE_READ
+gl_PREREQ_SAFE_READ
 
 Makefile.am:
+lib_SOURCES += safe-read.c
 
 Include:
 "safe-read.h"

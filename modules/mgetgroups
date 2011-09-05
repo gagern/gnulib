@@ -10,12 +10,13 @@ Depends-on:
 getgroups
 getugroups
 realloc-gnu
-xalloc
+xalloc-oversized
 
 configure.ac:
 gl_MGETGROUPS
 
 Makefile.am:
+lib_SOURCES += mgetgroups.c
 
 Include:
 "mgetgroups.h"

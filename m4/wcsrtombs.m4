@@ -1,4 +1,4 @@
-# wcsrtombs.m4 serial 7
+# wcsrtombs.m4 serial 11
 dnl Copyright (C) 2008-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -14,6 +14,22 @@ AC_DEFUN([gl_FUNC_WCSRTOMBS],
   AC_CHECK_FUNCS_ONCE([wcsrtombs])
   if test $ac_cv_func_wcsrtombs = no; then
     HAVE_WCSRTOMBS=0
+    AC_CHECK_DECLS([wcsrtombs],,, [[
+/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.  */
+#include <stddef.h>
+#include <stdio.h>
+#include <time.h>
+#include <wchar.h>
+]])
+    if test $ac_cv_have_decl_wcsrtombs = yes; then
+      dnl On Minix 3.1.8, the system's <wchar.h> declares wcsrtombs() although
+      dnl it does not have the function. Avoid a collision with gnulib's
+      dnl replacement.
+      REPLACE_WCSRTOMBS=1
+    fi
   else
     if test $REPLACE_MBSTATE_T = 1; then
       REPLACE_WCSRTOMBS=1
@@ -33,12 +49,6 @@ AC_DEFUN([gl_FUNC_WCSRTOMBS],
            REPLACE_WCSRTOMBS=1 ;;
       esac
     fi
-  fi
-  if test $HAVE_WCSRTOMBS = 0 || test $REPLACE_WCSRTOMBS = 1; then
-    gl_REPLACE_WCHAR_H
-    AC_LIBOBJ([wcsrtombs])
-    AC_LIBOBJ([wcsrtombs-state])
-    gl_PREREQ_WCSRTOMBS
   fi
 ])
 
@@ -123,10 +133,10 @@ AC_DEFUN([gl_WCSRTOMBS_NULL],
       dnl is present.
 changequote(,)dnl
       case "$host_os" in
-                      # Guess no on HP-UX and OSF/1.
-        hpux* | osf*) gl_cv_func_wcsrtombs_null="guessing no" ;;
-                      # Guess yes otherwise.
-        *)            gl_cv_func_wcsrtombs_null="guessing yes" ;;
+                               # Guess no on HP-UX, OSF/1, mingw.
+        hpux* | osf* | mingw*) gl_cv_func_wcsrtombs_null="guessing no" ;;
+                               # Guess yes otherwise.
+        *)                     gl_cv_func_wcsrtombs_null="guessing yes" ;;
       esac
 changequote([,])dnl
       if test $LOCALE_FR != none; then
@@ -144,6 +154,7 @@ changequote([,])dnl
 #include <wchar.h>
 int main ()
 {
+  int result = 0;
   if (setlocale (LC_ALL, "$LOCALE_FR") != NULL)
     {
       const char original[] = "B\374\337er";
@@ -152,12 +163,14 @@ int main ()
       if (mbstowcs (input, original, 10) == 5)
         {
           const wchar_t *src = input;
-          wcsrtombs (NULL, &src, 10, NULL);
+          size_t ret = wcsrtombs (NULL, &src, 3, NULL);
+          if (ret != 5)
+            result |= 1;
           if (src != input)
-            return 1;
+            result |= 2;
         }
     }
-  return 0;
+  return result;
 }]])],
           [gl_cv_func_wcsrtombs_null=yes],
           [gl_cv_func_wcsrtombs_null=no],

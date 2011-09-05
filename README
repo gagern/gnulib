@@ -77,6 +77,7 @@ changes.
 
 Contributing to Gnulib
 ======================
+
 All software here is copyrighted by the Free Software Foundation - you need
 to have filled out an assignment form for a project that uses the
 module for that contribution to be accepted here.
@@ -201,7 +202,8 @@ Portability guidelines
 ----------------------
 
 Gnulib code is intended to be portable to a wide variety of platforms,
-not just GNU platforms.
+not just GNU platforms.  See the documentation section "Target Platforms"
+for details.
 
 Many Gnulib modules exist so that applications need not worry about
 undesirable variability in implementations.  For example, an
@@ -210,27 +212,17 @@ application that uses the 'malloc' module need not worry about (malloc
 need not worry about localtime_r returning int (not char *) on some
 platforms that predate POSIX 1003.1-2001.
 
-Originally much of the Gnulib code was portable to ancient hosts like
-4.2BSD, but it is a maintenance hassle to maintain compatibility with
-unused hosts, so currently we assume at least a freestanding C89
-compiler, possibly operating with a C library that predates C89.  The
-oldest environment currently ported to is probably SunOS 4 + GCC 1.x,
-though we haven't tested this exact combination.  SunOS 4 last shipped
-on 1998-09-30, and Sun dropped support for it on 2003-10-01, so at
-some point we may start assuming a C89 library as well.
+Currently we assume at least a freestanding C89 compiler, possibly
+operating with a C library that predates C89.  The oldest environments
+currently ported to are probably HP-UX 10.20 and IRIX 5.3, though we
+are not testing these platforms very often.
 
 Because we assume a freestanding C89 compiler, Gnulib code can include
 <float.h>, <limits.h>, <stdarg.h>, and <stddef.h> unconditionally.  It
 can also assume the existence of <ctime.h>, <errno.h>, <fcntl.h>,
-<locale.h>, <signal.h>, <stdio.h>, <stdlib.h>, <string.h>, and
-<time.h>.  Some of these headers, such as <errno.h>, were present in
-Unix Version 7 and are thus widely available.  <string.h> and
-<stdlib.h> were not in Unix Version 7, so they weren't universally
-available on ancient hosts, but they are both in SunOS 4 (the oldest
-platform still in relatively-common use) so Gnulib assumes them now.
-Similarly, many modules include <sys/types.h> even though it's not
-even in C99; that's OK since <sys/types.h> has been around nearly
-forever.
+<locale.h>, <signal.h>, <stdio.h>, <stdlib.h>, <string.h>, and <time.h>.
+Similarly, many modules include <sys/types.h> even though it's not even
+in C99; that's OK since <sys/types.h> has been around nearly forever.
 
 Even if the include files exist, they may not conform to C89.
 However, GCC has a "fixincludes" script that attempts to fix most
@@ -239,10 +231,10 @@ largely conform to C89 or better.  People still using ancient hosts
 should use fixincludes or fix their include files manually.
 
 Even if the include files conform to C89, the library itself may not.
-For example, SunOS 4's (free (NULL)) can dump core, so Gnulib code
-must avoid freeing a null pointer, even though C89 allows it.
+For example, strtod and mktime have some bugs on some platforms.
 You can work around some of these problems by requiring the relevant
-modules, e.g., the Gnulib 'free' module supplies a conforming 'free'.
+modules, e.g., the Gnulib 'mktime' module supplies a working and
+conforming 'mktime'.
 
 The GNU coding standards allow one departure from strict C99: Gnulib
 code can assume that standard internal types like size_t are no wider
@@ -250,30 +242,18 @@ than 'long'.  POSIX 1003.1-2001 and the GNU coding standards both
 require 'int' to be at least 32 bits wide, so Gnulib code assumes this
 as well.  Gnulib code makes the following additional assumptions:
 
- * With one exception noted below, signed integer arithmetic is two's
-   complement, without runtime overflow checking.  This is the
-   traditional behavior, and is supported by C99 implementations that
-   conform to ISO/IEC 10967-1 (LIA-1) and that define signed integer
-   types as being modulo.
+ * Signed integer arithmetic is two's complement.
 
-   The exception is signed loop indexes.  Here, the behavior is
-   undefined if any signed expression derived from the loop index
-   overflows.  For example, the following code contains two such
-   overflows (the "i++" and the "i + 1") and therefore has undefined
-   behavior:
+   Previously, gnulib code sometimes assumed that signed integer
+   arithmetic wraps around, but modern compiler optimizations
+   sometimes do not guarantee this, and gnulib code with this
+   assumption is now considered to be questionable.  For more, please
+   see the file doc/intprops.texi.
 
-     int i;
-     for (i = INT_MAX - 10; i <= INT_MAX; i++)
-       if (i + 1 < 0)
-	 {
-	   report_overflow ();
-	   break;
-	 }
-
-   This exception is a concession to modern optimizing compilers,
-   which can turn the above loop into code that executes the loop body
-   11 times, even though wraparound arithmetic would cause the loop to
-   iterate forever.
+   Some gnulib modules contain explicit support for the other signed
+   integer representations allowed by C99 (ones' complement and signed
+   magnitude), but these modules are the exception rather than the rule.
+   All practical gnulib targets use two's complement.
 
  * There are no "holes" in integer values: all the bits of an integer
    contribute to its value in the usual way.

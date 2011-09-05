@@ -45,7 +45,7 @@ enum { BILLION = 1000 * 1000 * 1000 };
 int
 nanosleep (const struct timespec *requested_delay,
            struct timespec *remaining_delay)
-#undef nanosleep
+# undef nanosleep
 {
   /* nanosleep mishandles large sleeps due to internal overflow problems.
      The worst known case of this is Linux 2.6.9 with glibc 2.3.4, which
@@ -65,7 +65,7 @@ nanosleep (const struct timespec *requested_delay,
     const time_t limit = 24 * 24 * 60 * 60;
     time_t seconds = requested_delay->tv_sec;
     struct timespec intermediate;
-    intermediate.tv_nsec = 0;
+    intermediate.tv_nsec = requested_delay->tv_nsec;
 
     while (limit < seconds)
       {
@@ -76,20 +76,12 @@ nanosleep (const struct timespec *requested_delay,
         if (result)
           {
             if (remaining_delay)
-              {
-                remaining_delay->tv_sec += seconds;
-                remaining_delay->tv_nsec += requested_delay->tv_nsec;
-                if (BILLION <= requested_delay->tv_nsec)
-                  {
-                    remaining_delay->tv_sec++;
-                    remaining_delay->tv_nsec -= BILLION;
-                  }
-              }
+              remaining_delay->tv_sec += seconds;
             return result;
           }
+        intermediate.tv_nsec = 0;
       }
     intermediate.tv_sec = seconds;
-    intermediate.tv_nsec = requested_delay->tv_nsec;
     return nanosleep (&intermediate, remaining_delay);
   }
 }
@@ -218,12 +210,11 @@ my_usleep (const struct timespec *ts_delay)
   tv_delay.tv_usec = (ts_delay->tv_nsec + 999) / 1000;
   if (tv_delay.tv_usec == 1000000)
     {
-      time_t t1 = tv_delay.tv_sec + 1;
-      if (t1 < tv_delay.tv_sec)
+      if (tv_delay.tv_sec == TYPE_MAXIMUM (time_t))
         tv_delay.tv_usec = 1000000 - 1; /* close enough */
       else
         {
-          tv_delay.tv_sec = t1;
+          tv_delay.tv_sec++;
           tv_delay.tv_usec = 0;
         }
     }

@@ -26,7 +26,7 @@
  * wctrans_t, and wctype_t are not yet implemented.
  */
 
-#ifndef _GL_WCTYPE_H
+#ifndef _@GUARD_PREFIX@_WCTYPE_H
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
@@ -52,12 +52,25 @@
 # @INCLUDE_NEXT@ @NEXT_WCTYPE_H@
 #endif
 
-#ifndef _GL_WCTYPE_H
-#define _GL_WCTYPE_H
+#ifndef _@GUARD_PREFIX@_WCTYPE_H
+#define _@GUARD_PREFIX@_WCTYPE_H
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
 /* The definition of _GL_WARN_ON_USE is copied here.  */
+
+/* Solaris 2.6 <wctype.h> includes <widec.h> which includes <euc.h> which
+   #defines a number of identifiers in the application namespace.  Revert
+   these #defines.  */
+#ifdef __sun
+# undef multibyte
+# undef eucw1
+# undef eucw2
+# undef eucw3
+# undef scrw1
+# undef scrw2
+# undef scrw3
+#endif
 
 /* Define wint_t and WEOF.  (Also done in wchar.in.h.)  */
 #if !@HAVE_WINT_T@ && !defined wint_t
@@ -115,6 +128,10 @@
 #    define iswspace rpl_iswspace
 #    define iswupper rpl_iswupper
 #    define iswxdigit rpl_iswxdigit
+#   endif
+#  endif
+#  if @REPLACE_TOWLOWER@
+#   if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #    define towlower rpl_towlower
 #    define towupper rpl_towupper
 #   endif
@@ -258,7 +275,7 @@ iswxdigit
 }
 
 static inline wint_t
-#  if @REPLACE_ISWCNTRL@
+#  if @REPLACE_TOWLOWER@
 rpl_towlower
 #  else
 towlower
@@ -269,7 +286,7 @@ towlower
 }
 
 static inline wint_t
-#  if @REPLACE_ISWCNTRL@
+#  if @REPLACE_TOWLOWER@
 rpl_towupper
 #  else
 towupper
@@ -279,7 +296,7 @@ towupper
   return (wc >= 'a' && wc <= 'z' ? wc - 'a' + 'A' : wc);
 }
 
-# elif ! @HAVE_ISWBLANK@ || @REPLACE_ISWBLANK@
+# elif @GNULIB_ISWBLANK@ && (! @HAVE_ISWBLANK@ || @REPLACE_ISWBLANK@)
 /* Only the iswblank function is missing.  */
 
 #  if @REPLACE_ISWBLANK@
@@ -334,7 +351,6 @@ rpl_towupper (wint_t wc)
 #if @REPLACE_ISWCNTRL@
 _GL_CXXALIAS_RPL (iswalnum, int, (wint_t wc));
 _GL_CXXALIAS_RPL (iswalpha, int, (wint_t wc));
-_GL_CXXALIAS_RPL (iswblank, int, (wint_t wc));
 _GL_CXXALIAS_RPL (iswcntrl, int, (wint_t wc));
 _GL_CXXALIAS_RPL (iswdigit, int, (wint_t wc));
 _GL_CXXALIAS_RPL (iswgraph, int, (wint_t wc));
@@ -347,11 +363,6 @@ _GL_CXXALIAS_RPL (iswxdigit, int, (wint_t wc));
 #else
 _GL_CXXALIAS_SYS (iswalnum, int, (wint_t wc));
 _GL_CXXALIAS_SYS (iswalpha, int, (wint_t wc));
-# if @REPLACE_ISWBLANK@
-_GL_CXXALIAS_RPL (iswblank, int, (wint_t wc));
-# else
-_GL_CXXALIAS_SYS (iswblank, int, (wint_t wc));
-# endif
 _GL_CXXALIAS_SYS (iswcntrl, int, (wint_t wc));
 _GL_CXXALIAS_SYS (iswdigit, int, (wint_t wc));
 _GL_CXXALIAS_SYS (iswgraph, int, (wint_t wc));
@@ -364,7 +375,6 @@ _GL_CXXALIAS_SYS (iswxdigit, int, (wint_t wc));
 #endif
 _GL_CXXALIASWARN (iswalnum);
 _GL_CXXALIASWARN (iswalpha);
-_GL_CXXALIASWARN (iswblank);
 _GL_CXXALIASWARN (iswcntrl);
 _GL_CXXALIASWARN (iswdigit);
 _GL_CXXALIASWARN (iswgraph);
@@ -375,7 +385,55 @@ _GL_CXXALIASWARN (iswspace);
 _GL_CXXALIASWARN (iswupper);
 _GL_CXXALIASWARN (iswxdigit);
 
-#if @REPLACE_ISWCNTRL@ || defined __MINGW32__
+#if @GNULIB_ISWBLANK@
+# if @REPLACE_ISWCNTRL@ || @REPLACE_ISWBLANK@
+_GL_CXXALIAS_RPL (iswblank, int, (wint_t wc));
+# else
+_GL_CXXALIAS_SYS (iswblank, int, (wint_t wc));
+# endif
+_GL_CXXALIASWARN (iswblank);
+#endif
+
+#if !@HAVE_WCTYPE_T@
+# if !GNULIB_defined_wctype_t
+typedef void * wctype_t;
+#  define GNULIB_defined_wctype_t 1
+# endif
+#endif
+
+/* Get a descriptor for a wide character property.  */
+#if @GNULIB_WCTYPE@
+# if !@HAVE_WCTYPE_T@
+_GL_FUNCDECL_SYS (wctype, wctype_t, (const char *name));
+# endif
+_GL_CXXALIAS_SYS (wctype, wctype_t, (const char *name));
+_GL_CXXALIASWARN (wctype);
+#elif defined GNULIB_POSIXCHECK
+# undef wctype
+# if HAVE_RAW_DECL_WCTYPE
+_GL_WARN_ON_USE (wctype, "wctype is unportable - "
+                 "use gnulib module wctype for portability");
+# endif
+#endif
+
+/* Test whether a wide character has a given property.
+   The argument WC must be either a wchar_t value or WEOF.
+   The argument DESC must have been returned by the wctype() function.  */
+#if @GNULIB_ISWCTYPE@
+# if !@HAVE_WCTYPE_T@
+_GL_FUNCDECL_SYS (iswctype, int, (wint_t wc, wctype_t desc));
+# endif
+_GL_CXXALIAS_SYS (iswctype, int, (wint_t wc, wctype_t desc));
+_GL_CXXALIASWARN (iswctype);
+#elif defined GNULIB_POSIXCHECK
+# undef iswctype
+# if HAVE_RAW_DECL_ISWCTYPE
+_GL_WARN_ON_USE (iswctype, "iswctype is unportable - "
+                 "use gnulib module iswctype for portability");
+# endif
+#endif
+
+#if @REPLACE_TOWLOWER@ || defined __MINGW32__
 _GL_CXXALIAS_RPL (towlower, wint_t, (wint_t wc));
 _GL_CXXALIAS_RPL (towupper, wint_t, (wint_t wc));
 #else
@@ -385,6 +443,45 @@ _GL_CXXALIAS_SYS (towupper, wint_t, (wint_t wc));
 _GL_CXXALIASWARN (towlower);
 _GL_CXXALIASWARN (towupper);
 
+#if !@HAVE_WCTRANS_T@
+# if !GNULIB_defined_wctrans_t
+typedef void * wctrans_t;
+#  define GNULIB_defined_wctrans_t 1
+# endif
+#endif
 
-#endif /* _GL_WCTYPE_H */
-#endif /* _GL_WCTYPE_H */
+/* Get a descriptor for a wide character case conversion.  */
+#if @GNULIB_WCTRANS@
+# if !@HAVE_WCTRANS_T@
+_GL_FUNCDECL_SYS (wctrans, wctrans_t, (const char *name));
+# endif
+_GL_CXXALIAS_SYS (wctrans, wctrans_t, (const char *name));
+_GL_CXXALIASWARN (wctrans);
+#elif defined GNULIB_POSIXCHECK
+# undef wctrans
+# if HAVE_RAW_DECL_WCTRANS
+_GL_WARN_ON_USE (wctrans, "wctrans is unportable - "
+                 "use gnulib module wctrans for portability");
+# endif
+#endif
+
+/* Perform a given case conversion on a wide character.
+   The argument WC must be either a wchar_t value or WEOF.
+   The argument DESC must have been returned by the wctrans() function.  */
+#if @GNULIB_TOWCTRANS@
+# if !@HAVE_WCTRANS_T@
+_GL_FUNCDECL_SYS (towctrans, wint_t, (wint_t wc, wctrans_t desc));
+# endif
+_GL_CXXALIAS_SYS (towctrans, wint_t, (wint_t wc, wctrans_t desc));
+_GL_CXXALIASWARN (towctrans);
+#elif defined GNULIB_POSIXCHECK
+# undef towctrans
+# if HAVE_RAW_DECL_TOWCTRANS
+_GL_WARN_ON_USE (towctrans, "towctrans is unportable - "
+                 "use gnulib module towctrans for portability");
+# endif
+#endif
+
+
+#endif /* _@GUARD_PREFIX@_WCTYPE_H */
+#endif /* _@GUARD_PREFIX@_WCTYPE_H */

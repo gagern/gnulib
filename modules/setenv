@@ -7,13 +7,16 @@ m4/setenv.m4
 
 Depends-on:
 stdlib
-malloca
-alloca-opt
-unistd
-environ
+malloca         [test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1]
+alloca-opt      [test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1]
+unistd          [test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1]
+environ         [test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1]
 
 configure.ac:
 gl_FUNC_SETENV
+if test $HAVE_SETENV = 0 || test $REPLACE_SETENV = 1; then
+  AC_LIBOBJ([setenv])
+fi
 gl_STDLIB_MODULE_INDICATOR([setenv])
 
 Makefile.am:

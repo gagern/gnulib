@@ -1,4 +1,4 @@
-# trunc.m4 serial 5
+# trunc.m4 serial 7
 dnl Copyright (C) 2007, 2010-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -56,10 +56,12 @@ AC_DEFUN([gl_FUNC_TRUNC],
 #include <math.h>
 ]gl_DOUBLE_MINUS_ZERO_CODE[
 ]gl_DOUBLE_SIGNBIT_CODE[
-int main()
+static double dummy (double f) { return 0; }
+int main (int argc, char *argv[])
 {
+  double (*my_trunc) (double) = argc ? trunc : dummy;
   /* Test whether trunc (-0.0) is -0.0.  */
-  if (signbitd (minus_zerod) && !signbitd (trunc (minus_zerod)))
+  if (signbitd (minus_zerod) && !signbitd (my_trunc (minus_zerod)))
     return 1;
   return 0;
 }
@@ -79,7 +81,7 @@ int main()
     HAVE_DECL_TRUNC=0
   fi
   if test $HAVE_DECL_TRUNC = 0 || test $REPLACE_TRUNC = 1; then
-    AC_LIBOBJ([trunc])
+    dnl No libraries are needed to link lib/trunc.c.
     TRUNC_LIBM=
   fi
   AC_SUBST([TRUNC_LIBM])

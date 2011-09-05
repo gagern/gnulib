@@ -1,4 +1,4 @@
-# serial 27
+# serial 29
 # Obtaining file system usage information.
 
 # Copyright (C) 1997-1998, 2000-2001, 2003-2011 Free Software Foundation, Inc.
@@ -19,10 +19,6 @@ AC_DEFUN([gl_FSUSAGE],
        #include <sys/param.h>
       #endif]])
   gl_FILE_SYSTEM_USAGE([gl_cv_fs_space=yes], [gl_cv_fs_space=no])
-  if test $gl_cv_fs_space = yes; then
-    AC_LIBOBJ([fsusage])
-    gl_PREREQ_FSUSAGE_EXTRA
-  fi
 ])
 
 # Try to determine how a program can obtain file system usage information.
@@ -33,6 +29,12 @@ AC_DEFUN([gl_FSUSAGE],
 
 AC_DEFUN([gl_FILE_SYSTEM_USAGE],
 [
+dnl Enable large-file support. This has the effect of changing the size
+dnl of field f_blocks in 'struct statvfs' from 32 bit to 64 bit on
+dnl glibc/Hurd, HP-UX 11, Solaris (32-bit mode). It also changes the size
+dnl of field f_blocks in 'struct statfs' from 32 bit to 64 bit on
+dnl MacOS X >= 10.5 (32-bit mode).
+AC_REQUIRE([AC_SYS_LARGEFILE])
 
 AC_MSG_NOTICE([checking how to get file system space usage])
 ac_fsusage_space=no
@@ -44,7 +46,7 @@ ac_fsusage_space=no
 # systems.  That system is reported to work fine with STAT_STATFS4 which
 # is what it gets when this test fails.
 if test $ac_fsusage_space = no; then
-  # glibc/{Hurd,kFreeBSD}, MacOS X >= 10.4, FreeBSD >= 5.0, NetBSD >= 3.0,
+  # glibc/{Hurd,kFreeBSD}, FreeBSD >= 5.0, NetBSD >= 3.0,
   # OpenBSD >= 4.4, AIX, HP-UX, IRIX, Solaris, Cygwin, Interix, BeOS.
   AC_CACHE_CHECK([for statvfs function (SVR4)], [fu_cv_sys_stat_statvfs],
                  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
@@ -60,14 +62,51 @@ a system call.
 "Do not use Tru64's statvfs implementation"
 #endif
 
-#include <sys/statvfs.h>]],
-                                    [[struct statvfs fsd; statvfs (0, &fsd);]])],
+#include <sys/statvfs.h>
+
+struct statvfs fsd;
+
+#if defined __APPLE__ && defined __MACH__
+#include <limits.h>
+/* On MacOS X >= 10.5, f_blocks in 'struct statvfs' is a 32-bit quantity;
+   that commonly limits file systems to 4 TiB.  Whereas f_blocks in
+   'struct statfs' is a 64-bit type, thanks to the large-file support
+   that was enabled above.  In this case, don't use statvfs(); use statfs()
+   instead.  */
+int check_f_blocks_size[sizeof fsd.f_blocks * CHAR_BIT <= 32 ? -1 : 1];
+#endif
+]],
+                                    [[statvfs (0, &fsd);]])],
                                  [fu_cv_sys_stat_statvfs=yes],
                                  [fu_cv_sys_stat_statvfs=no])])
   if test $fu_cv_sys_stat_statvfs = yes; then
     ac_fsusage_space=yes
-    AC_DEFINE([STAT_STATVFS], [1],
-              [  Define if there is a function named statvfs.  (SVR4)])
+    # AIX >= 5.2 has statvfs64 that has a wider f_blocks field than statvfs.
+    # glibc, HP-UX, IRIX, Solaris have statvfs64 as well, but on these systems
+    # statvfs with large-file support is already equivalent to statvfs64.
+    AC_CACHE_CHECK([whether to use statvfs64],
+      [fu_cv_sys_stat_statvfs64],
+      [AC_LINK_IFELSE(
+         [AC_LANG_PROGRAM(
+            [[#include <sys/types.h>
+              #include <sys/statvfs.h>
+              struct statvfs64 fsd;
+              int check_f_blocks_larger_in_statvfs64
+                [sizeof (((struct statvfs64 *) 0)->f_blocks)
+                 > sizeof (((struct statvfs *) 0)->f_blocks)
+                 ? 1 : -1];
+            ]],
+            [[statvfs64 (0, &fsd);]])],
+         [fu_cv_sys_stat_statvfs64=yes],
+         [fu_cv_sys_stat_statvfs64=no])
+      ])
+    if test $fu_cv_sys_stat_statvfs64 = yes; then
+      AC_DEFINE([STAT_STATVFS64], [1],
+                [  Define if statvfs64 should be preferred over statvfs.])
+    else
+      AC_DEFINE([STAT_STATVFS], [1],
+                [  Define if there is a function named statvfs.  (SVR4)])
+    fi
   fi
 fi
 
@@ -98,8 +137,8 @@ if test $ac_fsusage_space = no; then
 fi
 
 if test $ac_fsusage_space = no; then
-  # glibc/Linux, MacOS X < 10.4, FreeBSD < 5.0, NetBSD < 3.0, OpenBSD < 4.4.
-  # (glibc/{Hurd,kFreeBSD}, MacOS X >= 10.4, FreeBSD >= 5.0, NetBSD >= 3.0,
+  # glibc/Linux, MacOS X, FreeBSD < 5.0, NetBSD < 3.0, OpenBSD < 4.4.
+  # (glibc/{Hurd,kFreeBSD}, FreeBSD >= 5.0, NetBSD >= 3.0,
   # OpenBSD >= 4.4, AIX, HP-UX, OSF/1, Cygwin already handled above.)
   # (On IRIX you need to include <sys/statfs.h>, not only <sys/mount.h> and
   # <sys/vfs.h>.)

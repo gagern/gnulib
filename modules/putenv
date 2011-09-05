@@ -7,10 +7,13 @@ m4/putenv.m4
 
 Depends-on:
 stdlib
-malloc-posix
+malloc-posix    [test $REPLACE_PUTENV = 1]
 
 configure.ac:
 gl_FUNC_PUTENV
+if test $REPLACE_PUTENV = 1; then
+  AC_LIBOBJ([putenv])
+fi
 gl_STDLIB_MODULE_INDICATOR([putenv])
 
 Makefile.am:

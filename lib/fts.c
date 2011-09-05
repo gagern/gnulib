@@ -134,12 +134,21 @@ enum
 # define D_INO(dp) NOT_AN_INODE_NUMBER
 #endif
 
+/* If possible (see max_entries, below), read no more than this many directory
+   entries at a time.  Without this limit (i.e., when using non-NULL
+   fts_compar), processing a directory with 4,000,000 entries requires ~1GiB
+   of memory, and handling 64M entries would require 16GiB of memory.  */
+#ifndef FTS_MAX_READDIR_ENTRIES
+# define FTS_MAX_READDIR_ENTRIES 100000
+#endif
+
 /* If there are more than this many entries in a directory,
    and the conditions mentioned below are satisfied, then sort
    the entries on inode number before any further processing.  */
 #ifndef FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD
 # define FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD 10000
 #endif
+
 enum
 {
   _FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD = FTS_INODE_SORT_DIR_ENTRIES_THRESHOLD
@@ -349,7 +358,8 @@ internal_function
 diropen (FTS const *sp, char const *dir)
 {
   int open_flags = (O_SEARCH | O_DIRECTORY | O_NOCTTY | O_NONBLOCK
-                    | (ISSET (FTS_PHYSICAL) ? O_NOFOLLOW : 0));
+                    | (ISSET (FTS_PHYSICAL) ? O_NOFOLLOW : 0)
+                    | (ISSET (FTS_NOATIME) ? O_NOATIME : 0));
 
   int fd = (ISSET (FTS_CWDFD)
             ? openat (sp->fts_cwd_fd, dir, open_flags)
@@ -406,7 +416,8 @@ fts_open (char * const *argv,
                early, doing it here saves us the trouble of ensuring
                later (where it'd be messier) that "." can in fact
                be opened.  If not, revert to FTS_NOCHDIR mode.  */
-            int fd = open (".", O_SEARCH);
+            int fd = open (".",
+                           O_SEARCH | (ISSET (FTS_NOATIME) ? O_NOATIME : 0));
             if (fd < 0)
               {
                 /* Even if `.' is unreadable, don't revert to FTS_NOCHDIR mode
@@ -628,7 +639,7 @@ fts_close (FTS *sp)
 #if defined __linux__ \
   && HAVE_SYS_VFS_H && HAVE_FSTATFS && HAVE_STRUCT_STATFS_F_TYPE
 
-#include <sys/vfs.h>
+# include <sys/vfs.h>
 
 /* Linux-specific constants from coreutils' src/fs.h */
 # define S_MAGIC_TMPFS 0x1021994
@@ -710,7 +721,7 @@ leaf_optimization_applies (int dir_fd _GL_UNUSED) { return false; }
 #endif
 
 /* link-count-optimization entry:
-   map an stat.st_dev number to a boolean: leaf_optimization_works */
+   map a stat.st_dev number to a boolean: leaf_optimization_works */
 struct LCO_ent
 {
   dev_t st_dev;
@@ -906,6 +917,27 @@ fts_read (register FTS *sp)
 
         /* Move to the next node on this level. */
 next:   tmp = p;
+
+        /* If we have so many directory entries that we're reading them
+           in batches, and we've reached the end of the current batch,
+           read in a new batch.  */
+        if (p->fts_link == NULL && p->fts_parent->fts_dirp)
+          {
+            p = tmp->fts_parent;
+            sp->fts_cur = p;
+            sp->fts_path[p->fts_pathlen] = '\0';
+
+            if ((p = fts_build (sp, BREAD)) == NULL)
+              {
+                if (ISSET(FTS_STOP))
+                  return NULL;
+                goto cd_dot_dot;
+              }
+
+            free(tmp);
+            goto name;
+          }
+
         if ((p = p->fts_link) != NULL) {
                 sp->fts_cur = p;
                 free(tmp);
@@ -994,6 +1026,7 @@ check_for_dir:
                   }
                 return p;
         }
+cd_dot_dot:
 
         /* Move up to the parent node. */
         p = tmp->fts_parent;
@@ -1190,6 +1223,25 @@ set_stat_type (struct stat *st, unsigned int dtype)
   st->st_mode = type;
 }
 
+#define closedir_and_clear(dirp)                \
+  do                                            \
+    {                                           \
+      closedir (dirp);                          \
+      dirp = NULL;                              \
+    }                                           \
+  while (0)
+
+#define fts_opendir(file, Pdir_fd)                              \
+        opendirat((! ISSET(FTS_NOCHDIR) && ISSET(FTS_CWDFD)     \
+                   ? sp->fts_cwd_fd : AT_FDCWD),                \
+                  file,                                         \
+                  (((ISSET(FTS_PHYSICAL)                        \
+                     && ! (ISSET(FTS_COMFOLLOW)                 \
+                           && cur->fts_level == FTS_ROOTLEVEL)) \
+                    ? O_NOFOLLOW : 0)                           \
+                   | (ISSET (FTS_NOATIME) ? O_NOATIME : 0)),    \
+                  Pdir_fd)
+
 /*
  * This is the tricky part -- do not casually change *anything* in here.  The
  * idea is to build the linked list of entries that are used by fts_children
@@ -1208,11 +1260,9 @@ static FTSENT *
 internal_function
 fts_build (register FTS *sp, int type)
 {
-        register struct dirent *dp;
         register FTSENT *p, *head;
         register size_t nitems;
-        FTSENT *cur, *tail;
-        DIR *dirp;
+        FTSENT *tail;
         void *oldaddr;
         int saved_errno;
         bool descend;
@@ -1223,56 +1273,71 @@ fts_build (register FTS *sp, int type)
         size_t len, maxlen, new_len;
         char *cp;
         int dir_fd;
+        FTSENT *cur = sp->fts_cur;
+        bool continue_readdir = !!cur->fts_dirp;
 
-        /* Set current node pointer. */
-        cur = sp->fts_cur;
-
-        /*
-         * Open the directory for reading.  If this fails, we're done.
-         * If being called from fts_read, set the fts_info field.
-         */
-#if defined FTS_WHITEOUT && 0
-        if (ISSET(FTS_WHITEOUT))
-                oflag = DTF_NODUP|DTF_REWIND;
+        /* When cur->fts_dirp is non-NULL, that means we should
+           continue calling readdir on that existing DIR* pointer
+           rather than opening a new one.  */
+        if (continue_readdir)
+          {
+            DIR *dp = cur->fts_dirp;
+            dir_fd = dirfd (dp);
+            if (dir_fd < 0)
+              {
+                closedir_and_clear (cur->fts_dirp);
+                if (type == BREAD)
+                  {
+                    cur->fts_info = FTS_DNR;
+                    cur->fts_errno = errno;
+                  }
+                return NULL;
+              }
+          }
         else
-                oflag = DTF_HIDEW|DTF_NODUP|DTF_REWIND;
-#else
-# define __opendir2(file, flag) \
-        opendirat((! ISSET(FTS_NOCHDIR) && ISSET(FTS_CWDFD)     \
-                   ? sp->fts_cwd_fd : AT_FDCWD),                \
-                  file,                                         \
-                  ((ISSET(FTS_PHYSICAL)                         \
-                    && ! (ISSET(FTS_COMFOLLOW)                  \
-                          && cur->fts_level == FTS_ROOTLEVEL))  \
-                   ? O_NOFOLLOW : 0),                           \
-                  &dir_fd)
-#endif
-       if ((dirp = __opendir2(cur->fts_accpath, oflag)) == NULL) {
-                if (type == BREAD) {
-                        cur->fts_info = FTS_DNR;
-                        cur->fts_errno = errno;
-                }
-                return (NULL);
-        }
-       /* Rather than calling fts_stat for each and every entry encountered
-          in the readdir loop (below), stat each directory only right after
-          opening it.  */
-       if (cur->fts_info == FTS_NSOK)
-         cur->fts_info = fts_stat(sp, cur, false);
-       else if (sp->fts_options & FTS_TIGHT_CYCLE_CHECK) {
+          {
+            /* Open the directory for reading.  If this fails, we're done.
+               If being called from fts_read, set the fts_info field. */
+            if ((cur->fts_dirp = fts_opendir(cur->fts_accpath, &dir_fd)) == NULL)
+              {
+                if (type == BREAD)
+                  {
+                    cur->fts_info = FTS_DNR;
+                    cur->fts_errno = errno;
+                  }
+                return NULL;
+              }
+            /* Rather than calling fts_stat for each and every entry encountered
+               in the readdir loop (below), stat each directory only right after
+               opening it.  */
+            if (cur->fts_info == FTS_NSOK)
+              cur->fts_info = fts_stat(sp, cur, false);
+            else if (sp->fts_options & FTS_TIGHT_CYCLE_CHECK)
+              {
                 /* Now read the stat info again after opening a directory to
-                 * reveal eventual changes caused by a submount triggered by
-                 * the traversal.  But do it only for utilities which use
-                 * FTS_TIGHT_CYCLE_CHECK.  Therefore, only find and du
-                 * benefit/suffer from this feature for now.
-                 */
+                   reveal eventual changes caused by a submount triggered by
+                   the traversal.  But do it only for utilities which use
+                   FTS_TIGHT_CYCLE_CHECK.  Therefore, only find and du
+                   benefit/suffer from this feature for now.  */
                 LEAVE_DIR (sp, cur, "4");
                 fts_stat (sp, cur, false);
-                if (! enter_dir (sp, cur)) {
-                         __set_errno (ENOMEM);
-                         return NULL;
-                }
-        }
+                if (! enter_dir (sp, cur))
+                  {
+                    __set_errno (ENOMEM);
+                    return NULL;
+                  }
+              }
+          }
+
+        /* Maximum number of readdir entries to read at one time.  This
+           limitation is to avoid reading millions of entries into memory
+           at once.  When an fts_compar function is specified, we have no
+           choice: we must read all entries into memory before calling that
+           function.  But when no such function is specified, we can read
+           entries in batches that are large enough to help us with inode-
+           sorting, yet not so large that we risk exhausting memory.  */
+        size_t max_entries = (sp->fts_compar == NULL
+                              ? FTS_MAX_READDIR_ENTRIES : SIZE_MAX);
 
         /*
          * Nlinks is the number of possible entries of type directory in the
@@ -1307,7 +1372,13 @@ fts_build (register FTS *sp, int type)
          * needed sorted entries or stat information, they had better be
          * checking FTS_NS on the returned nodes.
          */
-        if (nlinks || type == BREAD) {
+        if (continue_readdir)
+          {
+            /* When resuming a short readdir run, we already have
+               the required dirp and dir_fd.  */
+            descend = true;
+          }
+        else if (nlinks || type == BREAD) {
                 if (ISSET(FTS_CWDFD))
                   {
                     dir_fd = dup (dir_fd);
@@ -1319,10 +1390,10 @@ fts_build (register FTS *sp, int type)
                                 cur->fts_errno = errno;
                         cur->fts_flags |= FTS_DONTCHDIR;
                         descend = false;
-                        closedir(dirp);
+                        closedir_and_clear(cur->fts_dirp);
                         if (ISSET(FTS_CWDFD) && 0 <= dir_fd)
                                 close (dir_fd);
-                        dirp = NULL;
+                        cur->fts_dirp = NULL;
                 } else
                         descend = true;
         } else
@@ -1353,9 +1424,14 @@ fts_build (register FTS *sp, int type)
 
         /* Read the directory, attaching each entry to the `link' pointer. */
         doadjust = false;
-        for (head = tail = NULL, nitems = 0; dirp && (dp = readdir(dirp));) {
+        head = NULL;
+        tail = NULL;
+        nitems = 0;
+        while (cur->fts_dirp) {
                 bool is_dir;
-
+                struct dirent *dp = readdir(cur->fts_dirp);
+                if (dp == NULL)
+                        break;
                 if (!ISSET(FTS_SEEDOT) && ISDOT(dp->d_name))
                         continue;
 
@@ -1374,7 +1450,7 @@ fts_build (register FTS *sp, int type)
 mem1:                           saved_errno = errno;
                                 free(p);
                                 fts_lfree(head);
-                                closedir(dirp);
+                                closedir_and_clear(cur->fts_dirp);
                                 cur->fts_info = FTS_ERR;
                                 SET(FTS_STOP);
                                 __set_errno (saved_errno);
@@ -1399,7 +1475,7 @@ mem1:                           saved_errno = errno;
                          */
                         free(p);
                         fts_lfree(head);
-                        closedir(dirp);
+                        closedir_and_clear(cur->fts_dirp);
                         cur->fts_info = FTS_ERR;
                         SET(FTS_STOP);
                         __set_errno (ENAMETOOLONG);
@@ -1409,10 +1485,6 @@ mem1:                           saved_errno = errno;
                 p->fts_parent = sp->fts_cur;
                 p->fts_pathlen = new_len;
 
-#if defined FTS_WHITEOUT && 0
-                if (dp->d_type == DT_WHT)
-                        p->fts_flags |= FTS_ISW;
-#endif
                 /* Store dirent.d_ino, in case we need to sort
                    entries before processing them.  */
                 p->fts_statp->st_ino = D_INO (dp);
@@ -1468,9 +1540,18 @@ mem1:                           saved_errno = errno;
                         tail = p;
                 }
                 ++nitems;
+                if (max_entries <= nitems) {
+                        /* When there are too many dir entries, leave
+                           fts_dirp open, so that a subsequent fts_read
+                           can take up where we leave off.  */
+                        goto break_without_closedir;
+                }
         }
-        if (dirp)
-                closedir(dirp);
+
+        if (cur->fts_dirp)
+                closedir_and_clear(cur->fts_dirp);
+
+ break_without_closedir:
 
         /*
          * If realloc() changed the address of the file name, adjust the
@@ -1496,7 +1577,7 @@ mem1:                           saved_errno = errno;
          * to an empty directory, we wind up here with no other way back.  If
          * can't get back, we're done.
          */
-        if (descend && (type == BCHILD || !nitems) &&
+        if (!continue_readdir && descend && (type == BCHILD || !nitems) &&
             (cur->fts_level == FTS_ROOTLEVEL
              ? RESTORE_INITIAL_CWD(sp)
              : fts_safe_changedir(sp, cur->fts_parent, -1, ".."))) {
@@ -1653,7 +1734,7 @@ fd_ring_check (FTS const *sp)
       int fd = i_ring_pop (&fd_w);
       if (0 <= fd)
         {
-          int parent_fd = openat (cwd_fd, "..", O_SEARCH);
+          int parent_fd = openat (cwd_fd, "..", O_SEARCH | O_NOATIME);
           if (parent_fd < 0)
             {
               // Warn?
@@ -1686,15 +1767,6 @@ fts_stat(FTS *sp, register FTSENT *p, bool follow)
 
         if (p->fts_level == FTS_ROOTLEVEL && ISSET(FTS_COMFOLLOW))
                 follow = true;
-
-#if defined FTS_WHITEOUT && 0
-        /* check for whiteout */
-        if (p->fts_flags & FTS_ISW) {
-                memset(sbp, '\0', sizeof (*sbp));
-                sbp->st_mode = S_IFWHT;
-                return (FTS_W);
-       }
-#endif
 
         /*
          * If doing a logical walk, or application requested FTS_FOLLOW, do
@@ -1822,6 +1894,7 @@ fts_alloc (FTS *sp, const char *name, register size_t namelen)
         p->fts_fts = sp;
         p->fts_path = sp->fts_path;
         p->fts_errno = 0;
+        p->fts_dirp = NULL;
         p->fts_flags = 0;
         p->fts_instr = FTS_NOINSTR;
         p->fts_number = 0;
@@ -1838,6 +1911,8 @@ fts_lfree (register FTSENT *head)
         /* Free a linked list of structures. */
         while ((p = head)) {
                 head = head->fts_link;
+                if (p->fts_dirp)
+                        closedir (p->fts_dirp);
                 free(p);
         }
 }
