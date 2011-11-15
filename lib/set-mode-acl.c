@@ -57,7 +57,7 @@ qset_acl (char const *name, int desc, mode_t mode)
 # if HAVE_ACL_GET_FILE
   /* POSIX 1003.1e draft 17 (abandoned) specific version.  */
   /* Linux, FreeBSD, MacOS X, IRIX, Tru64 */
-#  if MODE_INSIDE_ACL
+#  if !HAVE_ACL_TYPE_EXTENDED
   /* Linux, FreeBSD, IRIX, Tru64 */
 
   /* We must also have acl_from_text and acl_delete_def_file.
@@ -132,20 +132,16 @@ qset_acl (char const *name, int desc, mode_t mode)
   if (S_ISDIR (mode) && acl_delete_def_file (name))
     return -1;
 
-  if (mode & (S_ISUID | S_ISGID | S_ISVTX))
+  if (!MODE_INSIDE_ACL || (mode & (S_ISUID | S_ISGID | S_ISVTX)))
     {
-      /* We did not call chmod so far, so the special bits have not yet
-         been set.  */
+      /* We did not call chmod so far, and either the mode and the ACL are
+         separate or special bits are to be set which don't fit into ACLs.  */
       return chmod_or_fchmod (name, desc, mode);
     }
   return 0;
 
-#  else /* !MODE_INSIDE_ACL */
+#  else /* HAVE_ACL_TYPE_EXTENDED */
   /* MacOS X */
-
-#   if !HAVE_ACL_TYPE_EXTENDED
-#    error Must have ACL_TYPE_EXTENDED
-#   endif
 
   /* On MacOS X,  acl_get_file (name, ACL_TYPE_ACCESS)
      and          acl_get_file (name, ACL_TYPE_DEFAULT)
@@ -203,56 +199,9 @@ qset_acl (char const *name, int desc, mode_t mode)
 
 # elif HAVE_FACL && defined GETACLCNT /* Solaris, Cygwin, not HP-UX */
 
-#  if defined ACL_NO_TRIVIAL && 0
-  /* Solaris 10 (newer version), which has additional API declared in
-     <sys/acl.h> (acl_t) and implemented in libsec (acl_set, acl_trivial,
-     acl_fromtext, ...).  */
-
-  acl_t *aclp;
-  char acl_text[] = "user::---,group::---,mask:---,other:---";
-  int ret;
-  int saved_errno;
-
-  if (mode & S_IRUSR) acl_text[ 6] = 'r';
-  if (mode & S_IWUSR) acl_text[ 7] = 'w';
-  if (mode & S_IXUSR) acl_text[ 8] = 'x';
-  if (mode & S_IRGRP) acl_text[17] = acl_text[26] = 'r';
-  if (mode & S_IWGRP) acl_text[18] = acl_text[27] = 'w';
-  if (mode & S_IXGRP) acl_text[19] = acl_text[28] = 'x';
-  if (mode & S_IROTH) acl_text[36] = 'r';
-  if (mode & S_IWOTH) acl_text[37] = 'w';
-  if (mode & S_IXOTH) acl_text[38] = 'x';
-
-  if (acl_fromtext (acl_text, &aclp) != 0)
-    {
-      errno = ENOMEM;
-      return -1;
-    }
-
-  ret = (desc < 0 ? acl_set (name, aclp) : facl_set (desc, aclp));
-  saved_errno = errno;
-  acl_free (aclp);
-  if (ret < 0)
-    {
-      if (saved_errno == ENOSYS || saved_errno == EOPNOTSUPP)
-        return chmod_or_fchmod (name, desc, mode);
-      errno = saved_errno;
-      return -1;
-    }
-
-  if (mode & (S_ISUID | S_ISGID | S_ISVTX))
-    {
-      /* We did not call chmod so far, so the special bits have not yet
-         been set.  */
-      return chmod_or_fchmod (name, desc, mode);
-    }
-  return 0;
-
-#  else /* Solaris, Cygwin, general case */
-
   int done_setacl = 0;
 
-#   ifdef ACE_GETACL
+#  ifdef ACE_GETACL
   /* Solaris also has a different variant of ACLs, used in ZFS and NFSv4
      file systems (whereas the other ones are used in UFS file systems).  */
 
@@ -379,14 +328,14 @@ qset_acl (char const *name, int desc, mode_t mode)
           else
             entries[2].a_access_mask |= NEW_ACE_EXECUTE;
           entries[4].a_type = NEW_ACE_ACCESS_DENIED_ACE_TYPE;
-          entries[4].a_flags = ACE_EVERYONE;
+          entries[4].a_flags = NEW_ACE_EVERYONE;
           entries[4].a_who = 0;
           entries[4].a_access_mask = NEW_ACE_WRITE_NAMED_ATTRS
                                      | NEW_ACE_WRITE_ATTRIBUTES
                                      | NEW_ACE_WRITE_ACL
                                      | NEW_ACE_WRITE_OWNER;
           entries[5].a_type = NEW_ACE_ACCESS_ALLOWED_ACE_TYPE;
-          entries[5].a_flags = ACE_EVERYONE;
+          entries[5].a_flags = NEW_ACE_EVERYONE;
           entries[5].a_who = 0;
           entries[5].a_access_mask = NEW_ACE_READ_NAMED_ATTRS
                                      | NEW_ACE_READ_ATTRIBUTES
@@ -419,7 +368,7 @@ qset_acl (char const *name, int desc, mode_t mode)
       if (ret == 0)
         done_setacl = 1;
     }
-#   endif
+#  endif
 
   if (!done_setacl)
     {
@@ -457,8 +406,6 @@ qset_acl (char const *name, int desc, mode_t mode)
       return chmod_or_fchmod (name, desc, mode);
     }
   return 0;
-
-#  endif
 
 # elif HAVE_GETACL /* HP-UX */
 

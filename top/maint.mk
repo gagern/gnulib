@@ -21,8 +21,12 @@
 # ME := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
 ME := maint.mk
 
-# Override this in cfg.mk if you use a non-standard build-aux directory.
-build_aux ?= $(srcdir)/build-aux
+# Diagnostic for continued use of deprecated variable.
+# Remove in 2013
+ifneq ($(build_aux),)
+ $(error "$(ME): \
+set $$(_build-aux) relative to $$(srcdir) instead of $$(build_aux)")
+endif
 
 # Do not save the original name or timestamp in the .tar.gz file.
 # Use --rsyncable if available.
@@ -34,7 +38,7 @@ GZIP_ENV = '--no-name --best $(gzip_rsyncable)'
 GIT = git
 VC = $(GIT)
 
-VC_LIST = $(build_aux)/vc-list-files -C $(srcdir)
+VC_LIST = $(srcdir)/$(_build-aux)/vc-list-files -C $(srcdir)
 
 # You can override this variable in cfg.mk to set your own regexp
 # matching files to ignore.
@@ -279,7 +283,7 @@ define _sc_search_regexp
 endef
 
 sc_avoid_if_before_free:
-	@$(build_aux)/useless-if-before-free				\
+	@$(srcdir)/$(_build-aux)/useless-if-before-free			\
 		$(useless_free_options)					\
 	    $$($(VC_LIST_EXCEPT) | grep -v useless-if-before-free) &&	\
 	  { echo '$(ME): found useless "if" before "free" above' 1>&2;	\
@@ -645,7 +649,17 @@ _stddef_syms_re = NULL|offsetof|ptrdiff_t|size_t|wchar_t
 # Prohibit the inclusion of stddef.h without an actual use.
 sc_prohibit_stddef_without_use:
 	@h='stddef.h'							\
-	re='\<($(_stddef_syms_re)) *\('					\
+	re='\<($(_stddef_syms_re))\>'					\
+	  $(_sc_header_without_use)
+
+_de1 = dirfd|(close|(fd)?open|read|rewind|seek|tell)dir(64)?(_r)?
+_de2 = (versionsort|struct dirent|getdirentries|alphasort|scandir(at)?)(64)?
+_de3 = MAXNAMLEN|DIR|ino_t|d_ino|d_fileno|d_namlen
+_dirent_syms_re = $(_de1)|$(_de2)|$(_de3)
+# Prohibit the inclusion of dirent.h without an actual use.
+sc_prohibit_dirent_without_use:
+	@h='dirent.h'							\
+	re='\<($(_dirent_syms_re))\>'					\
 	  $(_sc_header_without_use)
 
 # Prohibit the inclusion of verify.h without an actual use.
@@ -776,10 +790,12 @@ gl_other_headers_ ?= \
 
 # Perl -lne code to extract "significant" cpp-defined symbols from a
 # gnulib header file, eliminating a few common false-positives.
+# The exempted names below are defined only conditionally in gnulib,
+# and hence sometimes must/may be defined in application code.
 gl_extract_significant_defines_ = \
   /^\# *define ([^_ (][^ (]*)(\s*\(|\s+\w+)/\
     && $$2 !~ /(?:rpl_|_used_without_)/\
-    && $$1 !~ /^(?:NSIG)$$/\
+    && $$1 !~ /^(?:NSIG|ENODATA)$$/\
     && $$1 !~ /^(?:SA_RESETHAND|SA_RESTART)$$/\
     and print $$1
 
@@ -789,8 +805,8 @@ define def_sym_regex
 	gen_h=$(gl_generated_headers_);					\
 	(cd $(gnulib_dir)/lib;						\
 	  for f in *.in.h $(gl_other_headers_); do			\
-	    test -e $$f &&						\
-	    perl -lne '$(gl_extract_significant_defines_)' $$f;		\
+	    test -f $$f							\
+	      && perl -lne '$(gl_extract_significant_defines_)' $$f;	\
 	  done;								\
 	) | sort -u							\
 	  | sed 's/^/^ *# *(define|undef)  */;s/$$/\\>/'
@@ -1109,16 +1125,20 @@ sc_makefile_path_separator_check:
 	halt=$(msg)							\
 	  $(_sc_search_regexp)
 
-# Check that `make alpha' will not fail at the end of the process.
+# Check that `make alpha' will not fail at the end of the process,
+# i.e., when pkg-M.N.tar.xz already exists (either in "." or in ../release)
+# and is read-only.
 writable-files:
-	if test -d $(release_archive_dir); then :; else			\
-	  for file in $(distdir).tar.gz					\
-		      $(release_archive_dir)/$(distdir).tar.gz; do	\
-	    test -e $$file || continue;					\
-	    test -w $$file						\
-	      || { echo ERROR: $$file is not writable; fail=1; };	\
+	if test -d $(release_archive_dir); then				\
+	  for file in $(DIST_ARCHIVES); do				\
+	    for p in ./ $(release_archive_dir)/; do			\
+	      test -e $$p$$file || continue;				\
+	      test -w $$p$$file						\
+		|| { echo ERROR: $$p$$file is not writable; fail=1; };	\
+	    done;							\
 	  done;								\
 	  test "$$fail" && exit 1 || : ;				\
+	else :;								\
 	fi
 
 v_etc_file = $(gnulib_dir)/lib/version-etc.c
@@ -1213,9 +1233,9 @@ bootstrap-tools ?= autoconf,automake,gnulib
 # If it's not already specified, derive the GPG key ID from
 # the signed tag we've just applied to mark this release.
 gpg_key_ID ?= \
-  $$(git cat-file tag v$(VERSION) > .ann-sig \
-     && gpgv .ann-sig - < /dev/null 2>&1 \
-	  | sed -n '/.*key ID \([0-9A-F]*\)/s//\1/p'; rm -f .ann-sig)
+  $$(git cat-file tag v$(VERSION) \
+     | gpgv --status-fd 1 --keyring /dev/null - - 2>/dev/null \
+     | sed -n '/^\[GNUPG:\] ERRSIG /{s///;s/ .*//p;q}')
 
 translation_project_ ?= coordinator@translationproject.org
 
@@ -1234,7 +1254,7 @@ else
 endif
 
 announcement: NEWS ChangeLog $(rel-files)
-	@$(build_aux)/announce-gen					\
+	@$(srcdir)/$(_build-aux)/announce-gen				\
 	    --mail-headers='$(announcement_mail_headers_)'		\
 	    --release-type=$(RELEASE_TYPE)				\
 	    --package=$(PACKAGE)					\
@@ -1258,7 +1278,7 @@ upload_dest_dir_ ?= $(PACKAGE)
 emit_upload_commands:
 	@echo =====================================
 	@echo =====================================
-	@echo "$(build_aux)/gnupload $(GNUPLOADFLAGS) \\"
+	@echo "$(srcdir)/$(_build-aux)/gnupload $(GNUPLOADFLAGS) \\"
 	@echo "    --to $(gnu_rel_host):$(upload_dest_dir_) \\"
 	@echo "  $(rel-files)"
 	@echo '# send the ~/announce-$(my_distdir) e-mail'
@@ -1266,9 +1286,9 @@ emit_upload_commands:
 	@echo =====================================
 
 define emit-commit-log
-  printf '%s\n' 'post-release administrivia' '' \
-    '* NEWS: Add header line for next release.' \
-    '* .prev-version: Record previous version.' \
+  printf '%s\n' 'maint: post-release administrivia' ''			\
+    '* NEWS: Add header line for next release.'				\
+    '* .prev-version: Record previous version.'				\
     '* cfg.mk (old_NEWS_hash): Auto-update.'
 endef
 
@@ -1353,7 +1373,7 @@ web-manual:
 	@test -z "$(manual_title)" \
 	  && { echo define manual_title in cfg.mk 1>&2; exit 1; } || :
 	@cd '$(srcdir)/doc'; \
-	  $(SHELL) ../build-aux/gendocs.sh $(gendocs_options_) \
+	  $(SHELL) ../$(_build-aux)/gendocs.sh $(gendocs_options_) \
 	     -o '$(abs_builddir)/doc/manual' \
 	     --email $(PACKAGE_BUGREPORT) $(PACKAGE) \
 	    "$(PACKAGE_NAME) - $(manual_title)"
@@ -1423,7 +1443,7 @@ update-copyright-env ?=
 update-copyright:
 	grep -l -w Copyright                                             \
 	  $$(export VC_LIST_EXCEPT_DEFAULT=COPYING && $(VC_LIST_EXCEPT)) \
-	  | $(update-copyright-env) xargs $(build_aux)/$@
+	  | $(update-copyright-env) xargs $(srcdir)/$(_build-aux)/$@
 
 # This tight_scope test is skipped with a warning if $(_gl_TS_headers) is not
 # overridden and $(_gl_TS_dir)/Makefile.am does not mention noinst_HEADERS.
@@ -1434,7 +1454,8 @@ _gl_TS_dir ?= src
 
 ALL_RECURSIVE_TARGETS += sc_tight_scope
 sc_tight_scope: tight-scope.mk
-	@if ! grep '^ *export _gl_TS_headers *=' $(srcdir)/cfg.mk	\
+	@fail=0;							\
+	if ! grep '^ *export _gl_TS_headers *=' $(srcdir)/cfg.mk	\
 		> /dev/null						\
 	   && ! grep -w noinst_HEADERS $(srcdir)/$(_gl_TS_dir)/Makefile.am \
 		> /dev/null 2>&1; then					\
@@ -1446,12 +1467,13 @@ sc_tight_scope: tight-scope.mk
 		-f $(abs_top_builddir)/$<				\
 	      _gl_tight_scope						\
 		|| fail=1;						\
-	fi
-	@rm -f $<
+	fi;								\
+	rm -f $<;							\
+	exit $$fail
 
 tight-scope.mk: $(ME)
 	@rm -f $@ $@-t
-	@perl -ne '/^# TS-start/.../^# TS-end/ and print' $(ME) > $@-t
+	@perl -ne '/^# TS-start/.../^# TS-end/ and print' $(srcdir)/$(ME) > $@-t
 	@chmod a=r $@-t && mv $@-t $@
 
 ifeq (a,b)

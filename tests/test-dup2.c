@@ -36,6 +36,8 @@ SIGNATURE_CHECK (dup2, int, (int, int));
 /* Get declarations of the Win32 API functions.  */
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
+/* Get _get_osfhandle.  */
+# include "msvc-nothrow.h"
 #endif
 
 #include "macros.h"
@@ -119,6 +121,9 @@ main (void)
   /* The source must be valid.  */
   errno = 0;
   ASSERT (dup2 (-1, fd) == -1);
+  ASSERT (errno == EBADF);
+  errno = 0;
+  ASSERT (dup2 (99, fd) == -1);
   ASSERT (errno == EBADF);
   errno = 0;
   ASSERT (dup2 (AT_FDCWD, fd) == -1);

@@ -20,6 +20,7 @@
 #include <limits.h>
 
 #include "minus-zero.h"
+#include "infinity.h"
 #include "nan.h"
 #include "macros.h"
 
@@ -41,8 +42,8 @@ main ()
   ASSERT (!isnanl (0.0L));
   ASSERT (!isnanl (minus_zerol));
   /* Infinite values.  */
-  ASSERT (!isnanl (1.0L / 0.0L));
-  ASSERT (!isnanl (-1.0L / 0.0L));
+  ASSERT (!isnanl (Infinityl ()));
+  ASSERT (!isnanl (- Infinityl ()));
   /* Quiet NaN.  */
   ASSERT (isnanl (NaNl ()));
 
@@ -64,7 +65,7 @@ main ()
   }
 #endif
 
-#if ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
 /* Representation of an 80-bit 'long double' as an initializer for a sequence
    of 'unsigned int' words.  */
 # ifdef WORDS_BIGENDIAN

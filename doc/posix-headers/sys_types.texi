@@ -3,10 +3,22 @@
 
 POSIX specification:@* @url{http://www.opengroup.org/onlinepubs/9699919799/basedefs/sys_types.h.html}
 
-Gnulib module: ---
+Gnulib module: sys_types
 
 Portability problems fixed by Gnulib:
 @itemize
+@item
+The type @code{pid_t} is not defined on some platforms:
+MSVC 9.
+@item
+The type @code{size_t} is not defined in this file on some platforms:
+MSVC 9.
+@item
+The type @code{ssize_t} is not defined on some platforms:
+MSVC 9.
+@item
+The type @code{mode_t} is not defined on some platforms:
+MSVC 9.
 @end itemize
 
 Portability problems not fixed by Gnulib:

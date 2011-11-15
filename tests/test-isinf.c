@@ -29,6 +29,7 @@
 #include <float.h>
 #include <limits.h>
 
+#include "infinity.h"
 #include "macros.h"
 
 float zerof = 0.0f;
@@ -53,8 +54,8 @@ test_isinff ()
   ASSERT (!isinf (FLT_MAX));
   ASSERT (!isinf (-FLT_MAX));
   /* Infinite values.  */
-  ASSERT (isinf (1.0f / 0.0f));
-  ASSERT (isinf (-1.0f / 0.0f));
+  ASSERT (isinf (Infinityf ()));
+  ASSERT (isinf (- Infinityf ()));
   /* Quiet NaN.  */
   ASSERT (!isinf (zerof / zerof));
 #if defined FLT_EXPBIT0_WORD && defined FLT_EXPBIT0_BIT
@@ -99,8 +100,8 @@ test_isinfd ()
   ASSERT (!isinf (DBL_MAX));
   ASSERT (!isinf (-DBL_MAX));
   /* Infinite values.  */
-  ASSERT (isinf (1.0 / 0.0));
-  ASSERT (isinf (-1.0 / 0.0));
+  ASSERT (isinf (Infinityd ()));
+  ASSERT (isinf (- Infinityd ()));
   /* Quiet NaN.  */
   ASSERT (!isinf (zerod / zerod));
 #if defined DBL_EXPBIT0_WORD && defined DBL_EXPBIT0_BIT
@@ -148,8 +149,8 @@ test_isinfl ()
   ASSERT (!isinf (LDBL_MAX));
   ASSERT (!isinf (-LDBL_MAX));
   /* Infinite values.  */
-  ASSERT (isinf (1.0L / 0.0L));
-  ASSERT (isinf (-1.0L / 0.0L));
+  ASSERT (isinf (Infinityl ()));
+  ASSERT (isinf (- Infinityl ()));
   /* Quiet NaN.  */
   ASSERT (!isinf (zerol / zerol));
 
@@ -171,7 +172,7 @@ test_isinfl ()
   }
 #endif
 
-#if ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
 /* Representation of an 80-bit 'long double' as an initializer for a sequence
    of 'unsigned int' words.  */
 # ifdef WORDS_BIGENDIAN

@@ -16,22 +16,38 @@
 
 /* written by Jim Meyering */
 
+/* If the user's config.h happens to include <fcntl.h>, let it include only
+   the system's <fcntl.h> here, so that orig_openat doesn't recurse to
+   rpl_openat.  */
+#define __need_system_fcntl_h
 #include <config.h>
+
+/* Get the original definition of open.  It might be defined as a macro.  */
+#include <fcntl.h>
+#include <sys/types.h>
+#undef __need_system_fcntl_h
+
+#if HAVE_OPENAT
+static inline int
+orig_openat (int fd, char const *filename, int flags, mode_t mode)
+{
+  return openat (fd, filename, flags, mode);
+}
+#endif
+
+/* Write "fcntl.h" here, not <fcntl.h>, otherwise OSF/1 5.1 DTK cc eliminates
+   this include because of the preliminary #include <fcntl.h> above.  */
+#include "fcntl.h"
 
 #include "openat.h"
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 #include <sys/stat.h>
 
-#include "dosname.h" /* solely for definition of IS_ABSOLUTE_FILE_NAME */
-#include "openat-priv.h"
-#include "save-cwd.h"
-
 #if HAVE_OPENAT
-
-# undef openat
 
 /* Like openat, but work around Solaris 9 bugs with trailing slash.  */
 int
@@ -86,7 +102,7 @@ rpl_openat (int dfd, char const *filename, int flags, ...)
     }
 # endif
 
-  fd = openat (dfd, filename, flags, mode);
+  fd = orig_openat (dfd, filename, flags, mode);
 
 # if OPEN_TRAILING_SLASH_BUG
   /* If the filename ends in a slash and fd does not refer to a directory,
@@ -123,6 +139,10 @@ rpl_openat (int dfd, char const *filename, int flags, ...)
 }
 
 #else /* !HAVE_OPENAT */
+
+# include "dosname.h" /* solely for definition of IS_ABSOLUTE_FILE_NAME */
+# include "openat-priv.h"
+# include "save-cwd.h"
 
 /* Replacement for Solaris' openat function.
    <http://www.google.com/search?q=openat+site:docs.sun.com>

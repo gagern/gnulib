@@ -133,12 +133,6 @@ rpl_acl_set_fd (int fd, acl_t acl)
 #  endif
 
 /* Linux-specific */
-#  ifndef HAVE_ACL_EXTENDED_FILE_NOFOLLOW
-#   define HAVE_ACL_EXTENDED_FILE_NOFOLLOW false
-#   define acl_extended_file_nofollow(name) (-1)
-#  endif
-
-/* Linux-specific */
 #  ifndef HAVE_ACL_FROM_MODE
 #   define HAVE_ACL_FROM_MODE false
 #   define acl_from_mode(mode) (NULL)
@@ -146,7 +140,7 @@ rpl_acl_set_fd (int fd, acl_t acl)
 
 /* Set to 1 if a file's mode is implicit by the ACL.
    Set to 0 if a file's mode is stored independently from the ACL.  */
-#  if HAVE_ACL_COPY_EXT_NATIVE && HAVE_ACL_CREATE_ENTRY_NP /* MacOS X */
+#  if (HAVE_ACL_COPY_EXT_NATIVE && HAVE_ACL_CREATE_ENTRY_NP) || defined __sgi /* MacOS X, IRIX */
 #   define MODE_INSIDE_ACL 0
 #  else
 #   define MODE_INSIDE_ACL 1
@@ -183,13 +177,9 @@ extern int acl_access_nontrivial (acl_t);
 #   define MODE_INSIDE_ACL 1
 #  endif
 
-#  if !defined ACL_NO_TRIVIAL /* Solaris <= 10, Cygwin */
-
 /* Return 1 if the given ACL is non-trivial.
    Return 0 if it is trivial, i.e. equivalent to a simple stat() mode.  */
 extern int acl_nontrivial (int count, aclent_t *entries);
-
-#  endif
 
 #  ifdef ACE_GETACL /* Solaris 10 */
 

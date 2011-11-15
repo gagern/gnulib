@@ -30,6 +30,7 @@
 
 #include "macros.h"
 #include "minus-zero.h"
+#include "infinity.h"
 #include "nan.h"
 
 /* The SGI MIPS floating-point format does not distinguish 0.0 and -0.0.  */
@@ -217,7 +218,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%a %d", 1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%a %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0);
     ASSERT (length == strlen (result));
@@ -227,7 +228,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%a %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%a %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0);
     ASSERT (length == strlen (result));
@@ -458,7 +459,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%010a %d", 1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%010a %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     /* "0000000inf 33" is not a valid result; see
        <http://lists.gnu.org/archive/html/bug-gnulib/2007-04/msg00107.html> */
@@ -531,7 +532,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%La %d", 1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%La %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0);
     ASSERT (length == strlen (result));
@@ -541,7 +542,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%La %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%La %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0);
     ASSERT (length == strlen (result));
@@ -559,7 +560,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
     ASSERT (length == strlen (result));
     free (result);
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -874,7 +875,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%010La %d", 1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%010La %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     /* "0000000inf 33" is not a valid result; see
        <http://lists.gnu.org/archive/html/bug-gnulib/2007-04/msg00107.html> */
@@ -1044,7 +1045,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%f %d", 1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%f %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
@@ -1055,7 +1056,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%f %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%f %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
@@ -1148,7 +1149,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015f %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015f %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
@@ -1343,7 +1344,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%Lf %d", 1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%Lf %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
@@ -1354,7 +1355,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%Lf %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%Lf %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
@@ -1373,7 +1374,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
     ASSERT (length == strlen (result));
     free (result);
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -1548,7 +1549,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015Lf %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015Lf %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
@@ -1654,7 +1655,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%F %d", 1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%F %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "INF 33") == 0
             || strcmp (result, "INFINITY 33") == 0);
@@ -1665,7 +1666,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%F %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%F %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-INF 33") == 0
             || strcmp (result, "-INFINITY 33") == 0);
@@ -1698,7 +1699,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015F %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015F %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -INF 33") == 0
             || strcmp (result, "      -INFINITY 33") == 0);
@@ -1790,7 +1791,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%LF %d", 1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%LF %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "INF 33") == 0
             || strcmp (result, "INFINITY 33") == 0);
@@ -1801,7 +1802,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%LF %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%LF %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-INF 33") == 0
             || strcmp (result, "-INFINITY 33") == 0);
@@ -1834,7 +1835,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015LF %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015LF %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -INF 33") == 0
             || strcmp (result, "      -INFINITY 33") == 0);
@@ -2032,7 +2033,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%e %d", 1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%e %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
@@ -2043,7 +2044,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%e %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%e %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
@@ -2154,7 +2155,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015e %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015e %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
@@ -2365,7 +2366,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%Le %d", 1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%Le %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
@@ -2376,7 +2377,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%Le %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%Le %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
@@ -2395,7 +2396,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
     ASSERT (length == strlen (result));
     free (result);
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -2588,7 +2589,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015Le %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015Le %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
@@ -2798,7 +2799,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%g %d", 1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%g %d", Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
@@ -2809,7 +2810,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%g %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%g %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
@@ -2913,7 +2914,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015g %d", -1.0 / 0.0, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015g %d", - Infinityd (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
@@ -3119,7 +3120,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Positive infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%Lg %d", 1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%Lg %d", Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
@@ -3130,7 +3131,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* Negative infinity.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%Lg %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%Lg %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
@@ -3149,7 +3150,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
     ASSERT (length == strlen (result));
     free (result);
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -3335,7 +3336,7 @@ test_function (char * (*my_asnprintf) (char *, size_t *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     size_t length;
     char *result =
-      my_asnprintf (NULL, &length, "%015Lg %d", -1.0L / 0.0L, 33, 44, 55);
+      my_asnprintf (NULL, &length, "%015Lg %d", - Infinityl (), 33, 44, 55);
     ASSERT (result != NULL);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);

@@ -9,18 +9,24 @@ m4/fts.m4
 
 Depends-on:
 cloexec
+closedir
 cycle-check
 d-ino
 d-type
 dirent-safer
+dup
 fchdir
 fcntl-h
 fcntl-safer
+fstat
 hash
 i-ring
 lstat
 memmove
+openat-h
 openat-safer
+opendir
+readdir
 stdbool
 unistd-safer
 

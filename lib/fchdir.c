@@ -197,69 +197,6 @@ _gl_directory_name (int fd)
   return NULL;
 }
 
-#if REPLACE_OPEN_DIRECTORY
-/* Return stat information about FD in STATBUF.  Needed when
-   rpl_open() used a dummy file to work around an open() that can't
-   normally visit directories.  */
-# undef fstat
-int
-rpl_fstat (int fd, struct stat *statbuf)
-{
-  if (0 <= fd && fd < dirs_allocated && dirs[fd].name != NULL)
-    return stat (dirs[fd].name, statbuf);
-  return fstat (fd, statbuf);
-}
-#endif
-
-/* Override opendir() and closedir(), to keep track of the open file
-   descriptors.  Needed because there is a function dirfd().  */
-
-int
-rpl_closedir (DIR *dp)
-#undef closedir
-{
-  int fd = dirfd (dp);
-  int retval = closedir (dp);
-
-  if (retval >= 0)
-    _gl_unregister_fd (fd);
-  return retval;
-}
-
-DIR *
-rpl_opendir (const char *filename)
-#undef opendir
-{
-  DIR *dp;
-
-  dp = opendir (filename);
-  if (dp != NULL)
-    {
-      int fd = dirfd (dp);
-      if (0 <= fd && _gl_register_fd (fd, filename) != fd)
-        {
-          int saved_errno = errno;
-          closedir (dp);
-          errno = saved_errno;
-          return NULL;
-        }
-    }
-  return dp;
-}
-
-/* Override dup(), to keep track of open file descriptors.  */
-
-int
-rpl_dup (int oldfd)
-#undef dup
-{
-  int newfd = dup (oldfd);
-
-  if (0 <= newfd)
-    newfd = _gl_register_dup (oldfd, newfd);
-  return newfd;
-}
-
 
 /* Implement fchdir() in terms of chdir().  */
 

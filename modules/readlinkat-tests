@@ -6,7 +6,9 @@ tests/macros.h
 
 Depends-on:
 ignore-value
+openat
 symlinkat
+unlinkat
 
 configure.ac:
 

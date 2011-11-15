@@ -4,7 +4,9 @@ tests/signature.h
 tests/macros.h
 
 Depends-on:
+msvc-nothrow
 open
+close
 
 configure.ac:
 

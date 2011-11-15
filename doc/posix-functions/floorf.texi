@@ -11,6 +11,9 @@ Portability problems fixed by either Gnulib module @code{floorf} or @code{floorf
 @item
 This function is missing on some platforms:
 Minix 3.1.8, AIX 5.1, HP-UX 11, Solaris 9.
+@item
+This function is only defined as a macro with arguments on some platforms:
+MSVC 9.
 @end itemize
 
 Portability problems fixed by Gnulib module @code{floorf-ieee}:

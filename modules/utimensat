@@ -3,13 +3,22 @@ Set file access and modification times of a file relative to a directory fd.
 
 Files:
 lib/utimensat.c
+lib/at-func.c
 m4/utimensat.m4
 
 Depends-on:
 sys_stat
 extensions
-openat          [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+at-internal     [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+dosname         [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+errno           [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+fchdir          [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+fcntl-h         [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+openat-die      [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+openat-h        [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+save-cwd        [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
 utimens         [test $HAVE_UTIMENSAT = 0 || test $REPLACE_UTIMENSAT = 1]
+fstatat         [test $REPLACE_UTIMENSAT = 1]
 
 configure.ac:
 gl_FUNC_UTIMENSAT

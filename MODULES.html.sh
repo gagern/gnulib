@@ -1512,19 +1512,26 @@ func_module ()
     #   parentheses (as per GNU standards, section "GNU Manuals").
     # - Flag the remaining symbol() constructs as errors.
     # - Change 'xxx' to <CODE>xxx</CODE>.
+    sed_extract_element='
+      '$sed_lt'
+      '$sed_gt'
+      '$sed_remove_trailing_empty_line'
+      s,^, ,
+      s,$, ,
+      s,\([^a-zA-Z_]\)'$posix_functions'() \(function\|macro\),\1<A HREF="'$POSIX2008_URL'/functions/\2.html">\2</A> \3,g
+      s,\([^a-zA-Z_]\)'$posix_functions' \(function\|macro\),\1<A HREF="'$POSIX2008_URL'/functions/\2.html">\2</A> \3,g
+      s,\([^a-zA-Z_]\)'$posix_functions'(),\1<A HREF="'$POSIX2008_URL'/functions/\2.html">\2</A> <SPAN STYLE="color:#FF0000;">what?? If you mean a function\, please say so.</SPAN>,g
+      s,\([^a-zA-Z_]\)'$posix2001_functions'() \(function\|macro\),\1<A HREF="'$POSIX2001_URL'xsh/\2.html">\2</A> \3,g
+      s,\([^a-zA-Z_]\)'$posix2001_functions' \(function\|macro\),\1<A HREF="'$POSIX2001_URL'xsh/\2.html">\2</A> \3,g
+      s,\([^a-zA-Z_]\)'$posix2001_functions'(),\1<A HREF="'$POSIX2001_URL'xsh/\2.html">\2</A> <SPAN STYLE="color:#FF0000;">what?? If you mean a function\, please say so.</SPAN>,g
+      s,\([^a-zA-Z_]\)\([a-zA-Z_][a-zA-Z0-9_]*\)() \(function\|macro\),\1\2 \3,g
+      s,\([^a-zA-Z_]\)\([a-zA-Z_][a-zA-Z0-9_]*\)(),\1\2 <SPAN STYLE="color:#FF0000;">what?? If you mean a function\, please say so.</SPAN>,g
+      s, '"'"'\([a-zA-Z0-9_ -]*\)'"'"'\([^a-zA-Z0-9_]\), <CODE>\1</CODE>\2,g
+      s,^ ,,
+      s, $,,
+    '
     element=`gnulib-tool --extract-description $1 \
-             | sed -e "$sed_lt" -e "$sed_gt" -e "$sed_remove_trailing_empty_line" \
-                   -e 's,^, ,' -e 's,$, ,' \
-                   -e 's,\([^a-zA-Z_]\)'"${posix_functions}"'() \(function\|macro\),\1<A HREF="'"$POSIX2008_URL"'/functions/\2.html">\2</A> \3,g' \
-                   -e 's,\([^a-zA-Z_]\)'"${posix_functions}"' \(function\|macro\),\1<A HREF="'"$POSIX2008_URL"'/functions/\2.html">\2</A> \3,g' \
-                   -e 's,\([^a-zA-Z_]\)'"${posix_functions}"'(),\1<A HREF="'"$POSIX2008_URL"'/functions/\2.html">\2</A> <SPAN STYLE="color:#FF0000;">what?? If you mean a function\, please say so.</SPAN>,g' \
-                   -e 's,\([^a-zA-Z_]\)'"${posix2001_functions}"'() \(function\|macro\),\1<A HREF="'"$POSIX2001_URL"'xsh/\2.html">\2</A> \3,g' \
-                   -e 's,\([^a-zA-Z_]\)'"${posix2001_functions}"' \(function\|macro\),\1<A HREF="'"$POSIX2001_URL"'xsh/\2.html">\2</A> \3,g' \
-                   -e 's,\([^a-zA-Z_]\)'"${posix2001_functions}"'(),\1<A HREF="'"$POSIX2001_URL"'xsh/\2.html">\2</A> <SPAN STYLE="color:#FF0000;">what?? If you mean a function\, please say so.</SPAN>,g' \
-                   -e 's,\([^a-zA-Z_]\)\([a-zA-Z_][a-zA-Z0-9_]*\)() \(function\|macro\),\1\2 \3,g' \
-                   -e 's,\([^a-zA-Z_]\)\([a-zA-Z_][a-zA-Z0-9_]*\)(),\1\2 <SPAN STYLE="color:#FF0000;">what?? If you mean a function\, please say so.</SPAN>,g' \
-                   -e 's, '"'"'\([a-zA-Z0-9_ -]*\)'"'"'\([^a-zA-Z0-9_]\), <CODE>\1</CODE>\2,g' \
-                   -e 's,^ ,,' -e 's, $,,'`
+             | LC_ALL=C sed -e "$sed_extract_element"`
     func_echo "<TD ALIGN=LEFT VALIGN=TOP WIDTH=\"80%\">$element"
 
     func_end TR
@@ -1539,13 +1546,19 @@ func_module ()
     includes=`gnulib-tool --extract-include-directive $1`
     files=`gnulib-tool --extract-filelist $1 \
            | grep -v '^m4/gnulib-common\.m4$'`
+    sed_extract_element='
+      '$sed_lt'
+      '$sed_gt'
+      '$sed_remove_trailing_empty_line'
+      s,^#include "\(.*\)"$,#include "<A HREF="'$repo_url_prefix'lib/\1'$repo_url_suffix_repl'">\1</A>",
+      s,^#include &lt;'$posix_headers'\.h&gt;$,#include \&lt;<A HREF="'$POSIX2008_URL'/basedefs/\1.h.html">\1.h</A>\&gt;,
+      s,<A HREF="'$POSIX2008_URL'/basedefs/\([a-zA-Z0-9_]*\)/\([a-zA-Z0-9_]*\)\.h\.html">,<A HREF="'$POSIX2008_URL'/basedefs/\1_\2.h.html">,
+      s,^#include &lt;'$posix2001_headers'\.h&gt;$,#include \&lt;<A HREF="'$POSIX2001_URL'xbd/\1.h.html">\1.h</A>\&gt;,
+      s/$/<BR>/
+    '
     element=`echo "$includes" \
-             | sed -e "$sed_lt" -e "$sed_gt" -e "$sed_remove_trailing_empty_line" \
-                   -e 's,^#include "\(.*\)"$,#include "<A HREF="'$repo_url_prefix'lib/\1'$repo_url_suffix_repl'">\1</A>",' \
-                   -e 's,^#include &lt;'"${posix_headers}"'\.h&gt;$,#include \&lt;<A HREF="'"$POSIX2008_URL"'/basedefs/\1.h.html">\1.h</A>\&gt;,' \
-                   -e 's,<A HREF="'"$POSIX2008_URL"'/basedefs/\([a-zA-Z0-9_]*\)/\([a-zA-Z0-9_]*\)\.h\.html">,<A HREF="'"$POSIX2008_URL"'/basedefs/\1_\2.h.html">,' \
-                   -e 's,^#include &lt;'"${posix2001_headers}"'\.h&gt;$,#include \&lt;<A HREF="'"$POSIX2001_URL"'xbd/\1.h.html">\1.h</A>\&gt;,' \
-                   -e 's/$/<BR>/' | tr -d "$trnl" | sed -e 's/<BR>$//'`
+             | LC_ALL=C sed -e "$sed_extract_element" | tr -d "$trnl" \
+             | sed -e 's/<BR>$//'`
     test -n "$element" || element='---'
     func_echo "<TD ALIGN=LEFT VALIGN=TOP>$element"
 
@@ -1554,21 +1567,28 @@ func_module ()
                  | sed -n -e "$sed_choose_unconditional_nonstandard_include" \
                  | sed -e "$sed_escape_dot" | tr -d "$trnl"`
     sed_choose_lib_files='s,^lib/\(.*\)$,\1,p'
+    sed_extract_include='
+      \|^'"$includefile"'$|d
+      s,^\(.*\)$,<A HREF="'$repo_url_prefix'lib/\1'$repo_url_suffix_repl'">\1</A>,
+      s/$/<BR>/
+    '
     element=`echo "$files" \
              | sed -e '/^$/d' \
              | sed -n -e "$sed_choose_lib_files" \
-             | sed -e '\|^'"${includefile}"'$|d' \
-                   -e 's,^\(.*\)$,<A HREF="'$repo_url_prefix'lib/\1'$repo_url_suffix_repl'">\1</A>,' \
-                   -e 's/$/<BR>/' | tr -d "$trnl" | sed -e 's/<BR>$//'`
+             | sed -e "$sed_extract_include" \
+             | tr -d "$trnl" | sed -e 's/<BR>$//'`
     test -n "$element" || element='---'
     func_echo "<TD ALIGN=LEFT VALIGN=TOP>$element"
 
     sed_choose_m4_files='s,^m4/\(.*\)$,\1,p'
+    sed_extract_repo_url='
+      /^onceonly/d
+      s,^\(.*\)$,<A HREF="'$repo_url_prefix'm4/\1'$repo_url_suffix_repl'">\1</A>,
+    '
     element=`(echo "$files" \
               | sed -e "$sed_remove_trailing_empty_line" \
               | sed -n -e "$sed_choose_m4_files" \
-              | sed -e '/^onceonly/d' \
-                    -e 's,^\(.*\)$,<A HREF="'$repo_url_prefix'm4/\1'$repo_url_suffix_repl'">\1</A>,'; \
+              | sed -e "$sed_extract_repo_url"; \
               gnulib-tool --extract-autoconf-snippet $1 \
               | sed -e "$sed_remove_trailing_empty_line") \
               | sed -e 's/$/<BR>/' | tr -d "$trnl" | sed -e 's/<BR>$//'`
@@ -1973,6 +1993,7 @@ func_all_modules ()
   func_echo "$element"
 
   func_begin_table
+  func_module base32
   func_module base64
   func_module check-version
   func_module crc
@@ -2319,6 +2340,10 @@ func_all_modules ()
   func_wrap H3
   func_echo "$element"
 
+  func_begin_table
+  func_module stdalign
+  func_end_table
+
   element="Support for obsolete systems lacking POSIX:2008"
   func_section_wrap posix_sup_obsolete
   func_wrap H2
@@ -2356,6 +2381,7 @@ func_all_modules ()
   func_module fclose
   func_module fcntl-h
   func_module fcntl
+  func_module fdatasync
   func_module flock
   func_module fopen
   func_module fprintf-posix
@@ -2409,6 +2435,7 @@ func_all_modules ()
   func_module perror
   func_module poll
   func_module popen
+  func_module posix_openpt
   func_module posix_spawn
   func_module posix_spawnattr_destroy
   func_module posix_spawnattr_getflags
@@ -2450,7 +2477,7 @@ func_all_modules ()
   func_module servent
   func_module setsockopt
   func_module shutdown
-  func_module signal
+  func_module signal-h
   func_module sleep
   func_module snprintf-posix
   func_module socket
@@ -3420,6 +3447,7 @@ func_all_modules ()
   func_module physmem
   func_module posixver
   func_module progname
+  func_module ptsname_r
   func_module pty
   func_module quotearg
   func_module quote
@@ -3593,7 +3621,7 @@ if test -n "$missed_files"; then
   func_echo "$element"
 
   func_echo '<PRE>'
-  echo "$missed_files" | sed -e 's,^\(.*\)$,<A HREF="'$repo_url_prefix'\1'$repo_url_suffix_repl'">\1</A>,'
+  echo "$missed_files" | sed -e 's,^\(.*\)$,<A HREF="'"$repo_url_prefix"'\1'"$repo_url_suffix_repl"'">\1</A>,'
   echo '</PRE>'
 
 fi

@@ -89,33 +89,58 @@ main (void)
       struct stat st;
       test_func func = funcs[i];
 
+      /* Test behaviour for invalid file descriptors.  */
+      {
+        errno = 0;
+        ASSERT (func (-1, "foo", 0600) == -1);
+        ASSERT (errno == EBADF
+                || errno == ENOSYS /* seen on mingw */
+               );
+      }
+      {
+        errno = 0;
+        ASSERT (func (99, "foo", 0600) == -1);
+        ASSERT (errno == EBADF
+                || errno == ENOSYS /* seen on mingw */
+               );
+      }
+
       /* Create fifo while cwd is '.', then stat it from '..'.  */
-      ASSERT (func (AT_FDCWD, BASE "fifo", 0600) == 0);
-      errno = 0;
-      ASSERT (func (dfd, BASE "fifo", 0600) == -1);
-      ASSERT (errno == EEXIST);
-      ASSERT (chdir ("..") == 0);
-      errno = 0;
-      ASSERT (fstatat (AT_FDCWD, BASE "fifo", &st, 0) == -1);
-      ASSERT (errno == ENOENT);
-      memset (&st, 0, sizeof st);
-      ASSERT (fstatat (dfd, BASE "fifo", &st, 0) == 0);
-      ASSERT (S_ISFIFO (st.st_mode));
-      ASSERT (unlinkat (dfd, BASE "fifo", 0) == 0);
+      if (func (AT_FDCWD, BASE "fifo", 0600) != 0)
+        ASSERT (errno == ENOSYS); /* seen on native Windows */
+      else
+        {
+          errno = 0;
+          ASSERT (func (dfd, BASE "fifo", 0600) == -1);
+          ASSERT (errno == EEXIST);
+          ASSERT (chdir ("..") == 0);
+          errno = 0;
+          ASSERT (fstatat (AT_FDCWD, BASE "fifo", &st, 0) == -1);
+          ASSERT (errno == ENOENT);
+          memset (&st, 0, sizeof st);
+          ASSERT (fstatat (dfd, BASE "fifo", &st, 0) == 0);
+          ASSERT (S_ISFIFO (st.st_mode));
+          ASSERT (unlinkat (dfd, BASE "fifo", 0) == 0);
+        }
 
       /* Create fifo while cwd is '..', then stat it from '.'.  */
-      ASSERT (func (dfd, BASE "fifo", 0600) == 0);
-      ASSERT (fchdir (dfd) == 0);
-      errno = 0;
-      ASSERT (func (AT_FDCWD, BASE "fifo", 0600) == -1);
-      ASSERT (errno == EEXIST);
-      memset (&st, 0, sizeof st);
-      ASSERT (fstatat (AT_FDCWD, BASE "fifo", &st, AT_SYMLINK_NOFOLLOW) == 0);
-      ASSERT (S_ISFIFO (st.st_mode));
-      memset (&st, 0, sizeof st);
-      ASSERT (fstatat (dfd, BASE "fifo", &st, AT_SYMLINK_NOFOLLOW) == 0);
-      ASSERT (S_ISFIFO (st.st_mode));
-      ASSERT (unlink (BASE "fifo") == 0);
+      if (func (dfd, BASE "fifo", 0600) != 0)
+        ASSERT (errno == ENOSYS); /* seen on native Windows */
+      else
+        {
+          ASSERT (fchdir (dfd) == 0);
+          errno = 0;
+          ASSERT (func (AT_FDCWD, BASE "fifo", 0600) == -1);
+          ASSERT (errno == EEXIST);
+          memset (&st, 0, sizeof st);
+          ASSERT (fstatat (AT_FDCWD, BASE "fifo", &st, AT_SYMLINK_NOFOLLOW)
+                  == 0);
+          ASSERT (S_ISFIFO (st.st_mode));
+          memset (&st, 0, sizeof st);
+          ASSERT (fstatat (dfd, BASE "fifo", &st, AT_SYMLINK_NOFOLLOW) == 0);
+          ASSERT (S_ISFIFO (st.st_mode));
+          ASSERT (unlink (BASE "fifo") == 0);
+        }
     }
 
   ASSERT (close (dfd) == 0);

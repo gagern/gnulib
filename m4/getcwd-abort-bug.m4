@@ -1,4 +1,4 @@
-# serial 4
+# serial 6
 # Determine whether getcwd aborts when the length of the working directory
 # name is unusually large.  Any length between 4k and 16k trigger the bug
 # when using glibc-2.4.90-9 or older.
@@ -14,6 +14,8 @@
 AC_DEFUN([gl_FUNC_GETCWD_ABORT_BUG],
 [
   AC_CHECK_DECLS_ONCE([getcwd])
+  AC_CHECK_HEADERS_ONCE([unistd.h])
+  AC_REQUIRE([gl_PATHMAX_SNIPPET_PREREQ])
   AC_CHECK_FUNCS([getpagesize])
   AC_CACHE_CHECK([whether getcwd aborts when 4k < cwd_length < 16k],
     gl_cv_func_getcwd_abort_bug,
@@ -26,10 +28,15 @@ AC_DEFUN([gl_FUNC_GETCWD_ABORT_BUG],
        [AC_LANG_SOURCE(
           [[
 #include <stdlib.h>
-#include <unistd.h>
-#include <limits.h>
+#if HAVE_UNISTD_H
+# include <unistd.h>
+#else /* on Windows with MSVC */
+# include <direct.h>
+#endif
 #include <string.h>
 #include <sys/stat.h>
+
+]gl_PATHMAX_SNIPPET[
 
 /* Don't get link errors because mkdir is redefined to rpl_mkdir.  */
 #undef mkdir

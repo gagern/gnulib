@@ -5,8 +5,10 @@ tests/signature.h
 tests/macros.h
 
 Depends-on:
+fstatat
 ignore-value
 symlink
+unlinkat
 
 configure.ac:
 

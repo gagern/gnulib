@@ -12,6 +12,47 @@ User visible incompatible changes
 
 Date        Modules         Changes
 
+2011-11-04  openat          This module no longer provides the mkdirat()
+                            function. If you need this function, you now need
+                            to request the 'mkdirat' module.
+
+2011-11-04  openat          This module no longer provides the fstatat()
+                            function. If you need this function, you now need
+                            to request the 'fstatat' module.
+
+2011-11-03  openat          This module no longer provides the unlinkat()
+                            function. If you need this function, you now need
+                            to request the 'unlinkat' module.
+
+2011-11-02  openat          This module no longer provides the fchmodat()
+                            function. If you need this function, you now need
+                            to request the 'fchmodat' module.
+
+2011-11-01  alignof         This module no longer provides the alignof() macro.
+                            Use either alignof_slot() or alignof_type() instead.
+
+2011-11-01  openat          This module no longer provides the fchownat()
+                            function. If you need this function, you now need
+                            to request the 'fchownat' module.
+
+2011-10-03  poll            The link requirements of this module are changed
+                            from empty to $(LIB_POLL).
+
+2011-09-25  sys_stat        This module no longer provides the fstat()
+                            function. If you need this function, you now need
+                            to request the 'fstat' module.
+
+2011-09-23  signal          This module is renamed to 'signal-h'.
+
+2011-09-22  select          The link requirements of this module are changed
+                            from $(LIBSOCKET) to $(LIB_SELECT).
+
+2011-09-12  fchdir          This module no longer overrides the functions
+                            opendir() and closedir(), unless the modules
+                            'opendir' and 'closedir' are in use, respectively.
+                            If you use opendir(), please use module 'opendir'.
+                            If you use closedir(), please use module 'closedir'.
+
 2011-08-04  pathmax         The header file "pathmax.h" no longer defines
                             PATH_MAX on GNU/Hurd. Please use one of the methods
                             listed in pathmax.h to ensure your package is

@@ -1,15 +1,21 @@
 Description:
-symlinkat(): create symlinks relative to a directory
+symlinkat() function: create symlinks relative to a directory
 
 Files:
 lib/symlinkat.c
+lib/at-func.c
 m4/symlinkat.m4
 
 Depends-on:
 unistd
 extensions
-fcntl-h
-openat          [test $HAVE_SYMLINKAT = 0]
+at-internal     [test $HAVE_SYMLINKAT = 0]
+dosname         [test $HAVE_SYMLINKAT = 0]
+errno           [test $HAVE_SYMLINKAT = 0]
+fchdir          [test $HAVE_SYMLINKAT = 0]
+openat-die      [test $HAVE_SYMLINKAT = 0]
+openat-h        [test $HAVE_SYMLINKAT = 0]
+save-cwd        [test $HAVE_SYMLINKAT = 0]
 symlink         [test $HAVE_SYMLINKAT = 0]
 
 configure.ac:

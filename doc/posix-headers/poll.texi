@@ -9,9 +9,12 @@ Portability problems fixed by Gnulib:
 @itemize
 @item
 This header file is missing on some platforms:
-mingw, BeOS.
+mingw, MSVC 9, BeOS.
 @end itemize
 
 Portability problems not fixed by Gnulib:
 @itemize
+@item
+This header file does not defined @code{nfds_t} on some platforms:
+IRIX 5.3.
 @end itemize

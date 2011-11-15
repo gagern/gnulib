@@ -21,6 +21,8 @@
      Platform                        PIPE_DATA_BLOCK_SIZE
 
      Linux                           >= 63489
+     Linux/SPARC                     >= 126977
+     Linux/IA-64, Linux/MIPS         >= 253953
      FreeBSD, OpenBSD, MacOS X       >= 65537
      AIX                             >= 32769
      HP-UX                           >= 8193
@@ -31,8 +33,10 @@
      Cygwin                          >= 65537
      native Win32                    >= 4097 (depends on the _pipe argument)
  */
-#if defined __osf__
+#if defined __osf__ || (defined __linux__ && (defined __ia64__ || defined __mips__))
 # define PIPE_DATA_BLOCK_SIZE 270000
+#elif defined __linux__ && defined __sparc__
+# define PIPE_DATA_BLOCK_SIZE 140000
 #else
 # define PIPE_DATA_BLOCK_SIZE 70000
 #endif

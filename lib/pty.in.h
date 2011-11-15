@@ -42,6 +42,14 @@
 
 /* Get 'struct termios' and 'struct winsize'.  */
 #include <termios.h>
+#if defined _AIX
+# include <sys/ioctl.h>
+#endif
+/* Mingw lacks 'struct termios' and 'struct winsize', but a forward
+   declaration of an opaque type is sufficient to allow compilation of
+   a stub openpty().  */
+struct termios;
+struct winsize;
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 

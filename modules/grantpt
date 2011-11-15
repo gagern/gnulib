@@ -3,11 +3,13 @@ grantpt() function: Acquire ownership of the slave side of a pseudo-terminal.
 
 Files:
 lib/grantpt.c
+lib/pty-private.h
 m4/grantpt.m4
 
 Depends-on:
 stdlib
 extensions
+fcntl-h         [test $HAVE_GRANTPT = 0]
 pt_chown        [test $HAVE_GRANTPT = 0]
 waitpid         [test $HAVE_GRANTPT = 0]
 configmake      [test $HAVE_GRANTPT = 0]
@@ -26,7 +28,7 @@ Include:
 <stdlib.h>
 
 License:
-LGPL
+LGPLv2+
 
 Maintainer:
 Bruno Haible

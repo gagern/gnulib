@@ -1,4 +1,4 @@
-# expl.m4 serial 3
+# expl.m4 serial 5
 dnl Copyright (C) 2010-2011 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -7,6 +7,8 @@ dnl with or without modifications, as long as this notice is preserved.
 AC_DEFUN([gl_FUNC_EXPL],
 [
   AC_REQUIRE([gl_MATH_H_DEFAULTS])
+  AC_REQUIRE([gl_LONG_DOUBLE_VS_DOUBLE])
+
   dnl Persuade glibc <math.h> to declare expl().
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
 
@@ -51,13 +53,18 @@ AC_DEFUN([gl_FUNC_EXPL],
      || test $gl_cv_func_expl_in_libm = yes; then
     dnl Also check whether it's declared.
     dnl MacOS X 10.3 has expl() in libc but doesn't declare it in <math.h>.
-    AC_CHECK_DECL([expl], , [HAVE_DECL_EXPL=0], [#include <math.h>])
+    AC_CHECK_DECL([expl], , [HAVE_DECL_EXPL=0], [[#include <math.h>]])
   else
     HAVE_DECL_EXPL=0
     HAVE_EXPL=0
     dnl Find libraries needed to link lib/expl.c.
-    AC_REQUIRE([gl_FUNC_FLOORL])
-    EXPL_LIBM="$FLOORL_LIBM"
+    if test $HAVE_SAME_LONG_DOUBLE_AS_DOUBLE = 1; then
+      AC_REQUIRE([gl_FUNC_EXP])
+      EXPL_LIBM="$EXP_LIBM"
+    else
+      AC_REQUIRE([gl_FUNC_FLOORL])
+      EXPL_LIBM="$FLOORL_LIBM"
+    fi
   fi
   AC_SUBST([EXPL_LIBM])
 ])

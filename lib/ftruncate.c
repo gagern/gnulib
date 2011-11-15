@@ -1,4 +1,4 @@
-/* ftruncate emulations that work on some System V's.
+/* ftruncate emulations for native Windows.
    This file is in the public domain.  */
 
 #include <config.h>
@@ -6,67 +6,33 @@
 /* Specification.  */
 #include <unistd.h>
 
-#include <sys/types.h>
-#include <fcntl.h>
+#if HAVE_CHSIZE
 
-#ifdef F_CHSIZE
+# include <errno.h>
+# include <io.h>
 
-int
-ftruncate (int fd, off_t length)
+# if HAVE_MSVC_INVALID_PARAMETER_HANDLER
+#  include "msvc-inval.h"
+static inline int
+chsize_nothrow (int fd, long length)
 {
-  return fcntl (fd, F_CHSIZE, length);
-}
+  int result;
 
-#else /* not F_CHSIZE */
-# ifdef F_FREESP
-
-/* By William Kucharski <kucharsk@netcom.com>.  */
-
-#  include <sys/stat.h>
-#  include <errno.h>
-
-int
-ftruncate (int fd, off_t length)
-{
-  struct flock fl;
-  struct stat filebuf;
-
-  if (fstat (fd, &filebuf) < 0)
-    return -1;
-
-  if (filebuf.st_size < length)
+  TRY_MSVC_INVAL
     {
-      /* Extend file length. */
-      if (lseek (fd, (length - 1), SEEK_SET) < 0)
-        return -1;
-
-      /* Write a "0" byte. */
-      if (write (fd, "", 1) != 1)
-        return -1;
+      result = chsize (fd, length);
     }
-  else
+  CATCH_MSVC_INVAL
     {
-
-      /* Truncate length. */
-
-      fl.l_whence = 0;
-      fl.l_len = 0;
-      fl.l_start = length;
-      fl.l_type = F_WRLCK;      /* write lock on file space */
-
-      /* This relies on the *undocumented* F_FREESP argument to fcntl,
-         which truncates the file so that it ends at the position
-         indicated by fl.l_start.  Will minor miracles never cease?  */
-
-      if (fcntl (fd, F_FREESP, &fl) < 0)
-        return -1;
+      result = -1;
+      errno = EBADF;
     }
+  DONE_MSVC_INVAL;
 
-  return 0;
+  return result;
 }
-
-# else /* not F_CHSIZE nor F_FREESP */
-#  if HAVE_CHSIZE                      /* native Windows, e.g. mingw */
+#  define chsize chsize_nothrow
+# endif
 
 int
 ftruncate (int fd, off_t length)
@@ -74,17 +40,4 @@ ftruncate (int fd, off_t length)
   return chsize (fd, length);
 }
 
-#  else /* not F_CHSIZE nor F_FREESP nor HAVE_CHSIZE */
-
-#   include <errno.h>
-
-int
-ftruncate (int fd, off_t length)
-{
-  errno = EIO;
-  return -1;
-}
-
-#  endif /* not HAVE_CHSIZE */
-# endif /* not F_FREESP */
-#endif /* not F_CHSIZE */
+#endif

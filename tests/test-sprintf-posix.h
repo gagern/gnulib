@@ -17,6 +17,7 @@
 /* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
 
 #include "minus-zero.h"
+#include "infinity.h"
 #include "nan.h"
 
 /* The SGI MIPS floating-point format does not distinguish 0.0 and -0.0.  */
@@ -168,7 +169,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%a %d", 1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%a %d", Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0);
     ASSERT (retval == strlen (result));
   }
@@ -176,7 +177,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%a %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%a %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0);
     ASSERT (retval == strlen (result));
   }
@@ -371,7 +372,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%010a %d", 1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%010a %d", Infinityd (), 33, 44, 55);
     /* "0000000inf 33" is not a valid result; see
        <http://lists.gnu.org/archive/html/bug-gnulib/2007-04/msg00107.html> */
     ASSERT (strcmp (result, "       inf 33") == 0);
@@ -432,7 +433,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%La %d", 1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%La %d", Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0);
     ASSERT (retval == strlen (result));
   }
@@ -440,7 +441,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%La %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%La %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0);
     ASSERT (retval == strlen (result));
   }
@@ -454,7 +455,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
             && strcmp (result + strlen (result) - 3, " 33") == 0);
     ASSERT (retval == strlen (result));
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -723,7 +724,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%010La %d", 1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%010La %d", Infinityl (), 33, 44, 55);
     /* "0000000inf 33" is not a valid result; see
        <http://lists.gnu.org/archive/html/bug-gnulib/2007-04/msg00107.html> */
     ASSERT (strcmp (result, "       inf 33") == 0);
@@ -877,7 +878,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%f %d", 1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%f %d", Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -886,7 +887,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%f %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%f %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -961,7 +962,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015f %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%015f %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1134,7 +1135,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%Lf %d", 1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%Lf %d", Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1143,7 +1144,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%Lf %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%Lf %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1158,7 +1159,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
             && strcmp (result + strlen (result) - 3, " 33") == 0);
     ASSERT (retval == strlen (result));
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -1305,7 +1306,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015Lf %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%015Lf %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1391,7 +1392,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%F %d", 1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%F %d", Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "INF 33") == 0
             || strcmp (result, "INFINITY 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1400,7 +1401,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%F %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%F %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "-INF 33") == 0
             || strcmp (result, "-INFINITY 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1427,7 +1428,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015F %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%015F %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "           -INF 33") == 0
             || strcmp (result, "      -INFINITY 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1501,7 +1502,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%LF %d", 1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%LF %d", Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "INF 33") == 0
             || strcmp (result, "INFINITY 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1510,7 +1511,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%LF %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%LF %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "-INF 33") == 0
             || strcmp (result, "-INFINITY 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1537,7 +1538,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015LF %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%015LF %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "           -INF 33") == 0
             || strcmp (result, "      -INFINITY 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1715,7 +1716,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%e %d", 1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%e %d", Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1724,7 +1725,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%e %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%e %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -1815,7 +1816,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015e %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%015e %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2004,7 +2005,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%Le %d", 1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%Le %d", Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2013,7 +2014,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%Le %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%Le %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2028,7 +2029,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
             && strcmp (result + strlen (result) - 3, " 33") == 0);
     ASSERT (retval == strlen (result));
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -2191,7 +2192,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015Le %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%015Le %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2379,7 +2380,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%g %d", 1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%g %d", Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2388,7 +2389,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%g %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%g %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2472,7 +2473,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015g %d", -1.0 / 0.0, 33, 44, 55);
+      my_sprintf (result, "%015g %d", - Infinityd (), 33, 44, 55);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2656,7 +2657,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Positive infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%Lg %d", 1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%Lg %d", Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "inf 33") == 0
             || strcmp (result, "infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2665,7 +2666,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* Negative infinity.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%Lg %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%Lg %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "-inf 33") == 0
             || strcmp (result, "-infinity 33") == 0);
     ASSERT (retval == strlen (result));
@@ -2680,7 +2681,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
             && strcmp (result + strlen (result) - 3, " 33") == 0);
     ASSERT (retval == strlen (result));
   }
-#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_))
+#if CHECK_PRINTF_SAFE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
   { /* Quiet NaN.  */
     static union { unsigned int word[4]; long double value; } x =
       { LDBL80_WORDS (0xFFFF, 0xC3333333, 0x00000000) };
@@ -2836,7 +2837,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   { /* FLAG_ZERO with infinite number.  */
     char result[1000];
     int retval =
-      my_sprintf (result, "%015Lg %d", -1.0L / 0.0L, 33, 44, 55);
+      my_sprintf (result, "%015Lg %d", - Infinityl (), 33, 44, 55);
     ASSERT (strcmp (result, "           -inf 33") == 0
             || strcmp (result, "      -infinity 33") == 0);
     ASSERT (retval == strlen (result));

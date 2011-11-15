@@ -5,6 +5,8 @@ tests/macros.h
 
 Depends-on:
 binary-io
+close
+msvc-nothrow
 open
 
 configure.ac:

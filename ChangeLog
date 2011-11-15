@@ -1,3 +1,4212 @@
+2011-11-15  Gary V. Vaughan  <gary@gnu.org>
+
+	maint.mk: fix tight-scope.mk generation in VPATH builds.
+	* top/maint.mk (tight-scope.mk): Make sure to prefix file
+	reference with $(srcdir) so that the file is found correctly even
+	when running `make syntax-check' in a VPATH build.
+
+2011-11-13  Bruno Haible  <bruno@clisp.org>
+	    Jim Meyering  <meyering@redhat.com>
+
+	Silence successful tests that use 'compare' on AIX, HP-UX, Solaris.
+	* tests/init.sh (compare): Remove "No differences encountered" or
+	synonymous output from the 'diff' program.
+
+2011-11-13  Bruno Haible  <bruno@clisp.org>
+
+	Makefile: Tweak indentation.
+	* Makefile: Use tab as first character in every line that contains rule
+	commands.
+
+2011-11-13  Bruno Haible  <bruno@clisp.org>
+
+	Syntax check for copyright statements.
+	* check-copyright: New file.
+	* Makefile (sc_check_copyright): New rule.
+
+2011-11-13  Simon Josefsson  <simon@josefsson.org>
+
+	* build-aux/git-version-gen: Add --prefix to configure the tag
+	match string.
+
+2011-11-13  Simon Josefsson  <simon@josefsson.org>
+
+	* build-aux/git-version-gen: Add --help and --version.
+
+2011-11-12  Jim Meyering  <meyering@redhat.com>
+
+	revamp the other test-exclude?.sh scripts to use init.sh, too
+	* tests/test-exclude1.sh: Use init.sh.
+	* tests/test-exclude2.sh: Likewise.
+	* tests/test-exclude3.sh: Likewise.
+	* tests/test-exclude4.sh: Likewise.
+	* tests/test-exclude5.sh: Likewise.
+	* tests/test-exclude6.sh: Likewise.
+	* tests/test-exclude7.sh: Likewise.
+	* tests/test-exclude8.sh: Likewise.
+	* modules/exclude-tests (Files): List init.sh.
+
+	test-exclude2.sh, test-exclude5.sh: fail if test-exclude fails
+	These shell scripts ignored failure of the binary test-exclude,
+	so making the latter return 77 didn't cause them to be skipped.
+	* tests/test-exclude5.sh: Exit with test-exclude's error status
+	when that program fails.  Revamp to use init.sh.
+	* tests/test-exclude2.sh: Likewise.
+
+	test-exclude: fix a typo
+	* tests/test-exclude.c (main): Test for "leading_dir", not "leading-dir".
+
+2011-11-11  Bruno Haible  <bruno@clisp.org>
+
+	obstack: Fix compilation error on MSVC 9.
+	* lib/obstack.c (print_and_abort): Declare with _Noreturn specifier.
+
+2011-11-11  Jim Meyering  <meyering@redhat.com>
+
+	test-exclude: skip tests rather than failing on deficient systems
+	* tests/test-exclude.c (main): Skip tests that use FNM_CASEFOLD
+	and FNM_LEADING_DIR on systems that lack the definitions.  This affects
+	at least Solaris 9.  Reported and diagnosed by Dagobert Michelsen in
+	http://thread.gmane.org/gmane.comp.gnu.grep.bugs/3947/focus=3950
+
+2011-11-10  Bruno Haible  <bruno@clisp.org>
+
+	ptsname_r test: Avoid gcc warning on glibc systems.
+	* tests/test-ptsname_r.c (null_ptr): New function.
+	(test_errors): Use it.
+
+2011-11-10  Bruno Haible  <bruno@clisp.org>
+
+	ptsname_r: Avoid compilation error on OSF/1 5.1.
+	* lib/stdlib.in.h (ptsname_r): Override if REPLACE_PTSNAME_R is 1.
+	* m4/stdlib_h.m4 (gl_STDLIB_H_DEFAULTS): Initialize REPLACE_PTSNAME_R.
+	* m4/ptsname_r.m4 (gl_FUNC_PTSNAME_R): Set REPLACE_PTSNAME_R if the
+	function is not declared or incompatibly declared.
+	* modules/stdlib (Makefile.am): Substitute REPLACE_PTSNAME_R.
+	* modules/ptsname_r (Depends-on, configure.ac): Update.
+	* doc/glibc-functions/ptsname_r.texi: Mention the OSF/1 problems.
+
+2011-11-10  Bruno Haible  <bruno@clisp.org>
+
+	fstatat: Make cross-compilation guess succeed everywhere except on AIX.
+	* m4/fstatat.m4 (gl_FUNC_FSTATAT): Require AC_CANONICAL_HOST.
+	When cross-compiling, guess yes on all platforms except AIX.
+	Reported by Ludovic Courtès <ludo@gnu.org>.
+
+2011-11-09  Bruno Haible  <bruno@clisp.org>
+
+	ptsname_r tests: Fix bugs.
+	* tests/test-ptsname_r.c (test_errors): Change return type to 'void'.
+	Fix ptsname_r calls. Reduce loop rounds to a reasonable amount.
+
+2011-11-09  Paul Eggert  <eggert@cs.ucla.edu>
+
+	fstatat: work with cross-compilation
+	Problem reported by Ludovic Courtès in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-11/msg00136.html>.
+	* m4/fstatat.m4 (gl_FUNC_FSTATAT): When cross-compiling, report
+	"cross-compiling" and assume the bug is present.  Replace
+	FSTATAT_ZERO_FLAG_BROKEN with HAVE_WORKING_FSTATAT_ZERO_FLAG with
+	an inverted sense, to be more conservative about our assumptions.
+	* lib/fstatat.c (rpl_fstatat): Adjust to renamed macro.
+
+2011-11-09  Bruno Haible  <bruno@clisp.org>
+
+	Improve MODULES.html output.
+	* modules/mkfifoat (Description): Use the word "function".
+	* modules/readlinkat (Description): Likewise.
+	* modules/symlinkat (Description): Likewise.
+
+2011-11-09  Eric Blake  <eblake@redhat.com>
+
+	ptsname_r-tests: new test module
+	* modules/ptsname_r-tests: New module.
+	* tests/test-ptsname_r.c: New file.
+
+	ptsname_r: new module
+	* modules/ptsname_r: New module.
+	* m4/ptsname_r.m4 (gl_FUNC_PTSNAME_R): New file.
+	* lib/ptsname.c (__ptsname_r): Split...
+	* lib/ptsname_r.c: ...into new file.
+	* m4/stdlib_h.m4 (gl_STDLIB_H): Check for decl.
+	(gl_STDLIB_H_DEFAULTS): Set witness defaults.
+	* modules/stdlib (Makefile.am): Substitute witnesses.
+	* lib/stdlib.in.h (ptsname_r): Declare it.
+	* doc/glibc-functions/ptsname_r.texi (ptsname_r): Document it.
+	* MODULES.html.sh (Misc): Likewise.
+	* modules/ptsname (Depends-on): Alter dependency.
+	* doc/posix-functions/ptsname.texi (ptsname): Mention new module.
+
+2011-11-09  Jim Meyering  <meyering@redhat.com>
+
+	announce-gen: be more concise when there's only one URL+tarball
+	* build-aux/announce-gen (get_tool_versions): When you distribute
+	only one type of tarball, combine the first two "Here are..."
+	sections and make the key-checking grammar independent of
+	how many tarballs there are.
+
+2011-11-09  Eric Blake  <eblake@redhat.com>
+
+	openpty: provide a stub on mingw
+	* lib/pty.in.h (includes): Provide forward declarations.
+	* lib/openpty.c (openpty) [mingw]: Provide ENOSYS stub.
+
+	raise: fix mingw handling of SIGPIPE
+	* lib/sigprocmask.c (_gl_raise_SIGPIPE): Provide a return value.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	More conditional dependencies.
+	* modules/faccessat (Depends-on): Add conditions.
+	* modules/fchmodat (Depends-on): Likewise.
+	* modules/fchownat (Depends-on): Likewise.
+	* modules/fstatat (Depends-on): Likewise.
+	* modules/mkfifoat (Depends-on): Likewise.
+	* modules/readlinkat (Depends-on): Likewise.
+	* modules/symlinkat (Depends-on): Likewise.
+	* modules/unlinkat (Depends-on): Likewise.
+	* modules/utimensat (Depends-on): Likewise.
+	* modules/mkdirat (Depends-on): Add sys_stat. Add conditions.
+	* modules/linkat (Depends-on): Refine the conditions.
+	* modules/renameat (Depends-on): Likewise.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	faccessat: Move AC_LIBOBJ invocation to module description.
+	* m4/faccessat.m4 (gl_PREREQ_FACCESSAT): New macro.
+	(gl_FUNC_FACESSAT): Don't test for access() here. Move AC_LIBOBJ
+	invocation from here...
+	* modules/faccessat (configure.ac): ... to here. Invoke
+	gl_PREREQ_FACCESSAT.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	faccessat: Simplify autoconf macro.
+	* m4/faccessat.m4 (gl_FUNC_FACCESSAT): Don't require gl_FUNC_OPENAT,
+	gl_FUNC_EUIDACCESS.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	renameat: Fix dependencies.
+	* modules/renameat (Depends-on): Add stdbool.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	mkfifoat: Fix module description.
+	* modules/mkfifoat (configure.ac): Invoke gl_SYS_STAT_MODULE_INDICATOR,
+	not gl_UNISTD_MODULE_INDICATOR.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	fstatat: Remove unused dependency.
+	* modules/fstatat (Depends-on): Remove fstat.
+
+2011-11-08  Simon Josefsson  <simon@josefsson.org>
+
+	GNUmakefile: behave when Makefile is missing.
+	* top/GNUmakefile: Always initialize _build-aux and _autoreconf.
+
+2011-11-08  Bruno Haible  <bruno@clisp.org>
+
+	openat: Conditionalize dependencies.
+	* lib/openat.c: Reduce the scope of some #includes.
+	* modules/openat (Depends-on): Add conditions.
+
+2011-11-07  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: extract GPG key ID without using a temporary file
+	* top/maint.mk (gpg_key_ID): Extract GPG key ID from signed tag, but
+	without using a temporary file.  Based on a suggestion from Werner Koch
+	in http://thread.gmane.org/gmane.comp.encryption.gpg.devel/16496
+
+2011-11-07  Eric Blake  <eblake@redhat.com>
+
+	grantpt: fix typo
+	* lib/stdlib.in.h (grantpt): Check correct function.
+
+	maint.mk: silence new syntax check
+	* top/maint.mk (sc_prohibit_dirent_without_use): Add missing @.
+
+2011-11-06  Bruno Haible  <bruno@clisp.org>
+
+	Doc about floating-point and math API.
+	* doc/posix-headers/float.texi: Mention problem with FLT_ROUNDS.
+	* doc/posix-headers/math.texi: Mention problem with math_errhandling.
+
+2011-11-06  Bruno Haible  <bruno@clisp.org>
+
+	stdalign tests: Skip the test when compiled by Sun C.
+	* tests/test-stdalign.c (main): Skip the test on Sun C.
+
+2011-11-06  Bruno Haible  <bruno@clisp.org>
+
+	ansi-c++-opt: Complete the 2011-06-05 change.
+	* m4/ansi-c++.m4 (gl_PROG_ANSI_CXX): When a C++ compiler is found but
+	does not support namespaces, set the variable to "no", not to ":".
+
+2011-11-06  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* doc/posix-headers/stdalign.texi (stdalign.h): Mention Sun review ID.
+
+2011-11-06  Bruno Haible  <bruno@clisp.org>
+
+	copysignl: Fix result for zero argument on HP-UX 11 with HP C.
+	* lib/copysignl.c (compute_minus_zerol) [HP-UX]: New function.
+	(minus_zerol) [HP-UX]: New macro.
+	(unary_minus) [HP-UX]: New function.
+	(copysignl) [HP-UX]: Use unary_minus function.
+
+2011-11-06  Bruno Haible  <bruno@clisp.org>
+
+	ldexp, ldexpf, ldexpl: Enhance tests.
+	* tests/test-ldexp.h: New file, combining code from tests/test-ldexp.c
+	and tests/test-ldexpl.c.
+	* tests/test-ldexpl.c: (DOUBLE, ISNAN, INFINITY, NAN, L_, MINUS_ZERO,
+	LDEXP, MIN_EXP, MAX_EXP): New macros.
+	Include test-ldexp.h.
+	(main): Just call test_function.
+	* tests/test-ldexp.c: Include float.h, isnand-nolibm.h, minus-zero.h,
+	infinity.h, nan.h.
+	(DOUBLE, ISNAN, INFINITY, NAN, L_, MINUS_ZERO, LDEXP, MIN_EXP,
+	MAX_EXP): New macros.
+	Include test-ldexp.h.
+	(x, y): Remove variables.
+	(main): Just call test_function.
+	* tests/test-ldexpf.c: Include float.h, isnanf-nolibm.h, minus-zero.h,
+	infinity.h, nan.h.
+	(DOUBLE, ISNAN, INFINITY, NAN, L_, MINUS_ZERO, LDEXP, MIN_EXP,
+	MAX_EXP): New macros.
+	Include test-ldexp.h.
+	(x, y): Remove variables.
+	(main): Just call test_function.
+	* modules/ldexpl-tests (Files): Add tests/test-ldexp.h.
+	* modules/ldexp-tests (Files): Add tests/test-ldexp.h,
+	tests/minus-zero.h, tests/infinity.h, tests/nan.h.
+	(Depends-on): Add isnand-nolibm, signbit, float.
+	* modules/ldexpf-tests (Files): Add tests/test-ldexp.h,
+	tests/minus-zero.h, tests/infinity.h, tests/nan.h.
+	(Depends-on): Add isnanf-nolibm, signbit, float.
+
+2011-11-06  Bruno Haible  <bruno@clisp.org>
+
+	math tests: Cosmetics.
+	* tests/test-math-c++.cc: Reorder declarations.
+
+2011-11-05  Bruno Haible  <bruno@clisp.org>
+
+	fma*: Simplify test.
+	* tests/test-fma2.h (FORGIVE_GLIBC_BUG): Remove macro.
+	(test_function): Remove all if (FORGIVE_GLIBC_BUG) statements.
+
+	Tests for module 'fmal'.
+	* modules/fmal-tests: New file.
+	* tests/test-fmal1.c: New file.
+	* tests/test-fmal2.c: New file.
+
+	New module 'fmal'.
+	* lib/math.in.h (fmal): New declaration.
+	* lib/fmal.c: New file.
+	* m4/fmal.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whethern fmal is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_FMAL, HAVE_FMAL, REPLACE_FMAL.
+	* modules/math (Makefile.am): Substitute GNULIB_FMAL, HAVE_FMAL,
+	REPLACE_FMAL.
+	* modules/fmal: New file.
+	* doc/posix-functions/fmal.texi: Mention the new module and the various
+	bugs.
+
+	Tests for module 'fmaf'.
+	* modules/fmaf-tests: New file.
+	* tests/test-fmaf1.c: New file.
+	* tests/test-fmaf2.c: New file.
+
+	New module 'fmaf'.
+	* lib/math.in.h (fmaf): New declaration.
+	* lib/fmaf.c: New file.
+	* m4/fmaf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whethern fmaf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_FMAF, HAVE_FMAF, REPLACE_FMAF.
+	* modules/math (Makefile.am): Substitute GNULIB_FMAF, HAVE_FMAF,
+	REPLACE_FMAF.
+	* modules/fmaf: New file.
+	* doc/posix-functions/fmaf.texi: Mention the new module and the various
+	bugs.
+
+	Tests for module 'fma'.
+	* modules/fma-tests: New file.
+	* tests/test-fma1.c: New file.
+	* tests/test-fma1.h: New file.
+	* tests/test-fma2.c: New file.
+	* tests/test-fma2.h: New file.
+
+	New module 'fma'.
+	* lib/math.in.h (fma): New declaration.
+	* lib/fma.c: New file.
+	* m4/fma.m4: New file.
+	* m4/fegetround.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whethern fma is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_FMA, HAVE_FMA, REPLACE_FMA.
+	* modules/math (Makefile.am): Substitute GNULIB_FMA, HAVE_FMA,
+	REPLACE_FMA.
+	* modules/fma: New file.
+	* doc/posix-functions/fma.texi: Mention the new module and the various
+	bugs.
+
+	Extend gl_MATHFUNC.
+	* m4/mathfunc.m4 (gl_MATHFUNC): Accept an 4th parameter of INCLUDES.
+	Support 'void' as argument type.
+	* m4/rint.m4 (gl_FUNC_RINT): Update gl_MATHFUNC invocation.
+
+2011-11-05  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: also prohibit inclusion of dirent.h without use
+	* top/maint.mk (sc_prohibit_dirent_without_use): New rule.
+
+2011-11-05  Bruno Haible  <bruno@clisp.org>
+
+	ldexpl tests: Avoid test failure on MSVC 9.
+	* tests/test-ldexpl.c (main): Use a temporary variable for the expected
+	value. Needed in order to enforce the conversion from a value greater
+	than LDBL_MAX to Infinity.
+
+2011-11-05  Bruno Haible  <bruno@clisp.org>
+
+	New modules 'at-internal', 'openat-h', split off from module 'openat'.
+	* modules/at-internal: New file, extracted from modules/openat.
+	* modules/openat-h: New file.
+	* m4/openat.m4 (gl_FUNC_OPENAT): Don't set GNULIB_OPENAT. Don't
+	invoke gl_PREREQ_OPENAT and gl_MODULE_INDICATOR.
+	* modules/openat (Description): Add reference to POSIX function.
+	(Files): Remove lib/openat.h, lib/openat-proc.c.
+	(Depends-on): Add at-internal, openat-h. Remove fdopendir, gettext-h,
+	intprops, unistd.
+	(configure.ac): Remove AC_LIBOBJ of openat-proc. Invoke
+	gl_PREREQ_OPENAT, gl_MODULE_INDICATOR here. Invoke
+	gl_FCNTL_MODULE_INDICATOR.
+	(Include): Remove unistd.h, openat.h.
+	* modules/areadlinkat (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, extensions, fchdir,
+	openat-die, openat-h, save-cwd.
+	* modules/areadlinkat-with-size (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, extensions, fchdir,
+	openat-die, openat-h, save-cwd, unistd.
+	* modules/faccessat (Files): Add lib/at-func.c, lib/openat-priv.h.
+	(Depends-on): Add at-internal, dosname, errno, fchdir, openat-die,
+	openat-h, save-cwd. Remove fcntl-h, openat.
+	* modules/fchmodat (Files): Remove lib/openat.h.
+	(Depends-on): Add at-internal, openat-h. Remove dirent, fcntl-h,
+	openat, stdbool, unistd.
+	* modules/fchownat (Files): Remove lib/openat.h.
+	(Depends-on): Add at-internal, openat-h. Remove dirent, fcntl-h,
+	openat, stdbool, sys_stat.
+	* modules/fdopendir (Files): Remove lib/openat-priv.h,
+	lib/openat-proc.c.
+	(Depends-on): Add at-internal.
+	(condigure.ac): Remove AC_LIBOBJ of openat-proc.
+	* modules/fstatat (Files): Remove lib/openat.h.
+	(Depends-on): Add at-internal, openat-h. Remove dirent, openat,
+	stdbool, unistd.
+	* modules/fts (Depends-on): Add openat-h.
+	* modules/linkat (Depends-on): Add at-internal, openat-h. Remove
+	openat.
+	* modules/mkdirat (Files): Remove lib/openat.h.
+	(Depends-on): Add at-internal, openat-h. Remove dirent, fcntl-h,
+	openat, stdbool, sys_stat.
+	* modules/mkfifoat (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, fchdir, openat-die,
+	openat-h, save-cwd. Remove fcntl-h, openat.
+	* modules/openat-die (Depends-on): Add openat-h. Remove openat.
+	* modules/readlinkat (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, fchdir, openat-die,
+	openat-h, save-cwd. Remove fcntl-h, openat.
+	* modules/renameat (Depends-on): Add at-internal, openat-h. Remove
+	openat.
+	* modules/selinux-at (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, extensions, fchdir,
+	fcntl-h, openat-die, openat-h, save-cwd, unistd. Remove openat.
+	* modules/symlinkat (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, fchdir, openat-die,
+	openat-h, save-cwd. Remove fcntl-h, openat.
+	* modules/unlinkat (Files): Remove lib/openat.h.
+	(Depends-on): Add at-internal, openat-h. Remove dirent, openat,
+	stdbool.
+	* modules/utimensat (Files): Add lib/at-func.c.
+	(Depends-on): Add at-internal, dosname, errno, fchdir, fcntl-h,
+	openat-die, openat-h, save-cwd.
+	* modules/fchownat-tests (Depends-on): Add openat-h. Remove openat.
+	* modules/fdutimensat-tests (Depends-on): Add openat.
+	* modules/fstatat-tests (Depends-on): Add openat-h.
+	* modules/readlinkat-tests (Depends-on): Add openat.
+	* modules/symlinkat-tests (Depends-on): Add openat.
+
+2011-11-05  Bruno Haible  <bruno@clisp.org>
+
+	openat: Include <stdbool.h>.
+	* lib/openat.c: Include <stdbool.h>.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	fchownat, renameat, unlinkat: Fix dependencies.
+	* modules/fchownat (Depends-on): Add fstatat.
+	* modules/renameat (Depends-on): Likewise.
+	* modules/unlinkat (Depends-on): Likewise.
+
+2011-11-04  Paul Eggert  <eggert@cs.ucla.edu>
+
+	openat: remove direct dependency on dirent
+	* lib/openat.h: Don't include <dirent.h>; it's no longer needed,
+	and hasn't been needed ever since fdopendir was split into its own
+	module on 2009-08-31.
+	* modules/openat (Depends-on): Remove dirent.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	renameat: Optimize code size.
+	* modules/renameat (configure.ac): Don't compile at-func2.c if
+	REPLACE_RENAMEAT is 1.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	openat tests: Fix file list.
+	* modules/openat-tests (Files): Add tests/test-open.h.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	openat, fchmodat, fchownat, linkat, renameat: Fix dependencies.
+	* modules/fchmodat (Depends-on): Add openat-die.
+	* modules/fchownat (Depends-on): Likewise.
+	* modules/linkat (Depends-on): Likewise.
+	* modules/renameat (Depends-on): Likewise.
+	* modules/openat (Depends-on): Add dirent.
+
+2011-11-04  Jim Meyering  <meyering@redhat.com>
+
+	at-func*.c: fix comments
+	* lib/at-func2.c: Correct/improve first-line comment.
+	* lib/at-func.c: Correct grammar in first-line comment.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	New module 'mkdirat', split off from module 'openat'.
+	* m4/mkdirat.m4: New file. extracted from m4/openat.m4.
+	* m4/openat.m4 (gl_FUNC_OPENAT): Don't require gl_SYS_STAT_H_DEFAULTS.
+	Don't test for mkdirat. Don't set GNULIB_MKDIRAT, HAVE_MKDIRAT.
+	* modules/mkdirat: New file, extracted from modules/openat.
+	* modules/openat (Files): Remove lib/mkdirat.c.
+	(Depends-on): Remove mkdir.
+	(configure.ac): Remove AC_LIBOBJ of mkdirat.
+	(Include): Remove <sys/stat.h>.
+	* modules/mkdirat-tests: New file, extracted from modules/openat-tests.
+	* modules/openat-tests (Files): Remove tests/test-mkdirat.c,
+	tests/test-mkdir.h.
+	(Depends-on): Remove ignore-value.
+	(Makefile.am): Remove rules for test-mkdirat.
+	* doc/posix-functions/mkdirat.texi: Mention module 'mkdirat' instead
+	of module 'openat'.
+	* NEWS: Mention the change.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	closedir: Avoid warning on mingw.
+	* lib/closedir.c: Include <unistd.h>.
+
+2011-11-04  Bruno Haible  <bruno@clisp.org>
+
+	New module 'fstatat', split off from module 'openat'.
+	* lib/openat.h (statat, lstatat): Enable only if GNULIB_FSTATAT is
+	defined.
+	* m4/fstatat.m4: New file. extracted from m4/openat.m4.
+	* m4/openat.m4 (gl_FUNC_OPENAT): Don't set GNULIB_FSTATAT. Don't invoke
+	gl_FUNC_FSTATAT.
+	(gl_FUNC_FSTATAT): Moved to m4/fstatat.m4.
+	* modules/fstatat: New file, extracted from modules/openat.
+	* modules/openat (Files): Remove lib/fstatat.c.
+	(Depends-on): Remove lstat.
+	(configure.ac): Remove AC_LIBOBJ of fstatat.
+	* modules/fstatat-tests: New file, extracted from modules/openat-tests.
+	* modules/openat-tests (Files): Remove tests/test-fstatat.c,
+	tests/test-lstat.h, tests/test-stat.h.
+	(Depends-on): Remove getcwd-lgpl.
+	(Makefile.am): Remove rules for test-fstatat.
+	* doc/posix-functions/fstatat.texi: Mention module 'fstatat' instead
+	of module 'openat'.
+	* NEWS: Mention the change.
+	* modules/getcwd (Depends-on): Add fstatat.
+	* modules/linkat (Depends-on): Likewise.
+	* modules/mkfifoat-tests (Depends-on): Likewise.
+	* modules/utimensat (Depends-on): Add fstatat. Remove openat.
+
+2011-11-03  Bruno Haible  <bruno@clisp.org>
+
+	New module 'unlinkat', split off from module 'openat'.
+	* m4/unlinkat.m4: New file, extracted from m4/openat.m4.
+	* m4/openat.m4 (gl_FUNC_OPENAT): Don't set GNULIB_UNLINKAT,
+	REPLACE_UNLINKAT, HAVE_UNLINKAT. Don't test for unlinkat.
+	* modules/unlinkat: New file, extracted from modules/openat. Correct
+	the dependency conditions.
+	* modules/openat (Files): Remove lib/unlinkat.c.
+	(Depends-on): Remove rmdir, unlink.
+	(configure.ac): Remove AC_LIBOBJ of unlinkat.
+	* modules/unlinkat-tests: New file, extracted from modules/openat-tests.
+	* modules/openat-tests (Files): Remove tests/test-unlinkat.c,
+	tests/test-rmdir.h, tests/test-unlink.h.
+	(Depends-on): Remove unlinkdir.
+	(Makefile.am): Remove rules for test-unlinkat.
+	* doc/posix-functions/unlinkat.texi: Mention module 'unlinkat' instead
+	of module 'openat'.
+	* NEWS: Mention the change.
+	* modules/linkat-tests (Depends-on): Add unlinkat.
+	* modules/mkfifoat-tests (Depends-on): Likewise.
+	* modules/readlinkat-tests (Depends-on): Likewise.
+
+2011-11-02  Bruno Haible  <bruno@clisp.org>
+
+	New module 'fchmodat', split off from module 'openat'.
+	* lib/openat.h (chmodat, lchmodat): Enable only if GNULIB_FCHMODAT is
+	defined.
+	* m4/fchmodat.m4: New file, extracted from m4/openat.m4.
+	* m4/openat.m4 (gl_FUNC_OPENAT): Don't set GNULIB_FCHMODAT. Don't test
+	for fchmodat, lchmod. Don't set HAVE_FCHMODAT.
+	* modules/fchmodat: New file, extracted from modules/openat.
+	* modules/openat (Files): Remove lib/fchmodat.c.
+	(configure.ac): Remove AC_LIBOBJ of fchmodat.
+	* modules/fchmodat-tests: New file, extracted from modules/openat-tests.
+	* modules/openat-tests (Files): Remove tests/test-fchmodat.c.
+	(Makefile.am): Remove rules for test-fchmodat.
+	* doc/posix-functions/fchmodat.texi: Mention module 'fchmodat' instead
+	of module 'openat'.
+	* NEWS: Mention the change.
+
+2011-11-02  Jim Meyering  <meyering@redhat.com>
+
+	putenv: indent #definition of "environ" to placate cppi
+	* lib/putenv.c (environ): Make indentation reflect cpp nesting.
+
+	gitlog-to-changelog: provide a ChangeLog-repair mechanism
+	Git logs are often treated as immutable, because editing them
+	changes the SHA1 checksums of all descendants.  Thus, errors in
+	git logs tend to stay there forever.  However, when we generate
+	a ChangeLog file -- typically for distribution -- from that git log,
+	we can actually make corrections in the generated file.  The key
+	lies in recording in machine-readable/applicable form the desired
+	corrections.  See --help for description and an example.
+	* build-aux/gitlog-to-changelog (parse_amend_file): New function.
+	(usage): Describe it; alphabetize option descriptions.
+	(main): Honor the new option, carefully.
+
+2011-11-01  Jim Meyering  <meyering@redhat.com>
+
+	gitlog-to-changelog: avoid an infloop
+	* build-aux/gitlog-to-changelog: Don't infloop for a commit log
+	that ends up being empty.
+
+2011-11-01  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* MODULES.html.sh: Fix sed-script shell quoting and locale issues.
+	(func_module): Replace foo=` ... sed -e COMPLICATED ... ` with
+	bar=COMPLICATED; foo=` ... sed -e "$bar" ... ` when COMPLICATED
+	contains (possibly-quoted) backslashes.  This should avoid
+	all-too-common shell bugs if COMPLICATED contains backslashes in
+	the "wrong" places.  Reported by David Evans in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-11/msg00013.html>.
+	When 'sed' uses character ranges like A-Z, invoke it in the C locale,
+	because we want ASCII ranges.  Is there some reason we don't use
+	the C locale everywhere in this script?
+	(func_module, top level): Avoid unwanted pathname expansion when
+	$repo_url_prefix or $repo_url_suffix_repl contain shell
+	metacharacters like '?' and '*'.
+
+2011-11-01  Bruno Haible  <bruno@clisp.org>
+
+	fchownat: Improve description.
+	* modules/fchownat (Description): Add link to function.
+
+2011-11-01  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* tests/test-stdalign.c (TEST_ALIGNMENT): Shrink back to 8.
+	mingw supports alignments only up to 8 (!).  Reported by Bruno Haible in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-11/msg00006.html>.
+	* doc/posix-headers/stdalign.texi (stdalign.h): Document this.
+
+2011-11-01  Bruno Haible  <bruno@clisp.org>
+
+	alignof: Avoid collision with stdalign module.
+	* lib/alignof.h (alignof): Remove macro.
+	* NEWS: Mention the change.
+	Reported by Paul Eggert.
+
+2011-11-01  Bruno Haible  <bruno@clisp.org>
+
+	New module 'fchownat', split off from module 'openat'.
+	* lib/openat.h (chownat, lchownat): Enable only if GNULIB_FCHOWNAT is
+	defined.
+	* m4/fchownat.m4: New file, extracted from m4/openat.m4.
+	* m4/openat.m4 (gl_FUNC_OPENAT): Don't set GNULIB_FCHOWNAT. Don't
+	invoke gl_FUNC_FCHOWNAT.
+	(gl_FUNC_FCHOWNAT_DEREF_BUG, gl_FUNC_FCHOWNAT_EMPTY_FILENAME_BUG,
+	gl_FUNC_FCHOWNAT): Moved to m4/fchownat.m4.
+	* modules/fchownat: New file, extracted from modules/openat.
+	* modules/openat (Files): Remove lib/fchownat.c.
+	(Depends-on): Remove lchown.
+	(configure.ac): Remove AC_LIBOBJ of fchownat.
+	* modules/fchownat-tests: New file, extracted from modules/openat-tests.
+	* modules/openat-tests (Files): Remove tests/test-fchownat.c,
+	tests/test-chown.h, tests/test-lchown.h, tests/nap.h.
+	(Depends-on): Remove mgetgroups, usleep, stat-time.
+	(configure.ac): Remove test for getegid.
+	(Makefile.am): Remove rules for test-fchownat.
+	* doc/posix-functions/fchownat.texi: Mention module 'fchownat' instead
+	of module 'openat'.
+	* NEWS: Mention the change.
+
+2011-10-31  Paul Eggert  <eggert@cs.ucla.edu>
+
+	stdalign: port better to MSVC and to Sun C 5.11
+	This fixes some of the problems reported by Bruno Haible in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-10/msg00300.html>.
+	* doc/posix-headers/stdalign.texi (stdalign.h): Document more
+	shortcomings of MSVC and of Sun C 5.11.
+	* lib/stdalign.in.h (_Alignas): Omit bogus extra parenthesis
+	around __declspec arg.
+	* modules/stdalign-tests (Files): Add tests/macros.h.
+	* tests/test-stdalign.c: Do not include <stdlib.h>; no longer needed.
+	Include macros.h, for ASSERT.
+	(DECLARE_ALIGNED): Remove.
+	(TEST_ALIGNMENT): Define to 16 if alignment is supported (more likely
+	to catch bug), and to 1 if not (simplifies the rest of the code).
+	(CHECK_STATIC): Always declare the alignment test vars; that's simpler.
+	(CHECK_AUTO): Remove.
+	(CHECK_ALIGNED): Check only the alignment of the static vars,
+	since auto var alignment isn't supported by Sun C 5.11.
+	(CHECK_TYPES): Remove.  All uses replaced by inline code, so that
+	ASSERT failures are easier to diagnose.
+
+2011-10-31  Bruno Haible  <bruno@clisp.org>
+
+	doc about some IRIX 5.3 problems.
+	* doc/posix-functions/getpwnam_r.texi: Mention incompatible declaration
+	on IRIX 5.3.
+	* doc/posix-headers/poll.texi: Mention missing nfds_t on IRIX 5.3.
+	* doc/posix-functions/ptsname.texi: Mention missing declaration on IRIX
+	5.3.
+	* doc/posix-functions/grantpt.texi: Likewise.
+	* doc/posix-functions/unlockpt.texi: Likewise.
+	* doc/posix-functions/lgamma.texi: Likewise.
+	* doc/posix-functions/nextafter.texi: Likewise.
+	* doc/posix-functions/remainder.texi: Likewise.
+	* doc/posix-functions/select.texi: Mention misplaced declaration on
+	IRIX 5.3.
+	Reported by Tom G. Christensen <tgc@jupiterrise.com>.
+
+2011-10-31  Dmitry V. Levin  <ldv@altlinux.org>
+
+	gitlog-to-changelog: fix git-log invocation.
+	git-log mishandles date strings before 1970-01-01 UTC, and there is
+	no use to specify --since=1970-01-01 by default anyway.
+	* build-aux/gitlog-to-changelog: By default, when no --since option
+	was given, do not specify explicit --since option to git-log.
+
+2011-10-30  Dmitry V. Levin  <ldv@altlinux.org>
+
+	gitlog-to-changelog: new option --append-dot.
+	* build-aux/gitlog-to-changelog: New option --append-dot, makes the
+	first non-blank line of each commit message terminated with a dot.
+
+2011-10-30  Bruno Haible  <bruno@clisp.org>
+
+	ffsl, ffsll: Avoid compilation error due to 'restrict'.
+	* lib/ffsl.h: Include <config.h>.
+	Suggested by Tom G. Christensen <tgc@jupiterrise.com>.
+
+2011-10-30  Jim Meyering  <meyering@redhat.com>
+
+	GNUmakefile: reenable "make syntax-check" for most projects
+	Since Friday's commit 05e2d798, "maint.mk: don't maintain a second
+	build-aux variable", "syntax-check" would do nothing but succeed with
+	the "No version control files detected..." diagnostic (unless you
+	happened to override _build-aux via cfg.mk).
+	* top/GNUmakefile (_autoreconf, _build-aux): Move default definitions
+	to precede inclusion of maint.mk.  Otherwise, these variables would
+	be used undefined in any project that does not override the default.
+
+2011-10-29  Dmitry V. Levin  <ldv@altlinux.org>
+
+	gitlog-to-changelog: treat a message with only blank lines as empty.
+	* build-aux/gitlog-to-changelog: Move the code that removes leading and
+	trailing blank lines before the code that issues a warning about an
+	empty commit message.
+
+2011-10-30  Jim Meyering  <meyering@redhat.com>
+
+	test-parse-datetime.c: avoid new DST-related false positive test failure
+	* tests/test-parse-datetime.c (gmt_offset): Determine the "gmt_offset"
+	based on the time/date we'll convert, not the current time.
+	Otherwise, the moment we cross a DST boundary like today's in
+	Europe, (CEST to CET), that offset ends up being one hour off.
+
+2011-10-27  Bruno Haible  <bruno@clisp.org>
+
+	fstat: Tweak documentation.
+	* modules/fstat (Description): More precise description.
+
+2011-10-27  Bruno Haible  <bruno@clisp.org>
+
+	Update documentation regarding 'largefile' module.
+	* doc/posix-functions/fstat.texi: Tweak wording.
+	* doc/posix-functions/opendir.texi: Mention that the module fixes the
+	problems with huge directories and/or small ino_t types.
+	* doc/posix-functions/readdir.texi: Likewise.
+	* doc/posix-functions/rewinddir.texi: Likewise.
+
+2011-10-28  Gary V. Vaughan  <gary@gnu.org>
+
+	maint.mk: don't maintain a second build-aux variable.
+	* maint.mk (build_aux): Removed.  The maintainer-makefile module
+	depends on GNUmakefile, which already maintains a cfg.mk
+	overridable $(_build-aux) for projects with a non-standard
+	build-aux directory location, although without the $(srcdir)
+	prefix.  Use that variable consistently instead of introducing a
+	second one.  Adjust all call sites.
+
+2011-10-27  Paul Eggert  <eggert@cs.ucla.edu>
+
+	Add stdalign module and use it in other modules.
+	This is based on a previous proposal by Bruno Haible
+	<https://lists.gnu.org/archive/html/bug-gnulib/2011-07/msg00226.html>.
+
+	stdalign: new module
+	* doc/posix-headers/stdalign.texi, lib/stdalign.in.h, m4/stdalign.m4:
+	* modules/stdalign: New files.
+	* MODULES.html.sh (c1x_core_properties): Add stdalign.
+	* doc/gnulib.texi (Header File Substitutes): Add stdalign.
+
+	stdalign-tests: new module
+	* modules/stdalign-tests, tests/test-stdalign.c: New files.
+
+	argp: use stdalign
+	* lib/argp-parse.c: Include <stdalign.h>.
+	(alignof): Remove.
+	* modules/argp (Depends-on): Add stdalign.
+
+	crypto libraries: use stdalign
+	* lib/md4.c, lib/md5.c, lib/sha1.c, lib/sha256.c, lib/sha512.c:
+	Include <stdalign.h> and <stdint.h>.  Do not include <stddef.h>.
+	Do not include <stdlib.h> twice, in md4.c.
+	(UNALIGNED_P): Simplify by using alignof.  Use uintptr_t, not size_t,
+	because we are accessing a pointer's bit-pattern, not a size.
+	* modules/crypto/gc-md4 (Depends-on): Add stdalign.
+	* modules/crypto/gc-md5, modules/crypto/gc-sha1, modules/crypto/md4:
+	* modules/crypto/md5, modules/crypto/sha1, modules/crypto/sha256:
+	* modules/crypto/sha512: Likewise.
+
+	sys_socket: use stdalign, not alignof
+	* lib/sys_socket.in.h: Include <stdalign.h> instead of <alignof.h>.
+	* modules/sys_socket (Depends-on): Depend on stdalign, not alignof.
+
+2011-10-27  Bruno Haible  <bruno@clisp.org>
+
+	raise test: Avoid a test failure on Linux/MIPS.
+	* tests/test-raise.c (main): Try raising signal 199, not 99. Needed
+	because 99 is a valid signal on Linux/MIPS.
+
+2011-10-27  Bruno Haible  <bruno@clisp.org>
+
+	nonblocking tests: Fix test failure on Linux/MIPS.
+	* tests/test-nonblocking-pipe.h (PIPE_DATA_BLOCK_SIZE) [Linux/MIPS]:
+	Set to 270000.
+
+2011-10-27  Bruno Haible  <bruno@clisp.org>
+
+	utimensat: Work around problem on Linux/hppa.
+	* lib/utimensat.c (rpl_utimensat) [Linux/hppa]: Reject invalid tv_nsec
+	values.
+	* doc/posix-functions/utimensat.texi: Mention the problem on Linux/hppa.
+
+2011-10-25  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: fix a bug in sc_prohibit_stddef_without_use
+	* top/maint.mk (sc_prohibit_stddef_without_use): Don't require / *\(/
+	after symbols like NULL, size_t, etc.
+	Reported by Alfred M. Szmidt.
+
+	maint.mk: exempt ENODATA from a syntax-check rule
+	* top/maint.mk (gl_extract_significant_defines_): Also exempt ENODATA
+	from the sc_prohibit_always-defined_macros syntax-check rule.
+	Add a comment.  See this for more details:
+	http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/28739/focus=28795
+
+2011-10-23  Jim Meyering  <meyering@redhat.com>
+
+	fts: close parent dir FD before returning from post-traversal fts_read
+	The problem: the fts-using "mkdir -p A/B; rm -rf A" would attempt to
+	unlink A, even though an FD open on A remained.  This is suboptimal
+	(holding a file descriptor open longer than needed), but otherwise not
+	a problem on Unix-like kernels.  However, on Cygwin with certain Novell
+	file systems, (see http://cygwin.com/ml/cygwin/2011-10/msg00365.html),
+	that represents a real problem: it causes the removal of A to fail
+	with e.g., "rm: cannot remove `A': Device or resource busy"
+
+	fts visits each directory twice and keeps a cache (fts_fd_ring) of
+	directory file descriptors.  After completing the final, FTS_DP,
+	visit of a directory, RESTORE_INITIAL_CWD intended to clear the FD
+	cache, but then proceeded to add a new FD to it via the subsequent
+	FCHDIR (which calls cwd_advance_fd and i_ring_push).  Before, the
+	final file descriptor would be closed only via fts_close's call to
+	fd_ring_clear.  Now, it is usually closed earlier, via the final
+	FTS_DP-returning fts_read call.
+	* lib/fts.c (restore_initial_cwd): New function, converted from
+	the macro.  Call fd_ring_clear *after* FCHDIR, not before it.
+	Update callers.
+	Reported by Franz Sirl via the above URL, with analysis by Eric Blake
+	in http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/28739
+
+2011-10-23  Gary V. Vaughan  <gary@gnu.org>
+	    Bruno Haible  <bruno@clisp.org>
+	    Jim Meyering  <jim@meyering.net>
+
+	readme-release: improve safety of release prep instructions.
+	* README-release: Don't git pull all branches when only master
+	is needed for the release process.
+	Run make maintainer-clean before changing trees and merging.
+	Don't try to run ./configure right after git pull in case files
+	that influence the bootstrap process have changed, move the
+	./configure step to after running ./bootstrap.
+	Don't bootstrap "one last time"... it's the first time!
+
+2011-10-22  Bruno Haible  <bruno@clisp.org>
+
+	errno, strerror-override: Support for MSVC 10.
+	* lib/errno.in.h (GNULIB_defined_ETXTBSY): Remove macro.
+	(ENOMSG, EIDRM, ENOLINK, EPROTO, EBADMSG, EOVERFLOW, ENOTSUP,
+	ENETRESET, ECONNABORTED, ECANCELED, EINPROGRESS, EALREADY, ENOTSOCK,
+	EDESTADDRREQ, EMSGSIZE, EPROTOTYPE, ENOPROTOOPT, EPROTONOSUPPORT,
+	EOPNOTSUPP, EAFNOSUPPORT, EADDRINUSE, EADDRNOTAVAIL, ENETDOWN,
+	ENETUNREACH, ECONNRESET, ENOBUFS, EISCONN, ENOTCONN, ETIMEDOUT,
+	ECONNREFUSED, ELOOP, EHOSTUNREACH, EWOULDBLOCK, ETXTBSY) [Win32]:
+	Assign values compatible with MSVC 10.
+	(ENODATA, ENOSR, ENOSTR, ENOTRECOVERABLE, EOWNERDEAD, ETIME, EOTHER):
+	New macros.
+	(GNULIB_defined_EWINSOCK): New macro.
+	* lib/strerror-override.c (strerror_override): Update accordingly.
+	* lib/strerror-override.h: Likewise.
+	* lib/w32sock.h (set_winsock_errno): Map those WSA* values that are no
+	longer equal to the corresponding errno value.
+	Reported by Michael Goffioul <michael.goffioul@gmail.com>.
+
+2011-10-22  Bruno Haible  <bruno@clisp.org>
+
+	perror: Recognize when test program crashes.
+	* m4/perror.m4 (gl_FUNC_PERROR): If the test program crashes due to
+	strerror, set gl_cv_func_perror_works to no.
+	Reported by Daniel Richard G. <skunk@iskunk.org>.
+
+	perror: Fix indentation.
+	* m4/perror.m4 (gl_FUNC_PERROR): Fix indentation.
+
+2011-10-22  Bruno Haible  <bruno@clisp.org>
+
+	isfinite, isinf, isnan, signbit: Don't define as a macro in C++.
+	* lib/math.in.h (_GL_MATH_CXX_REAL_FLOATING_DECL_1,
+	_GL_MATH_CXX_REAL_FLOATING_DECL_2): nEW MACROS.
+	(isfinite, isinf, isnan, signbit): In C++, define as overloaded
+	functions, not as a macro.
+	* tests/test-math-c++.cc (REAL_FLOATING_CHECK, OVERLOADED_CHECK): New
+	macros.
+	(isfinite, isinf, isnan, signbit): Check overloaded functions and
+	absence of macro.
+	Suggested by Eric Blake.
+	Reported by Michael Goffioul <michael.goffioul@gmail.com>.
+
+2011-10-21  Bruno Haible  <bruno@clisp.org>
+
+	relocatable-prog-wrapper: Don't leave object files behind.
+	* build-aux/install-reloc: Re-synchronize list of .o files to be
+	removed with list of compilation units.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	openpty, posix_openpt: Remove code duplication.
+	* lib/posix_openpt.c: Add comments about platforms, from lib/openpty.c.
+	* lib/openpty.c: Include <stdlib.h>.
+	(openpty): Use posix_openpt on all platforms except IRIX.
+	* modules/openpty (Depends-on): Add posix_openpt. Add conditions.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	unlockpt: Detect invalid argument.
+	* lib/unlockpt.c: Include <fcntl.h>.
+	(unlockpt): Check whether fd is valid, using fcntl().
+	* modules/unlockpt (Depends-on): Add fcntl-h.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	openpty: Avoid compilation error on AIX 6.1.
+	* lib/pty.in.h [AIX]: Include <sys/ioctl.h>, for 'struct winsize'.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	posix_openpt: Support for OpenBSD.
+	* lib/posix_openpt.c [OpenBSD]: Include <sys/ioctl.h>, <sys/tty.h>.
+	(posix_openpt) [OpenBSD]: New code.
+	* lib/grantpt.c: Include <fcntl.h>.
+	(grantpt) [OpenBSD]: Only test whether fd is valid, nothing else.
+	* modules/grantpt (Depends-on): Add fcntl-h.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	posix_openpt test: Coding style.
+	* tests/test-posix_openpt.c: Use GNU coding style.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	grantpt: Support --avoid=pt_chown.
+	* modules/grantpt (Files): Add lib/pty-private.h.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	posix_openpt: Fix autoconf macro.
+	* m4/posix_openpt.m4 (gl_FUNC_POSIX_OPENPT): Fix variable name. Remove
+	unneeded check for _getpty.
+
+2011-10-20  Bruno Haible  <bruno@clisp.org>
+
+	openpty: Update comments.
+	* lib/openpty.c: Add comments about Minix.
+
+2011-10-19  Eric Blake  <eblake@redhat.com>
+
+	openpty: relax license
+	* modules/openpty (License): Change from LGPLv3+ to LGPLv2+.
+
+	pt_chown: use configmake to simplify build
+	* modules/pt_chown (Makefile.am): Drop line guaranteed by configmake.
+
+	ptsname and others: relax license
+	* modules/grantpt (License): Change from LGPLv3+ to LGPLv2+.
+	* modules/unlockpt (License): Likewise.
+	* modules/pt_chown (License): Likewise.
+	* modules/ptsname (License): Likewise.
+	* modules/ttyname_r (License): Likewise.
+
+2011-10-19  Jim Meyering  <meyering@redhat.com>
+
+	posix_openpt: remove spurious #endif
+	* lib/posix_openpt.c (posix_openpt): Remove spurious #endif.
+
+2011-10-19  Gary V. Vaughan  <gary@gnu.org>
+
+	maint.mk: Respect $(build_aux) in web-manual rule.
+	* top/maint.mk (web-manual): Find gen-announce script in user's
+	$(build_aux) directory instead of hard-coding 'build-aux'.
+
+2011-10-19  Bruno Haible  <bruno@clisp.org>
+
+	posix_openpt: Fix compilation error.
+	* lib/posix_openpt.c (posix_openpt): Renamed from posix_openpty.
+	* doc/posix-functions/posix_openpt.texi: Mention ENOENT error code.
+	Mention the openpty module as an alternative.
+
+2011-10-19  Bruno Haible  <bruno@clisp.org>
+
+	Support for old NeXTstep 3.3 frexp().
+	* m4/frexp.m4 (gl_FUNC_FREXP_WORKS): Check for alarm. Limit the
+	execution time of the test to 5 seconds.
+	Reported by Daniel Richard G. <skunk@iskunk.org>.
+
+2011-10-19  Bruno Haible  <bruno@clisp.org>
+
+	Support for old NeXTstep 3.3 sed.
+	* m4/absolute-header.m4 (gl_ABSOLUTE_HEADER_ONE): In the sed address
+	part, use /.../, not \|...|. Escape periods in the header file name.
+	* m4/include_next.m4 (gl_NEXT_HEADERS_INTERNAL): Likewise.
+	Reported by Daniel Richard G. <skunk@iskunk.org>.
+
+2011-10-18  Daniel Richard G.  <skunk@iskunk.org>  (tiny change)
+
+	Support for old NeXTstep 3.3 gcc.
+	* lib/gettext.h (_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS): Write
+	'defined __STRICT_ANSI__', not '__STRICT_ANSI__'.
+	* lib/math.in.h (_GL_NUM_UINT_WORDS etc.): Likewise.
+	* lib/spawn.in.h (_Restrict_arr_): Likewise.
+	* lib/regex.h (_Restrict_arr_): Likewise.
+	* lib/regex_internal.h (re_token_t): Likewise.
+	* lib/regexec.c (check_node_accept_bytes): Likewise.
+	* tests/test-printf-posix.c (func1, func2, func3, func4): Likewise.
+
+2011-10-18  Eric Blake  <eblake@redhat.com>
+
+	posix_openpt: new module
+	* modules/posix_openpt: New module.
+	* m4/posix_openpt.m4: New file.
+	* lib/posix_openpt.c: Likewise.
+	* m4/stdlib_h.m4 (gl_STDLIB_H): Check for decl.
+	(gl_STDLIB_H_DEFAULTS): Set defaults.
+	* modules/stdlib (Makefile.am): Substitute macros.
+	* lib/stdlib.in.h (posix_openpt): Declare.
+	* MODULES.html.sh (systems lacking POSIX:2008): Document it.
+	* doc/posix-functions/posix_openpt.texi (posix_openpt): Likewise.
+	* modules/posix_openpt-tests: New test module.
+	* tests/test-posix_openpt.c: New test.
+
+2011-10-15  Bruno Haible  <bruno@clisp.org>
+
+	xstrtoll: Fix compilation failure.
+	* lib/xstrtol.c (ULLONG_MAX, LLONG_MAX, LLONG_MIN): New macros, taken
+	from lib/strtol.c.
+	* doc/posix-headers/limits.texi: Mention missing numerical limits on
+	some platforms.
+	Reported by Tom G. Christensen <tgc@jupiterrise.com>.
+
+2011-10-15  Bruno Haible  <bruno@clisp.org>
+
+	vasnprintf: Optimize bit search operation.
+	* lib/vasnprintf.c (divide): Use optimizations from integer_length.c.
+	* m4/vasnprintf.m4 (gl_PREREQ_VASNPRINTF): Require
+	gl_DOUBLE_EXPONENT_LOCATION.
+	* modules/vasnprintf (Files): Add m4/exponentd.m4.
+	* modules/unistdio/u8-vasnprintf (Files): Likewise.
+	* modules/unistdio/u8-u8-vasnprintf (Files): Likewise.
+	* modules/unistdio/u16-vasnprintf (Files): Likewise.
+	* modules/unistdio/u16-u16-vasnprintf (Files): Likewise.
+	* modules/unistdio/u32-vasnprintf (Files): Likewise.
+	* modules/unistdio/u32-u32-vasnprintf (Files): Likewise.
+	* modules/unistdio/ulc-vasnprintf (Files): Likewise.
+	* m4/isnand.m4 (gl_PREREQ_ISNAND): Use AC_REQUIRE.
+
+2011-10-15  Bruno Haible  <bruno@clisp.org>
+
+	vasnprintf: Fix comments.
+	* lib/vasnprintf.c (decode_long_double, decode_double): Fix comments.
+
+2011-10-14  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'integer_length_ll'.
+	* modules/integer_length_ll-tests: New file.
+	* tests/test-integer_length_ll.c: New file.
+
+	New module 'integer_length_ll'.
+	* lib/integer_length_ll.c: New file.
+	* modules/integer_length_ll: New file.
+
+2011-10-14  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'integer_length_l'.
+	* modules/integer_length_l-tests: New file.
+	* tests/test-integer_length_l.c: New file.
+
+	New module 'integer_length_l'.
+	* lib/integer_length_l.c: New file.
+	* modules/integer_length_l: New file.
+
+2011-10-14  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'integer_length'.
+	* modules/integer_length-tests: New file.
+	* tests/test-integer_length.c: New file.
+
+	New module 'integer_length'.
+	* lib/integer_length.h: New file.
+	* lib/integer_length.c: New file.
+	* modules/integer_length: New file.
+
+2011-10-14  Daniel Richard G.  <skunk@iskunk.org>  (tiny change)
+
+	popen: Fix dependency conditions.
+	* modules/popen (Depends-on, configure.ac): Fix shell syntax error.
+
+2011-10-14  Daniel Richard G.  <skunk@iskunk.org>  (tiny change)
+
+	perror: Fix autoconf test.
+	* m4/perror.m4 (gl_FUNC_PERROR): In the test program, include
+	<stdlib.h> and <string.h>.
+
+2011-10-14  Bruno Haible  <bruno@clisp.org>
+
+	ffsl: Optimize on 64-bit platforms.
+	* lib/ffsl.h (FUNC): Omit a test from the last loop round. Do loop
+	unrolling.
+
+2011-10-13  Bruno Haible  <bruno@clisp.org>
+
+	ffsl: Optimize on 32-bit platforms.
+	* lib/ffsl.h (FUNC): If TYPE has the same representation as 'int', just
+	use ffs() without a loop.
+
+	ffsl, ffsll: Optimize for GCC.
+	* lib/ffsl.h (FUNC): Use GCC_BUILTIN if defined.
+	* lib/ffsl.c (GCC_BUILTIN): New macro.
+	* lib/ffsll.c (GCC_BUILTIN): Likewise.
+
+2011-10-13  Bruno Haible  <bruno@clisp.org>
+
+	ffs, bcopy, memset: Support symbol renaming via config.h.
+	* lib/ffs.c: Include <config.h>.
+	* lib/bcopy.c: Likewise.
+	* lib/memset.c: Likewise.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	atanl: Simplify for platforms where 'long double' == 'double'.
+	* lib/atanl.c (atanl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New
+	alternative implementation.
+	* m4/atanl.m4 (gl_FUNC_ATANL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine ATANL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/atanl (Depends-on): Add atan. Update conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	acosl: Simplify for platforms where 'long double' == 'double'.
+	* lib/acosl.c (acosl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New
+	alternative implementation.
+	* m4/acosl.m4 (gl_FUNC_ACOSL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine ACOSL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/acosl (Depends-on): Add acos. Update conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	asinl: Simplify for platforms where 'long double' == 'double'.
+	* lib/asinl.c (asinl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New
+	alternative implementation.
+	* m4/asinl.m4 (gl_FUNC_ASINL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine ASINL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/asinl (Depends-on): Add asin. Update conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	tanl: Simplify for platforms where 'long double' == 'double'.
+	* lib/tanl.c (tanl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New alternative
+	implementation.
+	* m4/tanl.m4 (gl_FUNC_TANL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine TANL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/tanl (Depends-on): Add tan. Update conditions.
+	(configure.ac): Don't compile trigl.c if
+	HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	cosl: Simplify for platforms where 'long double' == 'double'.
+	* lib/cosl.c (cosl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New alternative
+	implementation.
+	* m4/cosl.m4 (gl_FUNC_COSL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine COSL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/cosl (Depends-on): Add cos. Update conditions.
+	(configure.ac): Don't compile sincosl.c and trigl.c if
+	HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	sinl: Simplify for platforms where 'long double' == 'double'.
+	* lib/sinl.c (sinl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New alternative
+	implementation.
+	* m4/sinl.m4 (gl_FUNC_SINL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine SINL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/sinl (Depends-on): Add sin. Update conditions.
+	(configure.ac): Don't compile sincosl.c and trigl.c if
+	HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	logl: Simplify for platforms where 'long double' == 'double'.
+	* lib/logl.c (logl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New alternative
+	implementation.
+	* m4/logl.m4 (gl_FUNC_LOGL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine LOGL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/logl (Depends-on): Add log. Update conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	expl: Simplify for platforms where 'long double' == 'double'.
+	* lib/expl.c (expl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New alternative
+	implementation.
+	* m4/expl.m4 (gl_FUNC_EXPL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine EXPL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/expl (Depends-on): Add exp. Update conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	sqrtl: Simplify for platforms where 'long double' == 'double'.
+	* lib/sqrtl.c (sqrtl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New
+	alternative implementation.
+	* m4/sqrtl.m4 (gl_FUNC_SQRTL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine SQRTL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/sqrtl (Depends-on): Update conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	ldexpl: Simplify for platforms where 'long double' == 'double'.
+	* lib/ldexpl.c (ldexpl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New
+	alternative implementation.
+	* m4/ldexpl.m4 (gl_FUNC_LDEXPL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine LDEXPL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/ldexpl (Depends-on): Add ldexp. Update conditions.
+
+2011-10-10  Tom G. Christensen  <tgc@jupiterrise.com>  (tiny change)
+
+	ffsll: set correct witness
+	* modules/ffsll (configure.ac): Fix typo.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	printf-frexpl: Simplify for platforms where 'long double' == 'double'.
+	* lib/printf-frexpl.c: Include <config.h>.
+	(printf_frexpl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/printf-frexp.c [!USE_LONG_DOUBLE]: Don't include <config.h> a
+	second time.
+	* m4/printf-frexpl.m4 (gl_FUNC_PRINTF_FREXPL): Require
+	gl_LONG_DOUBLE_VS_DOUBLE.
+	* modules/printf-frexpl (Depends-on): Add printf-frexp. Update
+	conditions.
+
+2011-10-10  Bruno Haible  <bruno@clisp.org>
+
+	frexpl: Simplify for platforms where 'long double' == 'double'.
+	* lib/frexpl.c: Include <config.h>.
+	(frexpl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/frexp.c [!USE_LONG_DOUBLE]: Don't include <config.h> a second
+	time.
+	* m4/frexpl.m4 (gl_FUNC_FREXPL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine FREXPL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	(gl_FUNC_FREXPL_NO_LIBM): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	* modules/frexpl (Depends-on): Add frexp. Update conditions.
+	* modules/frexpl-nolibm (Depends-on): Add frexp-nolibm. Update
+	conditions.
+
+2011-10-10  Jim Meyering  <meyering@redhat.com>
+
+	test-renameat: don't leave behind a temporary file
+	* tests/test-renameat.c (main): Don't forget to remove a temporary file.
+	  ERROR: files left in build directory after distclean:
+	  ./gltests/test-renameat.too
+	  make[1]: *** [distcleancheck] Error 1
+	Reported by Tom G. Christensen.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	rint: Determine RINT_LIBM correctly on AIX 7.
+	* m4/mathfunc.m4 (gl_MATHFUNC): Try to invoke the function also
+	directly, not only through a function pointer. Also accept an optional
+	4th argument with extra code.
+	* m4/rint.m4 (gl_FUNC_RINT): Pass an extra code that gets turned into a
+	rintf() call by gcc when optimizing.
+
+	mathfunc.m4: Refactor.
+	* m4/mathfunc.m4 (gl_MATHFUNC): Assign the argument list to a temporary
+	m4 variable.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	rintl: Simplify for platforms where 'long double' == 'double'.
+	* lib/rintl.c: Include <config.h>.
+	(rintl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/rint.c [!USE_LONG_DOUBLE]: Don't include <config.h> a second
+	time.
+	* m4/rintl.m4 (gl_FUNC_RINTL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine RINTL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/rintl (Depends-on): Add rint. Update conditions.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	roundl: Simplify for platforms where 'long double' == 'double'.
+	* lib/roundl.c: Include <config.h>.
+	(roundl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/round.c [!USE_LONG_DOUBLE]: Don't include <config.h> a second
+	time.
+	* m4/roundl.m4 (gl_FUNC_ROUNDL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine ROUNDL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/roundl (Depends-on): Add round. Update conditions.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	truncl: Simplify for platforms where 'long double' == 'double'.
+	* lib/truncl.c: Include <config.h>.
+	(truncl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/trunc.c [!USE_LONG_DOUBLE]: Don't include <config.h> a second
+	time.
+	* m4/truncl.m4 (gl_FUNC_TRUNCL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine TRUNCL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/truncl (Depends-on): Add trunc. Update conditions.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	ceill: Simplify for platforms where 'long double' == 'double'.
+	* lib/ceill.c: Include <config.h>.
+	(ceill) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/ceil.c [!USE_LONG_DOUBLE]: Don't include <config.h> a second
+	time.
+	* m4/ceill.m4 (gl_FUNC_CEILL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine CEILL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/ceill (Depends-on): Add ceil. Update conditions.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	floorl: Simplify for platforms where 'long double' == 'double'.
+	* lib/floorl.c: Include <config.h>.
+	(floorl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New function.
+	* lib/floor.c [!USE_LONG_DOUBLE]: Don't include <config.h> a second
+	time.
+	* m4/floorl.m4 (gl_FUNC_FLOORL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine FLOORL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/floorl (Depends-on): Add floor. Update conditions.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	rint: Fix ordering constraints.
+	* m4/rint.m4 (gl_FUNC_RINT): Require gl_MATH_H_DEFAULTS.
+	* m4/rintf.m4 (gl_FUNC_RINTF): Likewise.
+	* m4/rintl.m4 (gl_FUNC_RINTL): Likewise.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	copysignl: Simplify for platforms where 'long double' == 'double'.
+	* lib/copysignl.c (copysignl) [HAVE_SAME_LONG_DOUBLE_AS_DOUBLE]: New
+	alternative.
+	* m4/copysignl.m4 (gl_FUNC_COPYSIGNL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Determine COPYSIGNL_LIBM according to HAVE_SAME_LONG_DOUBLE_AS_DOUBLE.
+	* modules/copysignl (Depends-on): Add copysign. Update conditions.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'rintl'.
+	* modules/rintl-tests: New file.
+	* tests/test-rintl.c: New file.
+
+	New module 'rintl'.
+	* lib/math.in.h (rintl): New declaration.
+	* lib/rintl.c: New file.
+	* m4/rintl.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether rintl is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_RINTL, HAVE_RINTL.
+	* modules/math (Makefile.am): Substitute GNULIB_RINTL, HAVE_RINTL.
+	* modules/rintl: New file.
+	* tests/test-math-c++.cc: Check the declaration of rintl.
+	* modules/math-c++-tests (Makefile.am): Link test-math-c++ against
+	$(RINTL_LIBM). Needed on IRIX 6.5 with cc.
+	* doc/posix-functions/rintl.texi: Mention the new module.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'rintf'.
+	* modules/rintf-tests: New file.
+	* tests/test-rintf.c: New file.
+
+	New module 'rintf'.
+	* lib/math.in.h (rintf): New declaration.
+	* lib/rintf.c: New file.
+	* m4/rintf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether rintf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_RINTF, HAVE_RINTF.
+	* modules/math (Makefile.am): Substitute GNULIB_RINTF, HAVE_RINTF.
+	* modules/rintf: New file.
+	* tests/test-math-c++.cc: Check the declaration of rintf.
+	* doc/posix-functions/rintf.texi: Mention the new module.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	rint: Support for MSVC.
+	* lib/math.in.h (rint): New declaration.
+	* lib/rint.c: New file.
+	* m4/rint.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether rint is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_RINT, HAVE_RINT.
+	* modules/math (Makefile.am): Substitute GNULIB_RINT, HAVE_RINT.
+	* modules/rint (Description): Fix.
+	(Files): Add lib/rint.c, m4/rint.m4.
+	(Depends-on): Add math.
+	(configure.ac): Invoke gl_FUNC_RINT, AC_LIBOBJ,
+	gl_MATH_MODULE_INDICATOR.
+	* tests/test-math-c++.cc: Check the declaration of rint.
+	* modules/math-c++-tests (Makefile.am): Link test-math-c++ against
+	$(RINT_LIBM). Needed on IRIX 6.5 with cc.
+	* doc/posix-functions/rint.texi: Mention the replacement provided by
+	the module.
+
+	rint tests: More tests.
+	* tests/test-rint.c: Include <float.h>, <stdio.h>, isnand-nolibm.h,
+	minus-zero.h, infinity.h, nan.h.
+	(main): Skip the test if the current rounding mode is not standard. Add
+	tests for negative numbers, minus zero, infinity, NaN.
+	* modules/rint-tests (Files): Add tests/minus-zero.h, tests/infinity.h,
+	tests/nan.h.
+	(Depends-on): Add isnand-nolibm.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'copysignl'.
+	* modules/copysignl-tests: New file.
+	* tests/test-copysignl.c: New file.
+
+	New module 'copysignl'.
+	* lib/math.in.h (copysignl): New declaration.
+	* lib/copysignl.c: New file.
+	* m4/copysignl.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether copysignl is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_COPYSIGNL, HAVE_COPYSIGNL.
+	* modules/math (Makefile.am): Substitute GNULIB_COPYSIGNL,
+	HAVE_COPYSIGNL.
+	* modules/copysignl: New file.
+	* tests/test-math-c++.cc: Check the declaration of copysignl.
+	* modules/math-c++-tests (Makefile.am): Link test-math-c++ against
+	$(COPYSIGNL_LIBM). Needed on IRIX 6.5 with cc.
+	* doc/posix-functions/copysignl.texi: Mention the new module.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'copysignf'.
+	* modules/copysignf-tests: New file.
+	* tests/test-copysignf.c: New file.
+
+	New module 'copysignf'.
+	* lib/math.in.h (copysignf): New declaration.
+	* lib/copysignf.c: New file.
+	* m4/copysignf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether copysignf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_COPYSIGNF, HAVE_COPYSIGNF.
+	* modules/math (Makefile.am): Substitute GNULIB_COPYSIGNF,
+	HAVE_COPYSIGNF.
+	* modules/copysignf: New file.
+	* tests/test-math-c++.cc: Check the declaration of copysignf.
+	* doc/posix-functions/copysignf.texi: Mention the new module.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	Ensure that HAVE_* variables are set to 1 before they are set to 0.
+	* m4/fdopendir.m4 (gl_FUNC_FDOPENDIR): Require gl_DIRENT_H_DEFAULTS.
+	* m4/inet_ntop.m4 (gl_FUNC_INET_NTOP): Require gl_ARPA_INET_H_DEFAULTS.
+	* m4/inet_pton.m4 (gl_FUNC_INET_PTON): Likewise.
+	* m4/pthread_sigmask.m4 (gl_FUNC_PTHREAD_SIGMASK): Require
+	gl_SIGNAL_H_DEFAULTS.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	poll: Make macro safer.
+	* m4/poll.m4 (gl_FUNC_POLL): Complain if, after invoking gl_POLL_H,
+	ac_cv_header_poll_h is not set.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	copysign: Provide replacement.
+	* lib/math.in.h (copysign): New declaration.
+	* lib/copysign.c: New file.
+	* m4/copysign.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether copysign is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_COPYSIGN, HAVE_COPYSIGN.
+	* modules/math (Makefile.am): Substitute GNULIB_COPYSIGN,
+	HAVE_COPYSIGN.
+	* modules/copysign (Description): Clarify.
+	(Files): Add lib/copysign.c, m4/copysign.m4.
+	(Depends-on): Add math, signbit.
+	(configure.ac): Invoke gl_FUNC_COPYSIGN, AC_LIBOBJ,
+	gl_MATH_MODULE_INDICATOR.
+	* tests/test-math-c++.cc: Check the declaration of copysign.
+	* doc/posix-functions/copysign.texi: Mention the effects of the module
+	on Minix and MSVC.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	isinf: Ensure macro on AIX 5.1.
+	* m4/isinf.m4 (gl_ISINF): Also test whether isinf is defined as a
+	macro.
+	* doc/posix-functions/isinf.texi: Mention also AIX 5.1 as deficient.
+
+2011-10-09  Bruno Haible  <bruno@clisp.org>
+
+	*printf-posix tests: Fix for platforms where 'long double' == 'double'.
+	* modules/snprintf-posix-tests (configure.ac): Require
+	gl_LONG_DOUBLE_VS_DOUBLE.
+	* modules/sprintf-posix-tests (configure.ac): Likewise.
+	* modules/vasnprintf-posix-tests (configure.ac): Likewise.
+	* modules/vasprintf-posix-tests (configure.ac): Likewise.
+	* modules/vsnprintf-posix-tests (configure.ac): Likewise.
+	* modules/vsprintf-posix-tests (configure.ac): Likewise.
+	* tests/test-snprintf-posix.h (test_function): Avoid 80-bit long double
+	tests on platforms where 'long double' is the same as 'double'.
+	* tests/test-sprintf-posix.h (test_function): Likewise.
+	* tests/test-vasnprintf-posix.c (test_function): Likewise.
+	* tests/test-vasprintf-posix.c (test_function): Likewise.
+
+	*printf: Fix for platforms where 'long double' == 'double'.
+	* m4/printf.m4 (gl_PRINTF_INFINITE_LONG_DOUBLE): Require
+	gl_LONG_DOUBLE_VS_DOUBLE. Don't blindly assume 80-bit 'long double'.
+	* modules/dprintf-posix (Files): Add m4/math_h.m4.
+	* modules/fprintf-posix (Files): Likewise.
+	* modules/obstack-printf-posix (Files): Likewise.
+	* modules/snprintf-posix (Files): Likewise.
+	* modules/sprintf-posix (Files): Likewise.
+	* modules/vasnprintf (Files): Likewise.
+	* modules/vasnprintf-posix (Files): Likewise.
+	* modules/vasprintf-posix (Files): Likewise.
+	* modules/vdprintf-posix (Files): Likewise.
+	* modules/vfprintf-posix (Files): Likewise.
+	* modules/vsnprintf-posix (Files): Likewise.
+	* modules/vsprintf-posix (Files): Likewise.
+	* modules/unistdio/u8-vasnprintf (Files): Likewise.
+	* modules/unistdio/u8-u8-vasnprintf (Files): Likewise.
+	* modules/unistdio/u16-vasnprintf (Files): Likewise.
+	* modules/unistdio/u16-u16-vasnprintf (Files): Likewise.
+	* modules/unistdio/u32-vasnprintf (Files): Likewise.
+	* modules/unistdio/u32-u32-vasnprintf (Files): Likewise.
+	* modules/unistdio/ulc-vasnprintf (Files): Likewise.
+
+	isnanl[-nolibm]: Fix for platforms where 'long double' == 'double'.
+	* lib/isnan.c (rpl_isnanl): Don't blindly assume 80-bit 'long double'.
+	* m4/isnanl.m4 (gl_PREREQ_ISNANL): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	(gl_FUNC_ISNANL_WORKS): Likewise. Don't blindly assume 80-bit
+	'long double'.
+	* modules/isnanl-nolibm (Files): Add m4/math_h.m4.
+
+	isinf: Fix for platforms where 'long double' == 'double'.
+	* m4/isinf.m4 (gl_ISINFL_WORKS): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Don't blindly assume 80-bit 'long double'.
+
+	isfinite: Fix for platforms where 'long double' == 'double'.
+	* m4/isfinite.m4 (gl_ISFINITEL_WORKS): Require gl_LONG_DOUBLE_VS_DOUBLE.
+	Don't blindly assume 80-bit 'long double'.
+
+	isfinite, isinf, isnan tests: Avoid syntax error on MSVC 9.
+	* m4/math_h.m4 (gl_LONG_DOUBLE_VS_DOUBLE): New macro.
+	* modules/isfinite-tests (configure.ac): Require
+	gl_LONG_DOUBLE_VS_DOUBLE.
+	* modules/isinf-tests (configure.ac): Likewise.
+	* modules/isnan-tests (configure.ac): Likewise.
+	* modules/isnanl-tests (configure.ac): Likewise.
+	* modules/isnanl-nolibm-tests (configure.ac): Likewise.
+	* tests/test-isfinite.c (test_isfinitel): Avoid 80-bit long double
+	tests on platforms where 'long double' is the same as 'double'.
+	* tests/test-isinf.c (test_isinfl): Likewise.
+	* tests/test-isnan.c (test_long_double): Likewise.
+	* tests/test-isnanl.h (main): Likewise.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'tanhf'.
+	* modules/tanhf-tests: New file.
+	* tests/test-tanhf.c: New file.
+
+	New module 'tanhf'.
+	* lib/math.in.h (tanhf): New declaration.
+	* lib/tanhf.c: New file.
+	* m4/tanhf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether tanhf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_TANHF, HAVE_TANHF.
+	* modules/math (Makefile.am): Substitute GNULIB_TANHF, HAVE_TANHF.
+	* modules/tanhf: New file.
+	* tests/test-math-c++.cc: Check the declaration of tanhf.
+	* doc/posix-functions/tanhf.texi: Mention the new module.
+
+	tanh: Use a .m4 file.
+	* m4/tanh.m4: New file.
+	* modules/tanh (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_TANH.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'coshf'.
+	* modules/coshf-tests: New file.
+	* tests/test-coshf.c: New file.
+
+	New module 'coshf'.
+	* lib/math.in.h (coshf): New declaration.
+	* lib/coshf.c: New file.
+	* m4/coshf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether coshf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_COSHF, HAVE_COSHF.
+	* modules/math (Makefile.am): Substitute GNULIB_COSHF, HAVE_COSHF.
+	* modules/coshf: New file.
+	* tests/test-math-c++.cc: Check the declaration of coshf.
+	* doc/posix-functions/coshf.texi: Mention the new module.
+
+	cosh: Use a .m4 file.
+	* m4/cosh.m4: New file.
+	* modules/cosh (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_COSH.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'sinhf'.
+	* modules/sinhf-tests: New file.
+	* tests/test-sinhf.c: New file.
+
+	New module 'sinhf'.
+	* lib/math.in.h (sinhf): New declaration.
+	* lib/sinhf.c: New file.
+	* m4/sinhf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether sinhf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_SINHF, HAVE_SINHF.
+	* modules/math (Makefile.am): Substitute GNULIB_SINHF, HAVE_SINHF.
+	* modules/sinhf: New file.
+	* tests/test-math-c++.cc: Check the declaration of sinhf.
+	* doc/posix-functions/sinhf.texi: Mention the new module.
+
+	sinh: Use a .m4 file.
+	* m4/sinh.m4: New file.
+	* modules/sinh (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_SINH.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'atan2f'.
+	* modules/atan2f-tests: New file.
+	* tests/test-atan2f.c: New file.
+
+	New module 'atan2f'.
+	* lib/math.in.h (atan2f): New declaration.
+	* lib/atan2f.c: New file.
+	* m4/atan2f.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether atan2f is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_ATAN2F, HAVE_ATAN2F.
+	* modules/math (Makefile.am): Substitute GNULIB_ATAN2F, HAVE_ATAN2F.
+	* modules/atan2f: New file.
+	* tests/test-math-c++.cc: Check the declaration of atan2f.
+	* doc/posix-functions/atan2f.texi: Mention the new module.
+
+	atan2: Use a .m4 file.
+	* m4/atan2.m4: New file.
+	* modules/atan2 (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_ATAN2.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'atanf'.
+	* modules/atanf-tests: New file.
+	* tests/test-atanf.c: New file.
+
+	New module 'atanf'.
+	* lib/math.in.h (atanf): New declaration.
+	* lib/atanf.c: New file.
+	* m4/atanf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether atanf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_ATANF, HAVE_ATANF.
+	* modules/math (Makefile.am): Substitute GNULIB_ATANF, HAVE_ATANF.
+	* modules/atanf: New file.
+	* tests/test-math-c++.cc: Check the declaration of atanf.
+	* doc/posix-functions/atanf.texi: Mention the new module.
+
+	atan: Use a .m4 file.
+	* m4/atan.m4: New file.
+	* modules/atan (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_ATAN.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'acosf'.
+	* modules/acosf-tests: New file.
+	* tests/test-acosf.c: New file.
+
+	New module 'acosf'.
+	* lib/math.in.h (acosf): New declaration.
+	* lib/acosf.c: New file.
+	* m4/acosf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether acosf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_ACOSF, HAVE_ACOSF.
+	* modules/math (Makefile.am): Substitute GNULIB_ACOSF, HAVE_ACOSF.
+	* modules/acosf: New file.
+	* tests/test-math-c++.cc: Check the declaration of acosf.
+	* doc/posix-functions/acosf.texi: Mention the new module.
+
+	acos: Use a .m4 file.
+	* m4/acos.m4: New file.
+	* modules/acos (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_ACOS.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'asinf'.
+	* modules/asinf-tests: New file.
+	* tests/test-asinf.c: New file.
+
+	New module 'asinf'.
+	* lib/math.in.h (asinf): New declaration.
+	* lib/asinf.c: New file.
+	* m4/asinf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether asinf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_ASINF, HAVE_ASINF.
+	* modules/math (Makefile.am): Substitute GNULIB_ASINF, HAVE_ASINF.
+	* modules/asinf: New file.
+	* tests/test-math-c++.cc: Check the declaration of asinf.
+	* doc/posix-functions/asinf.texi: Mention the new module.
+
+	asin: Use a .m4 file.
+	* m4/asin.m4: New file.
+	* modules/asin (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_ASIN.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'tanf'.
+	* modules/tanf-tests: New file.
+	* tests/test-tanf.c: New file.
+
+	New module 'tanf'.
+	* lib/math.in.h (tanf): New declaration.
+	* lib/tanf.c: New file.
+	* m4/tanf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether tanf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_TANF, HAVE_TANF.
+	* modules/math (Makefile.am): Substitute GNULIB_TANF, HAVE_TANF.
+	* modules/tanf: New file.
+	* tests/test-math-c++.cc: Check the declaration of tanf.
+	* doc/posix-functions/tanf.texi: Mention the new module.
+
+	tan: Use a .m4 file.
+	* m4/tan.m4: New file.
+	* modules/tan (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_TAN.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'cosf'.
+	* modules/cosf-tests: New file.
+	* tests/test-cosf.c: New file.
+
+	New module 'cosf'.
+	* lib/math.in.h (cosf): New declaration.
+	* lib/cosf.c: New file.
+	* m4/cosf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether cosf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_COSF, HAVE_COSF.
+	* modules/math (Makefile.am): Substitute GNULIB_COSF, HAVE_COSF.
+	* modules/cosf: New file.
+	* tests/test-math-c++.cc: Check the declaration of cosf.
+	* doc/posix-functions/cosf.texi: Mention the new module.
+
+	cos: Use a .m4 file.
+	* m4/cos.m4: New file.
+	* modules/cos (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_COS.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'sinf'.
+	* modules/sinf-tests: New file.
+	* tests/test-sinf.c: New file.
+
+	New module 'sinf'.
+	* lib/math.in.h (sinf): New declaration.
+	* lib/sinf.c: New file.
+	* m4/sinf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether sinf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_SINF, HAVE_SINF.
+	* modules/math (Makefile.am): Substitute GNULIB_SINF, HAVE_SINF.
+	* modules/sinf: New file.
+	* tests/test-math-c++.cc: Check the declaration of sinf.
+	* doc/posix-functions/sinf.texi: Mention the new module.
+
+	sin: Use a .m4 file.
+	* m4/sin.m4: New file.
+	* modules/sin (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_SIN.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'powf'.
+	* modules/powf-tests: New file.
+	* tests/test-powf.c: New file.
+
+	New module 'powf'.
+	* lib/math.in.h (powf): New declaration.
+	* lib/powf.c: New file.
+	* m4/powf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether powf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_POWF, HAVE_POWF.
+	* modules/math (Makefile.am): Substitute GNULIB_POWF, HAVE_POWF.
+	* modules/powf: New file.
+	* tests/test-math-c++.cc: Check the declaration of powf.
+	* doc/posix-functions/powf.texi: Mention the new module.
+
+	pow: Use a .m4 file.
+	* m4/pow.m4: New file.
+	* modules/pow (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_POW.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'log10f'.
+	* modules/log10f-tests: New file.
+	* tests/test-log10f.c: New file.
+
+	New module 'log10f'.
+	* lib/math.in.h (log10f): New declaration.
+	* lib/log10f.c: New file.
+	* m4/log10f.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether log10f is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_LOG10F, HAVE_LOG10F.
+	* modules/math (Makefile.am): Substitute GNULIB_LOG10F, HAVE_LOG10F.
+	* modules/log10f: New file.
+	* tests/test-math-c++.cc: Check the declaration of log10f.
+	* doc/posix-functions/log10f.texi: Mention the new module.
+
+	log10: Use a .m4 file.
+	* m4/log10.m4: New file.
+	* modules/log10 (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_LOG10.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'logf'.
+	* modules/logf-tests: New file.
+	* tests/test-logf.c: New file.
+
+	New module 'logf'.
+	* lib/math.in.h (logf): New declaration.
+	* lib/logf.c: New file.
+	* m4/logf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether logf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_LOGF, HAVE_LOGF.
+	* modules/math (Makefile.am): Substitute GNULIB_LOGF, HAVE_LOGF.
+	* modules/logf: New file.
+	* tests/test-math-c++.cc: Check the declaration of logf.
+	* doc/posix-functions/logf.texi: Mention the new module.
+
+	log: Use a .m4 file.
+	* m4/log.m4: New file.
+	* modules/log (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_LOG.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'expf'.
+	* modules/expf-tests: New file.
+	* tests/test-expf.c: New file.
+
+	New module 'expf'.
+	* lib/math.in.h (expf): New declaration.
+	* lib/expf.c: New file.
+	* m4/expf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether expf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_EXPF, HAVE_EXPF.
+	* modules/math (Makefile.am): Substitute GNULIB_EXPF, HAVE_EXPF.
+	* modules/expf: New file.
+	* tests/test-math-c++.cc: Check the declaration of expf.
+	* doc/posix-functions/expf.texi: Mention the new module.
+
+	exp: Use a .m4 file.
+	* m4/exp.m4: New file.
+	* modules/exp (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_EXP.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'sqrtf'.
+	* modules/sqrtf-tests: New file.
+	* tests/test-sqrtf.c: New file.
+
+	New module 'sqrtf'.
+	* lib/math.in.h (sqrtf): New declaration.
+	* lib/sqrtf.c: New file.
+	* m4/sqrtf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether sqrtf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_SQRTF, HAVE_SQRTF.
+	* modules/math (Makefile.am): Substitute GNULIB_SQRTF, HAVE_SQRTF.
+	* modules/sqrtf: New file.
+	* tests/test-math-c++.cc: Check the declaration of sqrtf.
+	* doc/posix-functions/sqrtf.texi: Mention the new module.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	Tests: Avoid link failures w.r.t. libintl.
+	* modules/faccessat-tests (Makefile.am): Link test-faccessat against
+	$(LIBINTL).
+	* modules/fchdir-tests (Makefile.am): Link test-fchdir against
+	$(LIBINTL).
+	* modules/getcwd-lgpl-tests (Makefile.am): Link test-getcwd-lgpl
+	against $(LIBINTL).
+	* modules/getcwd-tests (Makefile.am): Link test-getcwd against
+	$(LIBINTL).
+	* modules/openat-tests (Makefile.am): Link test-fchmodat against
+	$(LIBINTL).
+	* modules/stat-tests (Makefile.am): Link test-stat against $(LIBINTL).
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	pow tests: Defeat compiler optimizations.
+	* tests/test-pow.c (main): Assign arguments to x and y before use.
+
+2011-10-08  Bruno Haible  <bruno@clisp.org>
+
+	gnulib-tool: Improve last commit.
+	* gnulib-tool (func_modules_transitive_closure): Simplify code.
+	(func_emit_autoconf_snippets): Instead of invoking func_acceptable,
+	ignore dependencies that are not among the modules list.
+
+2011-10-07  Paul Eggert  <eggert@cs.ucla.edu>
+
+	gnulib-tool: don't follow dependencies to avoided modules
+	This fixes a bug that is related to the previous one.
+	* gnulib-tool (func_modules_transitive_closure)
+	(func_emit_autoconf_snippets):
+	Check whether a dependency is acceptable before using it.
+	(--extract-dependencies): Report an error if --avoid is also used,
+	since this combination of options is not yet supported.
+
+	gnulib-tool: fix typo that broke Emacs on powerpc-apple-darwin9.8.0.
+	Problem reported by Peter Dyballa in
+	<http://debbugs.gnu.org/cgi/bugreport.cgi?bug=9696>.
+	* gnulib-tool (func_emit_autoconf_snippets): Quote with "", not '',
+	when echoing "$condition".
+
+2011-10-07  Bruno Haible  <bruno@clisp.org>
+
+	Fix documentation about math functions on MacOS X.
+	* doc/posix-functions/exp2.texi: Don't say the function is missing on
+	MacOS X 10.5.
+	* doc/posix-functions/fdim.texi: Likewise.
+	* doc/posix-functions/feclearexcept.texi: Likewise.
+	* doc/posix-functions/fegetenv.texi: Likewise.
+	* doc/posix-functions/fegetround.texi: Likewise.
+	* doc/posix-functions/feholdexcept.texi: Likewise.
+	* doc/posix-functions/feraiseexcept.texi: Likewise.
+	* doc/posix-functions/fesetenv.texi: Likewise.
+	* doc/posix-functions/fesetround.texi: Likewise.
+	* doc/posix-functions/fetestexcept.texi: Likewise.
+	* doc/posix-functions/feupdateenv.texi: Likewise.
+	* doc/posix-functions/fmax.texi: Likewise.
+	* doc/posix-functions/fmin.texi: Likewise.
+	* doc/posix-functions/log2.texi: Likewise.
+	* doc/posix-functions/modff.texi: Likewise.
+	* doc/posix-functions/nan.texi: Likewise.
+	* doc/posix-functions/nanf.texi: Likewise.
+	* doc/posix-functions/nextafterf.texi: Likewise.
+	* doc/posix-functions/remquo.texi: Likewise.
+
+2011-10-07  Bruno Haible  <bruno@clisp.org>
+
+	modff: Drop assumption about library that defines modff.
+	* m4/modff.m4 (gl_FUNC_MODFF): Use gl_MATHFUNC macro instead of
+	AC_CHECK_FUNCS.
+	* modules/modff (Files): Add m4/mathfunc.m4.
+
+2011-10-07  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	raise tests: Avoid a GCC warning.
+	* tests/test-raise.c (handler): Use _Noreturn.
+
+2011-10-07  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'ldexpf'.
+	* modules/ldexpf-tests: New file.
+	* tests/test-ldexpf.c: New file.
+
+	New module 'ldexpf'.
+	* lib/math.in.h (ldexpf): New declaration.
+	* lib/ldexpf.c: New file.
+	* m4/ldexpf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether ldexpf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_LDEXPF, HAVE_LDEXPF.
+	* modules/math (Makefile.am): Substitute GNULIB_LDEXPF, HAVE_LDEXPF.
+	* modules/ldexpf: New file.
+	* tests/test-math-c++.cc: Check the declaration of ldexpf.
+	* doc/posix-functions/ldexpf.texi: Mention the new module.
+
+2011-10-06  Bruno Haible  <bruno@clisp.org>
+
+	frexpf: Work around problems on IRIX and mingw.
+	* lib/math.in.h (frexpf): Consider also REPLACE_FREXPF.
+	* m4/math_h.m4 (gl_MATH_H_DEFAULTS): Initialize REPLACE_FREXPF.
+	* m4/frexpf.m4 (gl_FUNC_FREXPF_WORKS): New macro.
+	(gl_FUNC_FREXPF): Invoke it. Set REPLACE_FREXPF.
+	* modules/frexpf (Depends-on, configure.ac): Consider REPLACE_FREXPF.
+	* modules/math (Makefile.am): Substitute REPLACE_FREXPF.
+	* doc/posix-functions/frexpf.texi: Mention the IRIX and mingw problems.
+
+2011-10-06  Bruno Haible  <bruno@clisp.org>
+
+	fabsf: Drop assumption about library that defines fabsf.
+	* m4/fabsf.m4 (gl_FUNC_FABSF): Use gl_MATHFUNC macro instead of
+	AC_CHECK_FUNCS.
+	* modules/fabsf (Files): Add m4/mathfunc.m4.
+
+2011-10-06  Bruno Haible  <bruno@clisp.org>
+
+	frexpf: Drop assumption about library that defines frexpf.
+	* m4/mathfunc.m4 (gl_MATHFUNC): Support also the argument types
+	'int *', 'float *', 'long double *', 'float', 'long double'.
+	* m4/frexpf.m4 (gl_FUNC_FREXPF): Use gl_MATHFUNC macro instead of
+	AC_CHECK_FUNCS.
+	* modules/frexpf (Files): Add m4/mathfunc.m4.
+
+	Tests for module 'frexpf'.
+	* modules/frexpf-tests: New file.
+	* tests/test-frexpf.c: New file.
+
+	New module 'frexpf'.
+	* lib/math.in.h (frexpf): New declaration.
+	* lib/frexpf.c: New file.
+	* m4/frexpf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether frexpf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_FREXPF, HAVE_FREXPF.
+	* modules/math (Makefile.am): Substitute GNULIB_FREXPF, HAVE_FREXPF.
+	* modules/frexpf: New file.
+	* tests/test-math-c++.cc: Check the declaration of frexpf.
+	* doc/posix-functions/frexpf.texi: Mention the new module.
+
+2011-10-06  Bruno Haible  <bruno@clisp.org>
+
+	math: Sort function declarations of math.in.h.
+	* lib/math.in.h (frexp, logb): Move declarations.
+
+2011-10-05  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'modff'.
+	* modules/modff-tests: New file.
+	* tests/test-modff.c: New file.
+
+	New module 'modff'.
+	* lib/math.in.h (modff): New declaration.
+	* lib/modff.c: New file.
+	* m4/modff.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether modff is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_MODFF, HAVE_MODFF.
+	* modules/math (Makefile.am): Substitute GNULIB_MODFF, HAVE_MODFF.
+	* modules/modff: New file.
+	* tests/test-math-c++.cc: Check the declaration of modff.
+	* doc/posix-functions/modff.texi: Mention the new module.
+
+	modf tests: Make test sharper.
+	* tests/test-modf.c (main): Strengthen upper bound.
+
+	modf: Use a .m4 file.
+	* m4/modf.m4: New file.
+	* modules/modf (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_MODF.
+
+2011-10-05  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'fmodf'.
+	* modules/fmodf-tests: New file.
+	* tests/test-fmodf.c: New file.
+
+	New module 'fmodf'.
+	* lib/math.in.h (fmodf): New declaration.
+	* lib/fmodf.c: New file.
+	* m4/fmodf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether fmodf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_FMODF, HAVE_FMODF.
+	* modules/math (Makefile.am): Substitute GNULIB_FMODF, HAVE_FMODF.
+	* modules/fmodf: New file.
+	* tests/test-math-c++.cc: Check the declaration of fmodf.
+	* doc/posix-functions/fmodf.texi: Mention the new module.
+
+	fmod: Use a .m4 file.
+	* m4/fmod.m4: New file.
+	* modules/fmod (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_FMOD.
+
+2011-10-05  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'fabsf'.
+	* modules/fabsf-tests: New file.
+	* tests/test-fabsf.c: New file.
+
+	New module 'fabsf'.
+	* lib/math.in.h (fabsf): New declaration.
+	* lib/fabsf.c: New file.
+	* m4/fabsf.m4: New file.
+	* m4/math_h.m4 (gl_MATH_H): Test whether fabsf is declared.
+	(gl_MATH_H_DEFAULTS): Initialize GNULIB_FABSF, HAVE_FABSF.
+	* modules/math (Makefile.am): Substitute GNULIB_FABSF, HAVE_FABSF.
+	* modules/fabsf: New file.
+	* tests/test-math-c++.cc: Check the declaration of fabsf.
+	* doc/posix-functions/fabsf.texi: Mention the new module.
+
+	fabs: Use a .m4 file.
+	* m4/fabs.m4: New file.
+	* modules/fabs (Files): Add it.
+	(configure.ac): Just invoke gl_FUNC_FABS.
+
+2011-10-05  Jim Meyering  <meyering@redhat.com>
+
+	file-has-acl: revert both recent changes, 80af92af and 95f7c57f
+	* lib/file-has-acl.c: While the 2011-10-03 change does fix the
+	ls -lL regression introduced in coreutils-8.12, it does so at the
+	cost of an additional stat call in the common case.  Besides, now
+	that the kernel change that prompted commit 95f7c57f has been reverted
+	(see https://bugzilla.redhat.com/show_bug.cgi?id=720325#c24)
+	we have no use for commit 95f7c57f, "file-has-acl: use
+	acl_extended_file_nofollow if available".
+
+2011-10-03  Kamil Dudka  <kdudka@redhat.com>
+
+	file-has-acl: revert unintended change in behavior of ls -L
+	* lib/file-has-acl.c (acl_extended_file_wrap): New function,
+	derived from...
+	(file_has_acl): ...code here.  Call it.
+	This problem was introduced with 2011-07-22 commit 95f7c57f,
+	"file-has-acl: use acl_extended_file_nofollow if available".
+	See http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/28538
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	poll: Avoid link errors on MSVC.
+	* m4/poll.m4 (gl_FUNC_POLL): Determine LIB_POLL.
+	* modules/poll (Depends-on): Add sockets.
+	(Link): New section.
+	* NEWS: Mention the change.
+	* modules/poll-tests (Makefile.am): Link test-poll against $(LIB_POLL).
+	* modules/poll-h-c++-tests (Makefile.am): Link test-poll-h-c++ against
+	$(LIB_POLL) instead of $(LIBSOCKET).
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	sys_select tests: Fix link error on MSVC 9.
+	* modules/sys_select-c++-tests (Makefile.am): Link test-sys_select-c++
+	with $(LIB_SELECT) instead of $(LIBSOCKET).
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	sys_select: Fix compilation error on mingw.
+	* lib/sys_select.in.h: On native Windows, include <io.h>.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	wmemset: Support for MSVC.
+	* m4/wmemset.m4 (gl_FUNC_WMEMSET): Use a small test program to test
+	whether wmemset() exists.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	wmemmove: Support for MSVC.
+	* m4/wmemmove.m4 (gl_FUNC_WMEMMOVE): Use a small test program to test
+	whether wmemmove() exists.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	wmemcpy: Support for MSVC.
+	* m4/wmemcpy.m4 (gl_FUNC_WMEMCPY): Use a small test program to test
+	whether wmemcpy() exists.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	wmemcmp: Support for MSVC.
+	* m4/wmemcmp.m4 (gl_FUNC_WMEMCMP): Use a small test program to test
+	whether wmemcmp() exists.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	wmemchr: Support for MSVC.
+	* m4/wmemchr.m4 (gl_FUNC_WMEMCHR): Use a small test program to test
+	whether wmemchr() exists.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	glthread/*, strsignal: Support for MSVC.
+	* lib/glthread/cond.h: Define WIN32_LEAN_AND_MEAN, so as to avoid
+	including <winsock.h> on MSVC 9.
+	* lib/glthread/lock.h: Likewise.
+	* lib/glthread/thread.h: Likewise.
+	* lib/glthread/tls.h: Likewise.
+	* lib/glthread/yield.h: Likewise.
+	* lib/strsignal.c: Include <string.h> first. Don't include <unistd.h>
+	if HAVE_UNISTD_H is false.
+	* m4/strsignal.m4 (gl_PREREQ_STRSIGNAL): Test for <unistd.h>.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	nonblocking tests: Fix test failure on OpenBSD/SPARC64.
+	* tests/test-nonblocking-socket.h (SOCKET_DATA_BLOCK_SIZE) [OpenBSD]:
+	Set to 100000.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	acl: Fix specification.
+	* lib/file-has-acl.c (file_has_acl): Fix specification.
+
+2011-10-03  Bruno Haible  <bruno@clisp.org>
+
+	relocatable-lib[-lgpl]: Avoid expensive /proc access on Linux, Cygwin.
+	* lib/relocatable.c (ENABLE_COSTLY_RELOCATABLE): New macro.
+	(compute_curr_prefix, shared_library_fullname,
+	find_shared_library_fullname, get_shared_library_fullname, relocate):
+	Use it together with PIC && INSTALLDIR.
+	Reported by <jojelino@gmail.com>
+	via Charles Wilson <cygwin@cwilson.fastmail.fm>.
+
+2011-10-01  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: adjust a release-related rule not to require use of gzip
+	* top/maint.mk (writable-files): Don't hard-code use of .tar.gz.
+	Instead, check each file in $(DIST_ARCHIVES).  This is better for
+	projects that build only .tar.xz files.  Also fix an erroneous test.
+
+	test-linkat: don't leave behind a temporary file
+	* tests/test-linkat.c (main): Don't forget to remove a temporary file.
+	Otherwise, coreutils' "make distcheck" would fail with this:
+	  Only in /c/cu/tests/torture/coreutils/test/\
+	    coreutils-8.13.22-d5caf.old/gnulib-tests: test-linkat.too
+	  make[2]: *** [my-distcheck] Error 1
+
+	float, math: add omitted file
+	* lib/itold.c: Add file, required for yesterday's float change.
+
+2011-10-01  Bruno Haible  <bruno@clisp.org>
+
+	isinf: Fix for OpenBSD/x86.
+	* m4/isinf.m4 (gl_ISINFL_WORKS): Also test the behaviour of isinf on
+	pseudo-NaNs, pseudo-Infinities, and other non-IEEE values.
+	* doc/posix-functions/isinf.texi: Mention the problem on OpenBSD/x86.
+
+2011-10-01  Bruno Haible  <bruno@clisp.org>
+
+	isfinite: Fix syntax error in configure test.
+	* m4/isfinite.m4 (gl_ISFINITEL_WORKS): Fix syntax error.
+
+	isfinite: Fix typo.
+	* m4/isfinite.m4 (gl_ISFINITEL_WORKS): When cross-compiling, set
+	gl_cv_func_isfinitel_works, not gl_cv_func_isnanl_works.
+
+2011-10-01  Bruno Haible  <bruno@clisp.org>
+
+	nonblocking tests: Fix test failure on Linux/IA-64.
+	* tests/test-nonblocking-pipe.h (PIPE_DATA_BLOCK_SIZE) [Linux/IA-64]:
+	Set to 270000.
+
+2011-10-01  Bruno Haible  <bruno@clisp.org>
+
+	mkfifoat tests: Fix a test failure on mingw.
+	* tests/test-mkfifoat.c (main): Allow mkfifoat or test_mknodat to fail
+	with error ENOSYS.
+
+2011-09-30  Bruno Haible  <bruno@clisp.org>
+
+	float, math: Fix 'int' to 'long double' conversion on Linux/SPARC64.
+	* m4/float_h.m4 (gl_FLOAT_H): Test conversion from 'int' to
+	'long double'. Set REPLACE_ITOLD.
+	* lib/float.in.h (_Qp_itoq, _gl_float_fix_itold): New declarations.
+	* lib/math.in.h (_Qp_itoq, _gl_math_fix_itold): New declarations.
+	* lib/itold.c: New file.
+	* modules/float (Files): Add lib/itold.c.
+	(configure.ac): When REPLACE_ITOLD is 1, arrange to compile itold.c.
+	(Makefile.am): Substitute REPLACE_ITOLD.
+	* modules/math (Depends-on): Add float.
+	(Makefile.am): Substitute REPLACE_ITOLD.
+	* doc/posix-headers/float.texi: Mention problem on Linux/SPARC64.
+	* doc/posix-headers/math.texi: Likewise.
+	* doc/posix-functions/logl.texi: Likewise.
+
+2011-09-30  Bruno Haible  <bruno@clisp.org>
+
+	nonblocking tests: Fix test failure on Linux/SPARC (32-bit and 64-bit).
+	* tests/test-nonblocking-pipe.h (PIPE_DATA_BLOCK_SIZE) [Linux/SPARC]:
+	Set to 140000.
+
+2011-09-30  Bruno Haible  <bruno@clisp.org>
+
+	gnulib-tool: Improve suggestion where to put gl_EARLY invocation.
+	* gnulib-tool (func_import): If the configure.ac has an AC_PROG_CC_STDC
+	invocation, say "right after AC_PROG_CC_STDC", not "right after
+	AC_PROG_CC".
+	Reported by Gary V. Vaughan <gary@gnu.org>.
+
+2011-09-30  Bruno Haible  <bruno@clisp.org>
+
+	Centralize C99 requirement.
+	* m4/gnulib-common.m4 (gl_PROG_CC_C99): New macro.
+	* modules/stdarg (configure.ac-early): Invoke it instead of
+	AC_PROG_CC_STDC.
+	Reported by Gary V. Vaughan and Paul Eggert.
+
+2011-09-29  Bruno Haible  <bruno@clisp.org>
+
+	float: Fix LDBL_MAX value on Linux/PowerPC.
+	* m4/float_h.m4 (gl_FLOAT_H): Set FLOAT_H and REPLACE_FLOAT_LDBL also
+	on Linux/PowerPC.
+	* lib/float.in.h (LDBL_MAX): Redefine also on Linux/PowerPC.
+	* lib/float.c (gl_LDBL_MAX): Also define on Linux/PowerPC.
+	* doc/posix-headers/float.texi: Mention Linux/PowerPC as an affected
+	platform.
+	Reported by Andreas Metzler <ametzler@downhill.at.eu.org>.
+
+2011-09-29  Bruno Haible  <bruno@clisp.org>
+
+	doc: Improve doc about gl_EARLY.
+	* doc/gnulib-tool.texi (Initial import): Mention where to place an
+	AC_PROG_CC_STDC invocation.
+	Reported by Gary V. Vaughan <gary@gnu.org>.
+
+2011-09-28  Bruno Haible  <bruno@clisp.org>
+
+	fgetc, fputc, fread, fwrite tests: Fix link error.
+	* tests/test-fgetc.c (main): Don't invoke gl_msvc_inval_ensure_handler
+	on non-MSVC platforms.
+	* tests/test-fputc.c (main): Likewise.
+	* tests/test-fread.c (main): Likewise.
+	* tests/test-fwrite.c (main): Likewise.
+	Reported by Jim Meyering.
+
+2011-09-27  Bruno Haible  <bruno@clisp.org>
+
+	fputc, fwrite tests: Avoid test failure on MSVC.
+	* tests/test-fgetc.c: Include msvc-inval.h.
+	(main): Invoke gl_msvc_inval_ensure_handler.
+	* tests/test-fputc.c: Include msvc-inval.h.
+	(main): Invoke gl_msvc_inval_ensure_handler.
+	* tests/test-fread.c: Include msvc-inval.h.
+	(main): Invoke gl_msvc_inval_ensure_handler.
+	* tests/test-fwrite.c: Include msvc-inval.h.
+	(main): Invoke gl_msvc_inval_ensure_handler.
+	* modules/fgetc-tests (Depends-on): Add msvc-inval.
+	* modules/fputc-tests (Depends-on): Likewise.
+	* modules/fread-tests (Depends-on): Likewise.
+	* modules/fwrite-tests (Depends-on): Likewise.
+
+2011-09-27  Bruno Haible  <bruno@clisp.org>
+
+	raise: Fix double declaration with modules 'sigprocmask' and 'sigpipe'.
+	* lib/signal.in.h (GNULIB_defined_signal_blocking): New macro.
+	(raise): Remove older, duplicated declaration.
+	(_gl_raise_SIGPIPE): New declaration.
+	* lib/sigprocmask.c (_gl_raise_SIGPIPE): New function.
+	(rpl_raise): Remove function.
+	* lib/raise.c (rpl_raise, raise): Merge into a single function. Handle
+	a gnulib-defined SIGPIPE here.
+	* m4/raise.m4 (gl_FUNC_RAISE): Set REPLACE_RAISE also if the module
+	'sigprocmask' has detected missing signal-blocking and the module
+	'sigpipe' is enabled.
+	Reported by Tatsuro MATSUOKA <tmacchant5@yahoo.co.jp>.
+
+2011-09-26  Gijs van Tulder  <gvtulder@gmail.com>
+
+	base64-tests: avoid memory leak
+	* tests/test-base64.c (main): Plug memory leak.
+
+	base32: new module
+	* modules/base32: New module.
+	* lib/base32.c: New file.
+	* lib/base32.h: Likewise.
+	* m4/base32.m4: Likewise.
+	* modules/base32-tests: New test.
+	* tests/test-base32.c: Likewise.
+	* MODULES.html.sh (Misc): Mention it.
+
+2011-09-26  Paul Eggert  <eggert@cs.ucla.edu>
+
+	gnulib: use more-standard license notice wording
+	* gnulib-tool (func_emit_copyright_notice): When emitting a
+	license notice into a file, use the standard wording as suggested
+	by the current information for GNU maintainers, except say "file"
+	rather than "program".  The new wording gives a license version
+	number, which addresses an issue raised by Glenn Morris in
+	<http://lists.gnu.org/archive/html/bug-gnulib/2011-09/msg00397.html>.
+	* m4/onceonly.m4: Use that same wording here, too.
+
+	dup2: minor simplification
+	* m4/dup2.m4 (gl_PREREQ_DUP2): Don't require AC_C_INLINE,
+	as lib/dup2.c no longer uses 'inline'.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	strings: Fix compilation error on MSVC.
+	* lib/strings.in.h: Include <stddef.h> for size_t.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	fflush et al.: Document limitation on MSVC.
+	* doc/posix-functions/fflush.texi: Document possible crash in handling
+	mode other than DEFAULT_HANDLING.
+	* doc/posix-functions/fgetc.texi: Likewise.
+	* doc/posix-functions/fputc.texi: Likewise.
+	* doc/posix-functions/fread.texi: Likewise.
+	* doc/posix-functions/fwrite.texi: Likewise.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	msvc-inval: Allow three invalid parameter handling modes.
+	* lib/msvc-inval.h: Don't include <stdlib.h> here.
+	(DEFAULT_HANDLING, HAIRY_LIBRARY_HANDLING, SANE_LIBRARY_HANDLING): New
+	macros.
+	(gl_msvc_inval_ensure_handler, TRY_MSVC_INVAL, CATCH_MSVC_INVAL,
+	DONE_MSVC_INVAL): Implement DEFAULT_HANDLING. Treat
+	SANE_LIBRARY_HANDLING as a no-op.
+	* lib/msvc-inval.c: Treat SANE_LIBRARY_HANDLING as a no-op. Include
+	<stdlib.h>.
+	(gl_msvc_invalid_parameter_handler): Implement DEFAULT_HANDLING.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	msvc-inval: Make handler multithread-safe.
+	* lib/msvc-inval.h (struct gl_msvc_inval_per_thread): New type.
+	(gl_msvc_inval_restart, gl_msvc_inval_restart_valid): Remove
+	declarations.
+	(gl_msvc_inval_current): New declaration.
+	(TRY_MSVC_INVAL, CATCH_MSVC_INVAL, DONE_MSVC_INVAL) [!_MSC_VER]:
+	Operate on the structure returned by gl_msvc_inval_current().
+	* lib/msvc-inval.c (gl_msvc_inval_restart, gl_msvc_inval_restart_valid):
+	Remove varaiables.
+	(tls_index, tls_initialized): New variables.
+	(not_per_thread): New variable.
+	(gl_msvc_inval_current): New function.
+	(gl_msvc_invalid_parameter_handler) [!_MSC_VER]: Use the structure
+	returned by gl_msvc_inval_current().
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	msvc-inval: Install handler globally.
+	* lib/msvc-inval.h (STATUS_GNULIB_INVALID_PARAMETER): Define also for
+	!_MSC_VER.
+	(gl_msvc_invalid_parameter_handler): Remove declaration.
+	(gl_msvc_inval_restart_valid, gl_msvc_inval_ensure_handler): New
+	declarations.
+	(TRY_MSVC_INVAL, CATCH_MSVC_INVAL, DONE_MSVC_INVAL) [!_MSC_VER]:
+	Install the handler globally, don't uninstall it.
+	* lib/msvc-inval.c (gl_msvc_inval_restart_valid): New variable.
+	(gl_msvc_invalid_parameter_handler): Make static. If the restart is not
+	currently valid, call RaiseException instead.
+	(gl_msvc_inval_initialized, gl_msvc_inval_ensure_handler): Define also
+	for !_MSC_VER.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	strerror_r-posix: Fix for MSVC 9.
+	* lib/strerror_r.c (local_snprintf): New function.
+	(snprintf): Define to local_snprintf, not to _snprintf.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	ftruncate: Support for MSVC 9.
+	* lib/ftruncate.c: Include errno.h, msvc-inval.h.
+	(chsize_nothrow): New function.
+	(chsize): Redefine as a macro.
+	* m4/ftruncate.m4 (gl_PREREQ_FTRUNCATE): Require AC_C_INLINE.
+	* modules/ftruncate (Depends-on): Add msvc-inval.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	New module 'fstat'.
+	* lib/sys_stat.in.h (fstat): Declare only if GNULIB_FSTAT is set.
+	* lib/fstat.c: New file, based on a piece of lib/fchdir.c.
+	* lib/fchdir.c (rpl_fstat): Remove function.
+	* m4/fstat.m4: New file.
+	* m4/fchdir.m4 (gl_FUNC_FCHDIR): Don't set REPLACE_FSTAT.
+	* m4/sys_stat_h.m4 (gl_HEADER_SYS_STAT_H): Test whether fstat is
+	declared.
+	(gl_SYS_STAT_H_DEFAULTS): Initialize GNULIB_FSTAT.
+	* modules/sys_stat (Makefile.am): Substitute GNULIB_FSTAT.
+	* modules/fstat: New file.
+	* modules/sys_stat-tests (Depends-on): Remove fstat-tests.
+	* tests/test-sys_stat-c++.cc (fstat): Check only if GNULIB_TEST_FSTAT
+	is set.
+	* doc/posix-functions/fstat.texi: Mention the new module and the
+	problem on MSVC.
+	* NEWS: Mention the change.
+	* modules/acl (Depends-on): Add fstat.
+	* modules/chdir-safer (Depends-on): Likewise.
+	* modules/chown (Depends-on): Likewise.
+	* modules/copy-file (Depends-on): Likewise.
+	* modules/fchdir (Depends-on): Likewise.
+	* modules/fdopendir (Depends-on): Likewise.
+	* modules/fopen (Depends-on): Likewise.
+	* modules/fts (Depends-on): Likewise.
+	* modules/getcwd (Depends-on): Likewise.
+	* modules/isapipe (Depends-on): Likewise.
+	* modules/linkat (Depends-on): Likewise.
+	* modules/lseek (Depends-on): Likewise.
+	* modules/mkdir-p (Depends-on): Likewise.
+	* modules/open (Depends-on): Likewise.
+	* modules/openat (Depends-on): Likewise.
+	* modules/read-file (Depends-on): Likewise.
+	* modules/renameat (Depends-on): Likewise.
+	* modules/utimens (Depends-on): Likewise.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	linkat: Fix compilation on MSVC 9.
+	* lib/linkat.c: Don't include <stdint.h>.
+
+2011-09-25  Bruno Haible  <bruno@clisp.org>
+
+	fclose: Support for MSVC 9.
+	* lib/fclose.c: Include msvc-inval.h.
+	(fclose_nothrow): New function.
+	(rpl_fclose): Use it.
+	* modules/fclose (Depends-on): Add msvc-inval.
+	* doc/posix-functions/fclose.texi: Mention the problem on MSVC.
+
+2011-09-24  Paul Eggert  <eggert@cs.ucla.edu>
+
+	dup2: minor simplifications
+	* lib/dup2.c (ms_windows_dup2): Omit 'inline' as it's not clear
+	that it's a performance win.
+	(rpl_dup2): Change "if !((defined _WIN32 || defined __WIN32__) &&
+	! defined __CYGWIN__)" to "ifdef F_GETFL".
+
+2011-09-24  Jim Meyering  <meyering@redhat.com>
+
+	test-futimens: avoid a warning from gcc -Wshadow
+	* tests/test-futimens.h (test_futimens): Rename inner local, s/fd/fd0/
+	to avoid a shadowing warning.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	fdopen: Support for MSVC 9.
+	* m4/fdopen.m4 (gl_FUNC_FDOPEN): Set REPLACE_FDOPEN also if
+	HAVE_MSVC_INVALID_PARAMETER_HANDLER is 1.
+	* lib/fdopen.c: Include msvc-inval.h.
+	(fdopen_nothrow): New function.
+	(rpl_fdopen): Use it.
+	* modules/fdopen (Depends-on): Add msvc-inval.
+	* modules/fclose-tests (Depends-on): Add fdopen.
+	* modules/fflush-tests (Depends-on): Likewise.
+	* modules/fgetc-tests (Depends-on): Likewise.
+	* modules/fputc-tests (Depends-on): Likewise.
+	* modules/fread-tests (Depends-on): Likewise.
+	* modules/freopen-tests (Depends-on): Likewise.
+	* modules/fseeko-tests (Depends-on): Likewise.
+	* modules/ftello-tests (Depends-on): Likewise.
+	* modules/fwrite-tests  (Depends-on): Likewise.
+	* doc/posix-functions/fdopen.texi: Mention the problem on MSVC.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	fgetc, fputc, fread, fwrite tests: Avoid compilation error on MSVC.
+	* modules/fgetc-tests (Depends-on): Add unistd.
+	* modules/fputc-tests (Depends-on): Likewise.
+	* modules/fread-tests (Depends-on): Likewise.
+	* modules/fwrite-tests (Depends-on): Likewise.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	dup: Simplify autoconf test.
+	* m4/dup.m4 (gl_FUNC_DUP): Don't run a test program. Instead, just rely
+	on gl_MSVC_INVAL's result.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	Tests for function fwrite().
+	* modules/fwrite-tests: New file.
+	* tests/test-fwrite.c: New file.
+	* modules/stdio-tests (Depends-on): Add fwrite-tests.
+
+	Tests for function fread().
+	* modules/fread-tests: New file.
+	* tests/test-fread.c: New file.
+	* modules/stdio-tests (Depends-on): Add fread-tests.
+
+	Activate fputc tests.
+	* modules/stdio-tests (Depends-on): Add fputc-tests.
+
+	Enhance fgetc, fputc tests.
+	* tests/test-fgetc.c (main): Also test the stream's error indicator.
+	* tests/test-fputc.c (main): Likewise.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	write: Support for MSVC 9.
+	* lib/unistd.in.h (write): Replace also when GNULIB_UNISTD_H_NONBLOCKING
+	is not 1.
+	* lib/write.c (write_nothrow): New function.
+	(rpl_write): Define also when GNULIB_NONBLOCKING or GNULIB_SIGPIPE is
+	not 1. Use write_nothrow.
+	* m4/write.m4 (gl_FUNC_WRITE): Replace read if the platform has an
+	invalid parameter handler.
+	(gl_PREREQ_WRITE): New macro.
+	* modules/write (Depends-on): Add msvc-inval.
+	(configure.ac): Invoke gl_PREREQ_WRITE.
+	* doc/posix-functions/write.texi: Mention the problem on MSVC.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	read: Fix last commit.
+	* lib/read.c (read_nothrow): Change return type to 'ssize_t'.
+
+2011-09-24  Bruno Haible  <bruno@clisp.org>
+
+	dup2: Fix last commit.
+	* lib/dup2.c: Restore comments. Treat Cygwin like Unix.
+	(rpl_dup2): Disable fcntl workaround on native Windows.
+
+	sigprocmask: Make code safer.
+	* lib/sigprocmask.c: Move '#include "msvc-inval.h"' before the code
+	section that changes macro definitions for this compilation unit.
+
+2011-09-23  Paul Eggert  <eggert@cs.ucla.edu>
+
+	dup2: clarify by coalescing Windows-specific material
+	* lib/dup2.c: Move '#include "msvc-inval.h"' and '#include
+	"msvc-nothrow.h"' to the Windows-specific section, so that the
+	Emacs source need not contain these include files.
+	(ms_windows_dup2): Rename from dup2_nothrow, and move all the
+	Windows-specific fixes into this function rather than just the
+	nothrow fix, as this shortens and clarifies the code.  Always
+	define as a function, as that's a bit cleaner than having it be
+	sometimes a function and sometimes a macro.
+	(rpl_dup2): Move the Windows-specific stuff out of here and into
+	ms_windows_dup2.  Don't protect the Haiku-related fix with
+	"#if !defined __linux__", as the same code also works around
+	a Linux kernel bug, and it doesn't add any system calls on any
+	platform.  Add comment about FreeBSD 6.1.
+
+	sigprocmask: move #include directive
+	* lib/sigprocmask.c: Move '#include "msvc-inval.h"' to the
+	Windows-specific section, so that the Emacs source need not
+	contain msvc-inval.h.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	read: Support for MSVC 9.
+	* lib/unistd.in.h (read): Replace also when GNULIB_UNISTD_H_NONBLOCKING
+	is not 1.
+	* lib/read.c (read_nothrow): New function.
+	(rpl_read): Define also when GNULIB_NONBLOCKING is not 1. Use
+	read_nothrow.
+	* m4/read.m4 (gl_FUNC_READ): Replace read if the platform has an
+	invalid parameter handler.
+	(gl_PREREQ_READ): New macro.
+	* modules/read (Depends-on): Add msvc-inval.
+	(configure.ac): Invoke gl_PREREQ_READ.
+	* doc/posix-functions/read.texi: Mention the problem on MSVC.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	close: Support for MSVC 9.
+	* lib/close.c: Include <errno.h>, msvc-inval.h.
+	(close_nothrow): New function.
+	(rpl_close): Use it.
+	* m4/close.m4 (gl_FUNC_CLOSE): Replace close if the platform has an
+	invalid parameter handler.
+	* modules/close (Depends-on): Add msvc-inval.
+	* modules/dup2-tests (Depends-on): Add close.
+	* modules/dup3-tests (Depends-on): Likewise.
+	* modules/fcntl-tests (Depends-on): Likewise.
+	* modules/spawn-pipe-tests (Depends-on): Likewise.
+	* modules/unistd-safer-tests (Depends-on): Likewise.
+	* doc/posix-functions/close.texi: Mention the problem on MSVC.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	New module 'dup'.
+	* lib/unistd.in.h (dup): Declare only if the 'dup' module is in use.
+	Allow replacement.
+	* lib/dup.c: New file.
+	* lib/fchdir.c (rpl_dup): Remove function.
+	* m4/dup.m4: New file.
+	* m4/fchdir.m4 (gl_FUNC_FCHDIR): Don't set REPLACE_DUP here.
+	* m4/unistd_h.m4 (gl_UNISTD_H): Test whether 'dup' is declared.
+	(gl_UNISTD_H_DEFAULTS): Initialize GNULIB_DUP.
+	* modules/unistd (Makefile.am): Substitute GNULIB_DUP.
+	* modules/dup: New file.
+	* tests/test-unistd-c++.cc: Check the signature of 'dup' only if the
+	'dup' module is in use.
+	* modules/fdopendir (Depends-on): Add dup.
+	* modules/fdutimensat-tests (Depends-on): Likewise.
+	* modules/fts (Depends-on): Likewise.
+	* modules/futimens-tests (Depends-on): Likewise.
+	* modules/posix_spawnp-tests (Depends-on): Likewise.
+	* modules/unistd-safer-tests (Depends-on): Likewise.
+	* modules/utimens-tests (Depends-on): Likewise.
+	* doc/posix-functions/dup.texi: Mention the new module and the problem
+	on MSVC.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	getdtablesize: Support for MSVC 9.
+	* lib/getdtablesize.c: Include msvc-inval.h.
+	(_setmaxstdio_nothrow): New function.
+	(_setmaxstdio): Redefine it.
+	* m4/getdtablesize.m4 (gl_PREREQ_GETDTABLESIZE): New macro.
+	* modules/getdtablesize (Depends-on): Add msvc-inval.
+	(configure.ac): Invoke gl_PREREQ_GETDTABLESIZE.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	signal-h: Rename from signal.
+	* modules/signal-h: Renamed from modules/signal.
+	* modules/pthread_sigmask (Depends-on): Update.
+	* modules/raise (Depends-on): Likewise.
+	* modules/sigaction (Depends-on): Likewise.
+	* modules/sigpipe (Depends-on): Likewise.
+	* modules/sigprocmask (Depends-on): Likewise.
+	* modules/sys_select (Depends-on): Likewise.
+	* modules/signal-h-tests: Renamed from modules/signal-tests.
+	(Files, Depends-on, Makefile.am): Update.
+	* tests/test-signal-h.c: Renamed from tests/test-signal.c.
+	* modules/signal-h-c++-tests: Renamed from modules/signal-c++-tests.
+	(Files, Makefile.am): Update.
+	* tests/test-signal-h-c++.cc: Renamed from tests/test-signal-c++.cc.
+	* tests/test-signal-h-c++2.cc: Renamed from tests/test-signal-c++2.cc.
+	* modules/signal: New placeholder file.
+	* MODULES.html.sh (Support for systems lacking POSIX:2008): Update.
+	* doc/posix-headers/signal.texi: Update.
+	* NEWS: Mention the change.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	sigprocmask: Avoid crashes through signal() on MSVC 9.
+	* lib/sigprocmask.c: Include msvc-inval.h.
+	(signal_nothrow): New function.
+	(signal): Redefine it.
+	* m4/signalblocking.m4 (gl_PREREQ_SIGPROCMASK): Require AC_C_INLINE.
+	* modules/sigprocmask (Depends-on): Add msvc-inval.
+	* doc/posix-functions/signal.texi: Mention the problem on MSVC.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'raise'.
+	* modules/raise-tests: New file.
+	* tests/test-raise.c: New file.
+
+	raise: Support for MSVC.
+	* lib/signal.in.h (raise): New declaration.
+	* lib/raise.c (raise_nothrow, rpl_raise): New alternate implementation
+	for native Windows platforms.
+	* m4/raise.m4: New file.
+	* m4/signal_h.m4 (gl_SIGNAL_H_DEFAULTS): Initialize GNULIB_RAISE,
+	HAVE_RAISE, REPLACE_RAISE.
+	* modules/signal (Makefile.am): Substitute GNULIB_RAISE, HAVE_RAISE,
+	REPLACE_RAISE.
+	* modules/raise (Status, Notice): Remove fields.
+	(Files): Add m4/raise.m4.
+	(Depends-on): Add signal, msvc-inval.
+	(configure.ac): Use the common idioms.
+	(Maintainer): Add me.
+	* tests/test-signal-c++.cc: Check the signature of raise.
+	* doc/posix-functions/raise.texi: Mention the problem on MSVC.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	pipe2: Fix compilation on pre-C99 compilers.
+	* lib/pipe2.c (pipe2): Surround verify(...) declaration with braces.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	New module 'msvc-nothrow'. Makes _get_osfhandle safe on MSVC 9.
+	* lib/msvc-nothrow.h: New file.
+	* lib/msvc-nothrow.c: New file.
+	* m4/msvc-nothrow.m4: New file.
+	* modules/msvc-nothrow: New file.
+	* lib/dup2.c: Include msvc-nothrow.h.
+	(rpl_dup2): No need to protect _get_osfhandle call here.
+	* lib/accept4.c: Include msvc-nothrow.h.
+	* lib/error.c: Likewise.
+	* lib/fcntl.c: Likewise.
+	* lib/lseek.c: Likewise.
+	* lib/nonblocking.c: Likewise.
+	* lib/poll.c: Likewise.
+	* lib/read.c: Likewise.
+	* lib/select.c: Likewise.
+	* lib/sockets.h: Likewise.
+	* lib/sockets.c: Likewise.
+	* lib/stdio-read.c: Likewise.
+	* lib/stdio-write.c: Likewise.
+	* lib/write.c: Likewise.
+	* lib/w32sock.h: Likewise.
+	* lib/w32spawn.h: Likewise.
+	* lib/flock.c: Include msvc-nothrow.h instead of <io.h>.
+	* lib/fsync.c: Likewise.
+	* lib/isapipe.c: Likewise.
+	* modules/dup2 (Depends-on): Add msvc-nothrow.
+	* modules/accept4 (Depends-on): Likewise.
+	* modules/error (Depends-on): Likewise.
+	* modules/fcntl (Depends-on): Likewise.
+	* modules/lseek (Depends-on): Likewise.
+	* modules/nonblocking (Depends-on): Likewise.
+	* modules/poll (Depends-on): Likewise.
+	* modules/read (Depends-on): Likewise.
+	* modules/select (Depends-on): Likewise.
+	* modules/sockets (Depends-on): Likewise.
+	* modules/sigpipe (Depends-on): Likewise.
+	* modules/write (Depends-on): Likewise.
+	* modules/accept (Depends-on): Likewise.
+	* modules/bind (Depends-on): Likewise.
+	* modules/connect (Depends-on): Likewise.
+	* modules/gethostname (Depends-on): Likewise.
+	* modules/getpeername (Depends-on): Likewise.
+	* modules/getsockname (Depends-on): Likewise.
+	* modules/getsockopt (Depends-on): Likewise.
+	* modules/ioctl (Depends-on): Likewise.
+	* modules/listen (Depends-on): Likewise.
+	* modules/recv (Depends-on): Likewise.
+	* modules/recvfrom (Depends-on): Likewise.
+	* modules/send (Depends-on): Likewise.
+	* modules/sendto (Depends-on): Likewise.
+	* modules/setsockopt (Depends-on): Likewise.
+	* modules/shutdown (Depends-on): Likewise.
+	* modules/socket (Depends-on): Likewise.
+	* modules/execute (Depends-on): Likewise.
+	* modules/spawn-pipe (Depends-on): Likewise.
+	* modules/flock (Depends-on): Likewise.
+	* modules/fsync (Depends-on): Likewise.
+	* modules/isapipe (Depends-on): Likewise.
+	* tests/test-cloexec.c: Include msvc-nothrow.h.
+	* tests/test-dup-safer.c: Likewise.
+	* tests/test-dup2.c: Likewise.
+	* tests/test-dup3.c: Likewise.
+	* tests/test-fcntl.c: Likewise.
+	* tests/test-pipe.c: Likewise.
+	* tests/test-pipe2.c: Likewise.
+	* modules/cloexec-tests (Depends-on): Add msvc-nothrow.
+	* modules/unistd-safer-tests (Depends-on): Likewise.
+	* modules/dup2-tests (Depends-on): Likewise.
+	* modules/dup3-tests (Depends-on): Likewise.
+	* modules/fcntl-tests (Depends-on): Likewise.
+	* modules/pipe-posix-tests (Depends-on): Likewise.
+	* modules/pipe2-tests (Depends-on): Likewise.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	dup2: Make code more maintainable.
+	* lib/dup2.c (dup2_nothrow): New function, extracted from rpl_dup2.
+	(rpl_dup2): Use it.
+	* m4/dup2.m4 (gl_PREREQ_DUP2): New macro.
+	* modules/dup2 (configure.ac): Invoke it.
+	Reported by Paul Eggert.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	msvc-inval: Fix compilation error.
+	* lib/msvc-inval.h: Include <excpt.h>.
+
+2011-09-23  Bruno Haible  <bruno@clisp.org>
+
+	mkdir: Tweak for MSVC 9.
+	* lib/sys_stat.in.h: Update comments.
+	* doc/posix-functions/mkdir.texi: Mention problem on MSVC 9.
+
+	Tests for module 'chdir'.
+	* modules/chdir-tests: New file.
+	* tests/test-chdir.c: New file.
+
+	New module 'chdir'.
+	* modules/chdir: New file.
+	* lib/unistd.in.h: Include <io.h>, <direct.h> also for chdir.
+	(chdir): New declaration.
+	* m4/unistd_h.m4 (gl_UNISTD_H): Test whether chdir is declared.
+	(gl_UNISTD_H_DEFAULTS): Initialize GNULIB_CHDIR.
+	* modules/unistd (Makefile.am): Substitute GNULIB_CHDIR.
+	* tests/test-unistd-c++.cc: Check signature of chdir.
+	* doc/posix-functions/chdir.texi: Mention problem on native Windows.
+	* modules/chdir-long (Depends-on): Add chdir.
+	* modules/fchdir (Depends-on): Likewise.
+	* modules/rename (Depends-on): Likewise.
+	* modules/savewd (Depends-on): Likewise.
+
+	rmdir: Support for mingw, MSVC 9.
+	* lib/unistd.in.h: Include <io.h> and <direct.h> also for rmdir.
+	* doc/posix-functions/getcwd.texi: Mention problem on native Windows.
+
+	getcwd: Tweak for MSVC 9.
+	* lib/unistd.in.h: Update comments.
+	* doc/posix-functions/getcwd.texi: Mention problem on MSVC 9.
+
+2011-09-22  Bruno Haible  <bruno@clisp.org>
+
+	strerror_r-posix: Avoid a link error on MSVC.
+	* m4/strerror_r.m4 (gl_PREREQ_STRERROR_R): Check for snprintf.
+	* lib/strerror_r.c (snprintf): Define to _snprintf if it doesn't exist.
+
+2011-09-22  Bruno Haible  <bruno@clisp.org>
+
+	select: Avoid link errors on MSVC.
+	* m4/select.m4 (gl_FUNC_SELECT): Determine LIB_SELECT.
+	* modules/select (Link): Replace $(LIBSOCKET) with $(LIB_SELECT).
+	* modules/pselect (Link): Likewise.
+	* NEWS: Mention the change.
+	* modules/select-tests (Makefile.am): Link test-select, test-select-fd,
+	test-select-stdin against $(LIB_SELECT).
+	* modules/pselect-tests (Makefile.am): Link test-pselect against
+	$(LIB_SELECT).
+
+2011-09-22  Bruno Haible  <bruno@clisp.org>
+
+	select: Avoid compilation error on MSVC.
+	* lib/select.c: Don't include <stdbool.h>.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	Consolidate all uses of PATH_MAX in *.m4 files.
+	* m4/pathmax.m4 (gl_PATHMAX_SNIPPET, gl_PATHMAX_SNIPPET_PREREQ): New
+	macros.
+	* m4/chdir-long.m4 (gl_FUNC_CHDIR_LONG): Use gl_PATHMAX_SNIPPET_PREREQ
+	and gl_PATHMAX_SNIPPET.
+	* m4/getcwd-abort-bug.m4 (gl_FUNC_GETCWD_ABORT_BUG): Likewise.
+	* m4/getcwd-path-max.m4 (gl_FUNC_GETCWD_PATH_MAX): Likewise.
+	* modules/chdir-long (Files): Add m4/pathmax.m4.
+	* modules/getcwd (Files): Likewise.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	ftruncate: Un-deprecate, concentrate on Win32 support.
+	* modules/ftruncate (Status, Notice): Remove sections.
+	(Depends-on): Add largefile.
+	* m4/ftruncate.m4 (gl_FUNC_FTRUNCATE): Drop failure message on
+	non-mingw platforms.
+	* lib/ftruncate.c: Remove code for the older platforms. For Win32,
+	include <io.h>.
+	* modules/perror-tests (Depends-on): Add ftruncate.
+	* doc/posix-functions/ftruncate.texi: Mention the MSVC problem and the
+	'ftruncate' module.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	Add dependencies to new dirent related modules.
+	* modules/opendir (Depends-on): Add closedir.
+	* modules/getcwd (Depends-on): Add opendir, closedir.
+	* modules/dirent-safer-tests (Depends-on): Likewise.
+	* modules/fdopendir-tests (Depends-on): Likewise.
+	* modules/rename-tests (Depends-on): Add opendir, readdir, closedir.
+	* modules/renameat-tests (Depends-on): Likewise.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	opendir: Avoid compilation error on mingw.
+	* lib/opendir.c: Include <stddef.h> always. Include <unistd.h> as well.
+	* modules/opendir (Depends-on): Add unistd.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	ftruncate tests: Avoid a test failure on mingw.
+	* tests/test-ftruncate.c (main): Allow a failure with EACCES.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	select tests: Avoid test failures on OSF/1 5.1 and mingw.
+	* tests/test-select.h (test_bad_fd): Disable all tests on OSF/1 and
+	native Windows.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	New module 'fdopen'.
+	* lib/stdio.in.h (fdopen): New declaration.
+	* lib/fdopen.c: New file.
+	* m4/fdopen.m4: New file.
+	* m4/stdio_h.m4 (gl_STDIO_H_DEFAULTS): Initialize GNULIB_FDOPEN,
+	REPLACE_FDOPEN.
+	* modules/stdio (Makefile.am): Substitute GNULIB_FDOPEN,
+	REPLACE_FDOPEN.
+	* modules/fdopen: New file.
+	* modules/stdio-tests (Depends-on): Remove fdopen-tests.
+	* tests/test-stdio-c++.cc: Check signature of fdopen.
+	* doc/posix-functions/fdopen.texi: Mention the new module.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	unlockpt tests: Avoid test failure on NetBSD 5.1.
+	* tests/test-unlockpt.c (main): Skip the EBADF tests on NetBSD.
+	* doc/posix-functions/unlockpt.texi: Mention the bug on NetBSD.
+
+2011-09-21  Bruno Haible  <bruno@clisp.org>
+
+	getlogin, getlogin_r tests: Avoid test failure on Linux/SPARC.
+	* tests/test-getlogin.c (main): Allow a failure with EINVAL.
+	* tests/test-getlogin_r.c (main): Likewise.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	time tests: Don't require pid_t.
+	* doc/posix-headers/time.texi: Revert last change.
+	* m4/time_h.m4 (gl_HEADER_TIME_H_BODY): Revert last change.
+	* tests/test-time.c: Comment out the check for pid_t.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	fsync tests: Avoid a test failure on mingw.
+	* tests/test-fsync.c (main): Allow a failure with EIO.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	euidaccess: Update comments.
+	* m4/euidaccess.m4 (gl_PREREQ_EUIDACCESS): Update comments.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	Ensure EBADF returns for socket functions on mingw.
+	* lib/accept.c (rpl_accept): Fail with error EBADF if the file
+	descriptor is invalid.
+	* lib/bind.c (rpl_bind): Likewise.
+	* lib/connect.c (rpl_connect): Likewise.
+	* lib/getpeername.c (rpl_getpeername): Likewise.
+	* lib/getsockname.c (rpl_getsockname): Likewise.
+	* lib/getsockopt.c (rpl_getsockopt): Likewise.
+	* lib/listen.c (rpl_listen): Likewise.
+	* lib/recv.c (rpl_recv): Likewise.
+	* lib/recvfrom.c (rpl_recvfrom): Likewise.
+	* lib/send.c (rpl_send): Likewise.
+	* lib/sendto.c (rpl_sendto): Likewise.
+	* lib/setsockopt.c (rpl_setsockopt): Likewise.
+	* lib/shutdown.c (rpl_shutdown): Likewise.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	select tests: EBADF tests.
+	* tests/test-select.h (do_select_bad_fd, do_select_bad_fd_nowait,
+	test_bad_fd): New functions.
+	(test_function): Invoke also test_bad_fd.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'posix_spawn_file_actions_addopen.
+	* modules/posix_spawn_file_actions_addopen-tests: New file.
+	* tests/test-posix_spawn_file_actions_addopen.c: New file.
+
+	Tests for module 'posix_spawn_file_actions_adddup2'.
+	* modules/posix_spawn_file_actions_adddup2-tests: New file.
+	* tests/test-posix_spawn_file_actions_adddup2.c: New file.
+
+	Tests for module 'posix_spawn_file_actions_addclose'.
+	* modules/posix_spawn_file_actions_addclose-tests: New file.
+	* tests/test-posix_spawn_file_actions_addclose.c: New file.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'unlockpt'.
+	* modules/unlockpt-tests: New file.
+	* tests/test-unlockpt.c: New file.
+	* doc/posix-functions/unlockpt.texi: Mention the Cygwin 1.7 problem.
+
+	Tests for module 'grantpt'.
+	* modules/grantpt-tests: New file.
+	* tests/test-grantpt.c: New file.
+	* doc/posix-functions/grantpt.texi: Mention the Cygwin 1.7 problem.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	freopen tests: EBADF tests.
+	* tests/test-freopen.c: Include errno.h, unistd.h.
+	(main): Add tests for EBADF, commented out for the moment.
+
+	fclose tests: EBADF tests.
+	* tests/test-fclose.c (main): Add tests for EBADF.
+
+	fflush tests: EBADF tests.
+	* tests/test-fflush.c: Include errno.h, macros.h.
+	(main): Add tests for EBADF.
+
+	ftello tests: EBADF tests.
+	* tests/test-ftello4.sh: New file.
+	* tests/test-ftello4.c: New file.
+	* modules/ftello-tests (Files): Add them.
+	(Makefile.am): Arrange to compile test-ftello4 and run test-ftello4.sh.
+
+	fseeko tests: EBADF tests.
+	* tests/test-fseeko4.sh: New file.
+	* tests/test-fseeko4.c: New file.
+	* modules/fseeko-tests (Files): Add them.
+	(Makefile.am): Arrange to compile test-fseeko4 and run test-fseeko4.sh.
+
+	Tests for function fputc().
+	* modules/fputc-tests: New file.
+	* tests/test-fputc.c: New file.
+	* modules/stdio-tests (Depends-on): Add fputc-tests.
+
+	Tests for function fgetc().
+	* modules/fgetc-tests: New file.
+	* tests/test-fgetc.c: New file.
+	* modules/stdio-tests (Depends-on): Add fgetc-tests.
+
+	Tests for function fdopen().
+	* modules/fdopen-tests: New file.
+	* tests/test-fdopen.c: New file.
+	* modules/stdio-tests (Depends-on): Add fdopen-tests.
+
+	Tests for module 'vdprintf'.
+	* modules/vdprintf-tests: New file.
+	* tests/test-vdprintf.c: New file.
+
+	Tests for module 'dprintf'.
+	* modules/dprintf-tests: New file.
+	* tests/test-dprintf.c: New file.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'ioctl'.
+	* modules/ioctl-tests: New file.
+	* tests/test-ioctl.c: New file.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	fcntl tests: EBADF tests.
+	* tests/test-fcntl.c (main): Add more tests for EBADF.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	utimensat tests: EBADF tests.
+	* tests/test-utimensat.c (main): Add tests for EBADF.
+
+	renameat tests: EBADF tests.
+	* tests/test-renameat.c (main): Add tests for EBADF.
+
+	mkfifoat tests: EBADF tests.
+	* tests/test-mkfifoat.c (main): Add tests for EBADF.
+
+	readlinkat tests: EBADF tests.
+	* tests/test-readlinkat.c (main): Add tests for EBADF.
+
+	symlinkat tests: EBADF tests.
+	* tests/test-symlinkat.c (main): Add tests for EBADF.
+
+	linkat tests: EBADF tests.
+	* tests/test-linkat.c (main): Add tests for EBADF.
+
+	Tests for module 'faccessat'.
+	* modules/faccessat-tests: New file.
+	* tests/test-faccessat.c: New file.
+
+	fdopendir tests: EBADF tests.
+	* tests/test-fdopendir.c (main): Add more tests for EBADF.
+
+	openat tests: EBADF tests.
+	* tests/test-fchownat.c (main): Add tests for EBADF.
+	* tests/test-fstatat.c (main): Likewise.
+	* tests/test-mkdirat.c (main): Likewise.
+	* tests/test-openat.c (main): Likewise.
+	* tests/test-unlinkat.c (main): Likewise.
+	* tests/test-fchmodat.c: New file.
+	* modules/openat-tests (Files): Add tests/test-fchmodat.c.
+	(Makefile.am): Also run 'test-fchmodat'.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	utimens, futimens, fdutimensat tests: EBADF tests.
+	* tests/test-futimens.h (test_futimens): Add more tests for EBADF.
+
+	Tests for function fstat().
+	* modules/fstat-tests: New file.
+	* tests/test-fstat.c: New file.
+	* modules/sys_stat-tests (Depends-on): Add fstat-tests.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	test-ttyname_r tests: EBADF tests.
+	* tests/test-ttyname_r.c (main): Add tests for EBADF.
+
+	Tests for module 'isatty'.
+	* modules/isatty-tests: New file.
+	* tests/test-isatty.c: New file.
+
+	Tests for module 'write'.
+	* modules/write-tests: New file.
+	* tests/test-write.c: New file.
+
+	Tests for module 'read'.
+	* modules/read-tests: New file.
+	* tests/test-read.c: New file.
+
+	pwrite tests: EBADF tests.
+	* tests/test-pwrite.c (main): Add tests for EBADF.
+
+	pread tests: EBADF tests.
+	* tests/test-pread.c (main): Add tests for EBADF.
+
+	lseek tests: EBADF tests.
+	* tests/test-lseek.c (main): Add more tests for EBADF.
+
+	Tests for module 'ftruncate'.
+	* modules/ftruncate-tests: New file.
+	* tests/test-ftruncate.sh: New file.
+	* tests/test-ftruncate.c: New file.
+
+	fsync tests: EBADF tests.
+	* tests/test-fsync.c (main): Add more tests for EBADF.
+
+	fdatasync tests: EBADF tests.
+	* tests/test-fdatasync.c (main): Add more tests for EBADF.
+
+	Tests for module 'fchown'.
+	* modules/fchown-tests: New file.
+	* tests/test-fchown.c: New file.
+
+	Tests for module 'fchmod'.
+	* modules/fchmod-tests: New file.
+	* tests/test-fchmod.c: New file.
+
+	fchdir tests: EBADF tests.
+	* tests/test-fchdir.c (main): Add more tests for EBADF.
+
+	dup2 tests: EBADF tests.
+	* tests/test-dup2.c (main): Add more tests for EBADF.
+
+	Tests for module 'dup'.
+	* modules/dup-tests: New file.
+	* tests/test-dup.c: New file.
+
+	Tests for module 'close'.
+	* modules/close-tests: New file.
+	* tests/test-close.c: New file.
+
+2011-09-20  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'shutdown'.
+	* modules/shutdown-tests: New file.
+	* tests/test-shutdown.c: New file.
+
+	Tests for module 'setsockopt'.
+	* modules/setsockopt-tests: New file.
+	* tests/test-setsockopt.c: New file.
+
+	Tests for module 'sendto'.
+	* modules/sendto-tests: New file.
+	* tests/test-sendto.c: New file.
+
+	Tests for module 'send'.
+	* modules/send-tests: New file.
+	* tests/test-send.c: New file.
+
+	Tests for module 'recvfrom'.
+	* modules/recvfrom-tests: New file.
+	* tests/test-recvfrom.c: New file.
+
+	Tests for module 'recv'.
+	* modules/recv-tests: New file.
+	* tests/test-recv.c: New file.
+
+	Tests for module 'listen'.
+	* modules/listen-tests: New file.
+	* tests/test-listen.c: New file.
+
+	Tests for module 'getsockopt'.
+	* modules/getsockopt-tests: New file.
+	* tests/test-getsockopt.c: New file.
+
+	Tests for module 'getsockname'.
+	* modules/getsockname-tests: New file.
+	* tests/test-getsockname.c: New file.
+
+	Tests for module 'getpeername'.
+	* modules/getpeername-tests: New file.
+	* tests/test-getpeername.c: New file.
+
+	Tests for module 'connect'.
+	* modules/connect-tests: New file.
+	* tests/test-connect.c: New file.
+
+	Tests for module 'bind'.
+	* modules/bind-tests: New file.
+	* tests/test-bind.c: New file.
+
+	accept4 tests: Fix for native Windows.
+	* tests/test-accept4.c: Include sockets.h.
+	(main): Invoke gl_sockets_startup.
+	* modules/accept4-tests (Depends-on): Add sockets.
+
+	accept tests: Fix for native Windows.
+	* tests/test-accept.c: Include sockets.h.
+	(main): Invoke gl_sockets_startup.
+	* modules/accept-tests (Depends-on): Add sockets.
+
+2011-09-19  Bruno Haible  <bruno@clisp.org>
+
+	msvc-inval: Require a semicolon after DONE_MSVC_INVAL.
+	* lib/msvc-inval.h (TRY_MSVC_INVAL, DONE_MSVC_INVAL): Wrap in a
+	do...while(0).
+	* lib/dup2.c (rpl_dup2): Add a semicolon after DONE_MSVC_INVAL.
+	Suggested by Paul Eggert.
+
+2011-09-19  Bruno Haible  <bruno@clisp.org>
+
+	sched: Ensure pid_t is defined.
+	* m4/sched_h.m4 (gl_SCHED_H): Arrange to override <sched.h> if it does
+	not define pid_t.
+	* lib/sched.in.h: Include <sys/types.h>.
+	* doc/posix-headers/sched.texi: Mention the pid_t problem.
+	Reported by Tom G. Christensen <tgc@jupiterrise.com>.
+
+2011-09-19  Bruno Haible  <bruno@clisp.org>
+
+	msvc-inval: Ensure the entire expansion is a single statement.
+	* lib/msvc-inval.h (TRY_MSVC_INVAL, DONE_MSVC_INVAL): Add an extra pair
+	of braces.
+
+2011-09-19  Jim Meyering  <meyering@redhat.com>
+
+	tests: use printf, not echo in init.sh's warn_ function
+	* tests/init.sh (warn_): Use printf, not echo.  The latter would
+	misbehave when given strings containing a backslash or starting
+	with e.g., -n.  James Youngman suggested setting IFS.
+
+2011-09-19  Eric Blake  <eblake@redhat.com>
+
+	futimens: enhance test
+	* tests/test-futimens.h (test_futimens): Also check for EBADF on
+	closed non-negative fd.
+
+	date: accept 'hence' as opposite of 'ago'
+	* lib/parse-datetime.y (relative_time_table): Add 'hence'.
+	* tests/test-parse-datetime.c (main): Enhance test.
+	Suggested by Jesse Wilson.
+
+2011-09-19  Jim Meyering  <meyering@redhat.com>
+
+	getcwd: don't fail in a deep directory on a system without openat
+	Before this change, getcwd would fail when called from a directory
+	of depth PATH_MAX / 3 or greater.  That was due to the fact that
+	the non-openat implementation used "..", "../..", "../../..", etc.
+	to access ancestor directories.  With too many, that string would
+	be longer than PATH_MAX.
+	* lib/getcwd.c (HAVE_OPENAT_SUPPORT): Define also when we are
+	using gnulib's openat replacement.
+	* m4/openat.m4: Set GNULIB_OPENAT, so getcwd.c knows when
+	we're using the replacement function.
+
+2011-09-14  Martin von Gagern  <Martin.vGagern@gmx.net>
+
+	maint.mk: avoid warnings from perl about missing files
+	* top/maint.mk (def_sym_regex): Ignore files listed in
+	$(gl_other_headers_) that do not exist, say because a project
+	does not use a corresponding module.
+
+2011-09-18  Paul Eggert  <eggert@cs.ucla.edu>
+
+	stat: use pathmax.h only if needed
+	* lib/stat.c: Include pathmax.h only if REPLACE_FUNC_STAT_DIR.
+	This is better for Emacs, which does not have a mingw port and
+	therefore can avoid the pathmax module.
+
+	utimens: remove dependency on dup2
+	* lib/utimens.c (fdutimens): Don't invoke dup2; it's not needed
+	to work around the Linux kernel bug.
+	* modules/utimens (Depends-on): Remove dup2.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	inet_ntop, inet_pton: Look for it also in libresolv.
+	* m4/inet_ntop.m4 (gl_FUNC_INET_NTOP): If the function was not found in
+	libnsl, search for it in libresolv.
+	* m4/inet_pton.m4 (gl_FUNC_INET_PTON): Likewise.
+	Needed on Solaris 7.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	accept, accept4 tests: Avoid link error on Solaris.
+	* modules/accept-tests (Makefile.am): Link test-accept against
+	$(LIBSOCKET).
+	* modules/accept4-tests (Makefile.am): Link test-accept4 against
+	$(LIBSOCKET).
+
+	accept4: Avoid link error on Solaris.
+	* modules/accept4 (Link): New section.
+
+	socket functions: Avoid link errors on Solaris.
+	* modules/accept (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/bind (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/connect (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/getpeername (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/getsockname (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/getsockopt (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/listen (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/recv (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/recvfrom (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/send (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/sendto (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/setsockopt (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/shutdown (Depends-on): Add socketlib.
+	(Link): New section.
+	* modules/socket (Depends-on): Add socketlib.
+	(Link): New section.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	ptsname tests: Let the test fail rather than hang (e.g. on AIX 5.1).
+	* tests/test-ptsname.c (main): Terminate the test if it takes longer
+	than 5 seconds.
+	* modules/ptsname-tests (configure.ac): Test for alarm.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	posix_spawn_file_actions_add*: Fix module dependencies.
+	* modules/posix_spawn_file_actions_addclose (Dependencies): Add
+	posix_spawn_file_actions_init.
+	* modules/posix_spawn_file_actions_adddup2 (Dependencies): Likewise.
+	* modules/posix_spawn_file_actions_addopen (Dependencies): Likewise.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	rename, renameat tests: Avoid test failures on FreeBSD 6.4.
+	* tests/test-rename.h (test_rename): Allow error code EEXIST.
+	* tests/test-renameat.c (main): Likewise.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'accept4'.
+	* modules/accept4-tests: New file.
+	* tests/test-accept4.c: New file.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'accept'.
+	* modules/accept-tests: New file.
+	* tests/test-accept.c: New file.
+
+2011-09-18  Bruno Haible  <bruno@clisp.org>
+
+	dup2: Support for MSVC.
+	* lib/dup2.c: Include msvc-inval.h.
+	(rpl_dup2): Handle invalid parameter notifications during dup2 and
+	_get_osfhandle calls.
+	* modules/dup2 (Depends-on): Add msvc-inval.
+	* doc/posix-functions/dup2.texi: Mention problem on MSVC.
+
+	New module 'msvc-inval'.
+	* lib/msvc-inval.h: New file.
+	* lib/msvc-inval.c: New file.
+	* m4/msvc-inval.m4: New file.
+	* modules/msvc-inval: New file.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	Tests for module 'pclose'.
+	* modules/pclose-tests: New file.
+
+	New module 'pclose'.
+	* lib/stdio.in.h (pclose): New declaration.
+	* lib/pclose.c: New file.
+	* m4/pclose.m4: New file.
+	* m4/stdio_h.m4 (gl_STDIO_H): Test whether pclose is declared.
+	(gl_STDIO_H_DEFAULTS): Initialize GNULIB_PCLOSE, HAVE_PCLOSE.
+	* modules/stdio (Makefile.am): Substitute GNULIB_PCLOSE, HAVE_PCLOSE.
+	* modules/pclose: New file.
+	* modules/popen-tests (Depends-on): Add pclose.
+	* modules/popen-safer-tests (Depends-on): Likewise.
+	* doc/posix-functions/pclose.texi: Mention the new module.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	popen: Support for MSVC.
+	* lib/stdio.in.h (popen): Declare it if the system lacks this function.
+	* lib/popen.c (popen): Provide alternate definition for native Windows.
+	* m4/popen.m4 (gl_FUNC_POPEN): Test if popen exists. Set HAVE_POPEN.
+	* m4/stdio_h.m4 (gl_STDIO_H_DEFAULTS): Initialize HAVE_POPEN.
+	* modules/popen (Depends-on, configure.ac): Update condition.
+	* modules/stdio (Makefile.am): Substitute HAVE_POPEN.
+	* doc/posix-functions/popen.texi: Mention that the MSVC problem is
+	fixed.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	isnanl, isnand, isnanf: Work around MSVC bug.
+	* lib/isnan.c (FUNC): Use alternate ways of computing NaN and Infinity.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	sys_socket tests: Fix recent mistake.
+	* tests/test-sys_socket.c (t1): Avoid collision of identifiers.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	putenv: Support for MSVC.
+	* modules/putenv (Depends-on): Add environ.
+	* lib/putenv.c (environ): Disable declaration.
+	* lib/unistd.in.h: Update comment.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	math: Avoid macro redefinition warnings on MSVC.
+	* lib/math.in.h (ceilf, ceill, floorf, floorl, frexpl, ldexpl):
+	Undefine before redefining.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	doc: Mention functions which are declared as macros.
+	* doc/posix-functions/*[fl].texi: Mention that some functions are
+	defined as macros with arguments only.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	Add dependencies to new dirent related modules.
+	* modules/backupfile (Depends-on): Add opendir, readdir, closedir.
+	* modules/fts (Depends-on): Likewise.
+	* modules/glob (Depends-on): Likewise.
+	* modules/savedir (Depends-on): Likewise.
+	* modules/scandir (Depends-on): Likewise.
+	* modules/dirent-safer (Depends-on): Add opendir, closedir.
+	* modules/fdopendir (Depends-on): Add opendir.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	inet_pton: Support for MSVC on Windows Vista or newer.
+	* lib/arpa_inet.in.h (inet_pton): Also consider REPLACE_INET_PTON.
+	* lib/inet_pton.c (rpl_inet_pton): Use a simple wrapper if
+	HAVE_DECL_INET_PTON is defined.
+	* m4/inet_pton.m4 (gl_FUNC_INET_PTON): Invoke gl_PREREQ_SYS_H_WINSOCK2.
+	On platforms with <winsock2.h>, test whether inet_pton is declared in
+	<ws2tcpip.h>. If so, arrange to replace it.
+	* m4/arpa_inet_h.m4 (gl_ARPA_INET_H_DEFAULTS): Initialize
+	REPLACE_INET_PTON.
+	* modules/arpa_inet (Makefile.am): Substitute REPLACE_INET_PTON.
+	* modules/inet_pton (Files): Add m4/sys_socket_h.m4.
+	(Depends-on, configure.ac): Update condition.
+	* doc/posix-functions/inet_pton.texi: Mention the MSVC problem.
+
+2011-09-17  Bruno Haible  <bruno@clisp.org>
+
+	inet_ntop: Support for MSVC on Windows Vista or newer.
+	* lib/arpa_inet.in.h (inet_ntop): Also consider REPLACE_INET_NTOP.
+	* lib/inet_ntop.c (rpl_inet_ntop): Use a simple wrapper if
+	HAVE_DECL_INET_NTOP is defined.
+	* m4/inet_ntop.m4 (gl_FUNC_INET_NTOP): Invoke gl_PREREQ_SYS_H_WINSOCK2.
+	On platforms with <winsock2.h>, test whether inet_ntop is declared in
+	<ws2tcpip.h>. If so, arrange to replace it.
+	* m4/arpa_inet_h.m4 (gl_ARPA_INET_H_DEFAULTS): Initialize
+	REPLACE_INET_NTOP.
+	* modules/arpa_inet (Makefile.am): Substitute REPLACE_INET_NTOP.
+	* modules/inet_ntop (Files): Add m4/sys_socket_h.m4.
+	(Depends-on, configure.ac): Update condition.
+	* doc/posix-functions/inet_ntop.texi: Mention the MSVC problem.
+
+2011-09-16  Eric Blake  <eblake@redhat.com>
+
+	test-fsync: yet another enhancement
+	* tests/test-fsync.c (main): Also test behavior on read-only text
+	file.
+
+2011-09-16  Bruno Haible  <bruno@clisp.org>
+
+	Enhance fsync, fdatasync tests.
+	* tests/test-fsync.c (main): Test both STDIN_FILENO and STDOUT_FILENO.
+	* tests/test-fdatasync.c (main): Likewise.
+
+2011-09-16  Bruno Haible  <bruno@clisp.org>
+
+	Support for MSVC compiler: Ensure mode_t gets defined.
+	* m4/fcntl_h.m4 (gl_FCNTL_H): Require AC_TYPE_MODE_T.
+	* m4/spawn_h.m4 (gl_SPAWN_H): Likewise.
+	* m4/sys_stat_h.m4 (gl_HEADER_SYS_STAT_H): Likewise.
+	* m4/sys_types_h.m4 (gl_SYS_TYPES_H): Likewise.
+	* tests/test-fcntl-h.c: Check that mode_t is defined.
+	* tests/test-sys_stat.c: Likewise.
+	* tests/test-sys_types.c: Likewise.
+	* doc/posix-headers/fcntl.texi: Mention the missing mode_t problem.
+	* doc/posix-headers/sys_stat.texi: Likewise.
+	* doc/posix-headers/sys_types.texi: Likewise.
+
+2011-09-16  Bruno Haible  <bruno@clisp.org>
+
+	sys_stat: Support for MSVC.
+	* lib/sys_stat.in.h (S_IFIFO): Define to _S_IFIFO if that exists.
+	* tests/test-sys_stat.c: Don't assume that S_IFBLK exists.
+	* doc/posix-headers/sys_stat.texi: Mention missing S_IFIFO, S_IFBLK on
+	MSVC.
+
+2011-09-16  Bruno Haible  <bruno@clisp.org>
+
+	Support for MSVC compiler: Ensure off_t gets defined.
+	* lib/unistd.in.h: Include <sys/types.h>.
+	* tests/test-fcntl-h.c: Check that off_t is defined.
+	* tests/test-sys_stat.c: Likewise.
+	* tests/test-sys_types.c: Likewise.
+
+2011-09-16  Eric Blake  <eblake@redhat.com>
+
+	fdatasync: port to Solaris
+	* m4/fdatasync.m4 (gl_FUNC_FDATASYNC): Set LIB_FDATASYNC.
+	* modules/fdatasync (Link): Document it.
+	* modules/fdatasync-tests (test_fdatasync_LDADD): Link with it.
+
+	fdatasync: port to MacOS X 10.7
+	* m4/fdatasync.m4 (gl_FUNC_FDATASYNC): Check for present but not
+	declared.
+	* m4/unistd_h.m4 (gl_UNISTD_H_DEFAULTS): Another default.
+	* modules/unistd (Makefile.am): Substitute it.
+	* lib/unistd.in.h (fdatasync): Declare on MacOS.
+	* doc/posix-functions/fdatasync.texi (fdatasync): Document it.
+
+	fdatasync: minor improvements
+	* modules/fdatasync (Depends-on): Add condition for fsync.
+	* lib/fdatasync.c (fdatasync): Add comment.
+	* tests/test-unistd-c++.cc: Test fdatasync.
+
+	unistd: update refs to newer POSIX
+	* lib/unistd.in.h: Prefer POSIX 2008 over 2001.
+	Suggested by Bruno Haible.
+
+	fdatasync: new module
+	* modules/fsync (Description): Document difference to fdatasync.
+	* modules/fdatasync: New module.
+	* m4/fdatasync.m4 (gl_FUNC_FDATASYNC): New file.
+	* lib/fdatasync.c (fdatasync): Likewise.
+	* m4/unistd_h.m4 (gl_UNISTD_H, gl_UNISTD_H_DEFAULTS): Set up
+	defaults.
+	* modules/unistd (Makefile.am): Set witnesses.
+	* lib/unistd.in.h (fdatasync): Declare.
+	* MODULES.html.sh: Document it.
+	* doc/posix-functions/fdatasync.texi (fdatasync): Likewise.
+	* modules/fdatasync-tests: New test.
+	* tests/test-fdatasync.c: Likewise.
+
+2011-09-16  Eric Blake  <eblake@redhat.com>
+
+	test-fsync: enhance tests
+	* modules/fsync-tests (Depends-on): Add errno, for mingw.
+	* tests/test-fsync.c (main): Enhance test.
+
+2011-09-15  Bruno Haible  <bruno@clisp.org>
+
+	Support for MSVC compiler: Ensure ssize_t gets defined.
+	* doc/posix-headers/sys_types.texi: Mention the missing ssize_t problem.
+	* doc/posix-headers/stdio.texi: Likewise.
+	* modules/stdio (Depends-on): Add ssize_t.
+	* modules/sys_socket (Depends-on): Likewise.
+	* modules/sys_types (Depends-on): Likewise.
+	* modules/sys_uio (Depends-on): Likewise.
+	* modules/unistd (Depends-on): Likewise.
+	* tests/test-sys_socket.c: Check that size_t and ssize_t are defined.
+	* tests/test-sys_types.c: Check that ssize_t is defined.
+
+2011-09-14  Bruno Haible  <bruno@clisp.org>
+
+	Avoid using #, the m4 comment starter character, near brackets.
+	* m4/absolute-header.m4 (gl_ABSOLUTE_HEADER_ONE): Use |, not #, as
+	delimiter character in sed expressions.
+	* m4/include_next.m4 (gl_NEXT_HEADERS_INTERNAL): Likewise.
+	Suggested by Eric Blake.
+
+	Properly quote AC_CHECK_DECLS' 4th argument.
+	* m4/c-stack.m4 (gl_PREREQ_C_STACK): Double-quote AC_CHECK_DECLS' 4th
+	argument.
+	* m4/ceilf.m4 (gl_FUNC_CEILF): Likewise.
+	* m4/ceill.m4 (gl_FUNC_CEILL): Likewise.
+	* m4/dirfd.m4 (gl_FUNC_DIRFD): Likewise.
+	* m4/floorf.m4 (gl_FUNC_FLOORF): Likewise.
+	* m4/floorl.m4 (gl_FUNC_FLOORL): Likewise.
+	* m4/fnmatch.m4 (gl_PREREQ_FNMATCH): Likewise.
+	* m4/getaddrinfo.m4 (gl_PREREQ_GETADDRINFO): Likewise.
+	* m4/getdomainname.m4 (gl_FUNC_GETDOMAINNAME): Likewise.
+	* m4/gethrxtime.m4 (gl_GETHRXTIME): Likewise.
+	* m4/getpass.m4 (gl_PREREQ_GETPASS): Likewise.
+	* m4/inet_ntop.m4 (gl_FUNC_INET_NTOP): Likewise.
+	* m4/inet_pton.m4 (gl_FUNC_INET_PTON): Likewise.
+	* m4/isfinite.m4 (gl_ISFINITE): Likewise.
+	* m4/isinf.m4 (gl_ISINF): Likewise.
+	* m4/logb.m4 (gl_FUNC_LOGB): Likewise.
+	* m4/readutmp.m4 (gl_READUTMP): Likewise.
+	* m4/regex.m4 (gl_PREREQ_REGEX): Likewise.
+	* m4/round.m4 (gl_FUNC_ROUND): Likewise.
+	* m4/roundf.m4 (gl_FUNC_ROUNDF): Likewise.
+	* m4/roundl.m4 (gl_FUNC_ROUNDL): Likewise.
+	* m4/signbit.m4 (gl_SIGNBIT): Likewise.
+	* m4/sleep.m4 (gl_FUNC_SLEEP): Likewise.
+	* m4/strsignal.m4 (gl_PREREQ_STRSIGNAL): Likewise.
+	* m4/trunc.m4 (gl_FUNC_TRUNC): Likewise.
+	* m4/truncf.m4 (gl_FUNC_TRUNCF): Likewise.
+	* m4/truncl.m4 (gl_FUNC_TRUNCL): Likewise.
+	* m4/vasnprintf.m4 (gl_PREREQ_VASNPRINTF): Likewise.
+	* m4/wctob.m4 (gl_FUNC_WCTOB): Likewise.
+	* m4/wcwidth.m4 (gl_FUNC_WCWIDTH): Likewise.
+	Reported by Eric Blake.
+
+	Properly quote AC_CHECK_DECL's 4th argument.
+	* m4/acosl.m4 (gl_FUNC_ACOSL): Double-quote AC_CHECK_DECL's 4th
+	argument.
+	* m4/argp.m4 (gl_ARGP): Likewise.
+	* m4/asinl.m4 (gl_FUNC_ASINL): Likewise.
+	* m4/atanl.m4 (gl_FUNC_ATANL): Likewise.
+	* m4/cosl.m4 (gl_FUNC_COSL): Likewise.
+	* m4/expl.m4 (gl_FUNC_EXPL): Likewise.
+	* m4/frexpl.m4 (gl_FUNC_FREXPL, gl_FUNC_FREXPL_NO_LIBM): Likewise.
+	* m4/getloadavg.m4 (gl_GETLOADAVG): Likewise.
+	* m4/ldexpl.m4 (gl_FUNC_LDEXPL): Likewise.
+	* m4/logl.m4 (gl_FUNC_LOGL): Likewise.
+	* m4/printf-frexpl.m4 (gl_FUNC_PRINTF_FREXPL): Likewise.
+	* m4/sinl.m4 (gl_FUNC_SINL): Likewise.
+	* m4/sqrtl.m4 (gl_FUNC_SQRTL): Likewise.
+	* m4/tanl.m4 (gl_FUNC_TANL): Likewise.
+	Reported by Eric Blake.
+
+2011-09-14  Eric Blake  <eblake@redhat.com>
+
+	opendir: avoid compile warning
+	* lib/opendir.c (includes): Always include errno.h.
+	Reported by Tatsuro MATSUOKA.
+
+2011-09-14  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: sc_tight_scope: propagate failure from sub-make
+	* top/maint.mk (sc_tight_scope): Actually initialize and use $fail.
+	Reported by Martin von Gagern.
+
+2011-09-13  Bruno Haible  <bruno@clisp.org>
+
+	tempname: Support for MSVC.
+	* doc/posix-headers/fcntl.texi: Document the problem with O_ACCMODE on
+	MSVC.
+	* modules/tempname (Depends-on): Add fcntl-h.
+
+2011-09-13  Bruno Haible  <bruno@clisp.org>
+
+	sys_time: Support for MSVC.
+	* m4/sys_time_h.m4 (gl_HEADER_SYS_TIME_H_BODY): Invoke
+	gl_PREREQ_SYS_H_WINSOCK2. When testing for 'struct timeval', also
+	include <winsock2.h>.
+	* lib/sys_time.in.h: On MSVC, include <winsock2.h> and hide its
+	function declarations that collide with POSIX.
+	* modules/sys_time (Files): Add m4/sys_socket_h.m4.
+	(Makefile.am): Substitute HAVE_WINSOCK2_H.
+
+2011-09-13  Bruno Haible  <bruno@clisp.org>
+
+	stat: Support for MSVC.
+	* lib/stat.c: Include pathmax.h.
+	* modules/stat (Depends-on): Add pathmax.
+
+	pathmax: Support for native Windows.
+	* lib/pathmax.h (PATH_MAX): Define to 260 on native Windows.
+
+2011-09-12  Bruno Haible  <bruno@clisp.org>
+
+	New modules 'opendir', 'readdir', 'rewinddir', 'closedir'.
+	* lib/dirent.in.h (struct dirent): New type.
+	(DT_UNKNOWN, DT_FIFO, DT_CHR, DT_DIR, DT_BLK, DT_REG, DT_LNK, DT_SOCK,
+	DT_WHT): New macros.
+	(DIR): New type.
+	(opendir, closedir): Declare only if the module 'opendir' is enabled.
+	(readdir, rewinddir): New declarations.
+	* lib/dirent-private.h: New file.
+	* lib/opendir.c: New file.
+	* lib/readdir.c: New file.
+	* lib/rewinddir.c: New file.
+	* lib/closedir.c: New file.
+	* lib/fchdir.c (rpl_closedir, rpl_opendir): Remove functions.
+	* m4/opendir.m4: New file.
+	* m4/readdir.m4: New file.
+	* m4/rewinddir.m4: New file.
+	* m4/closedir.m4: New file.
+	* m4/fchdir.m4 (gl_FUNC_FCHDIR): Don't set REPLACE_OPENDIR,
+	REPLACE_CLOSEDIR here.
+	* m4/dirent_h.m4 (gl_DIRENT_H): Also check whether closedir, opendir,
+	readdir, rewinddir are declared.
+	(gl_DIRENT_H_DEFAULTS): Initialize GNULIB_OPENDIR, GNULIB_READDIR,
+	GNULIB_REWINDDIR, GNULIB_CLOSEDIR, HAVE_OPENDIR, HAVE_READDIR,
+	HAVE_REWINDDIR, HAVE_CLOSEDIR.
+	* modules/dirent (Makefile.am): Substitute GNULIB_OPENDIR,
+	GNULIB_READDIR, GNULIB_REWINDDIR, GNULIB_CLOSEDIR, HAVE_OPENDIR,
+	HAVE_READDIR, HAVE_REWINDDIR, HAVE_CLOSEDIR.
+	* modules/opendir: New file.
+	* modules/readdir: New file.
+	* modules/rewinddir: New file.
+	* modules/closedir: New file.
+	* doc/posix-functions/opendir.texi: Mention the 'opendir' module.
+	* doc/posix-functions/readdir.texi: Mention the 'readdir' module.
+	* doc/posix-functions/rewinddir.texi: Mention the 'rewinddir' module.
+	* doc/posix-functions/closedir.texi: Mention the 'closedir' module.
+	* NEWS: Mention the 'fchdir' change.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	asm-underscore.m4: Support for MSVC.
+	* m4/asm-underscore.m4 (gl_C_ASM): New macro.
+	(gl_ASM_SYMBOL_PREFIX): Require it. Use its results.
+
+2011-09-11  Reuben Thomas  <rrt@sc3d.org>
+
+	Doc about crypt functions.
+	* doc/posix-functions/crypt.texi: Expand range of glibc versions
+	needing for _GNU_SOURCE to get crypt.
+	* doc/posix-functions/encrypt.texi: Likewise.
+	* doc/posix-functions/setkey.texi: Likewise.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	doc: Update regarding MSVC 9.
+	* doc/gnulib-intro.texi (Target Platforms): Classify MSVC as "rarely
+	tested".
+	* doc/posix-functions/*.texi: Update with info about MSVC 9.
+	* doc/posix-headers/*.texi: Likewise.
+	* doc/pastposix-functions/*.texi: Likewise.
+	* doc/glibc-functions/*.texi: Likewise.
+	* doc/glibc-headers/*.texi: Likewise.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	unistd et al.: Don't assume <unistd.h> exists.
+	* m4/chdir-long.m4 (gl_FUNC_CHDIR_LONG): Don't include <unistd.h> if it
+	does not exist.
+	* m4/environ.m4 (gl_ENVIRON): Don't include <unistd.h> if it does not
+	exist. But include <stdlib.h>.
+	* m4/fcntl-o.m4 (gl_FCNTL_O_FLAGS): If <unistd.h> does not exist,
+	include <io.h> and <stdlib.h> instead. Don't test symbolink links if
+	symlink() does not exist.
+	* m4/fflush.m4 (gl_FUNC_FFLUSH_STDIN): If <unistd.h> does not exist,
+	include <io.h> instead.
+	* m4/free.m4 (gl_FUNC_FREE): Assume free(NULL) works on native Windows.
+	* m4/getcwd.m4 (gl_FUNC_GETCWD_NULL): If <unistd.h> does not exist,
+	include <direct.h> instead.
+	* m4/getcwd-abort-bug.m4 (gl_FUNC_GETCWD_ABORT_BUG): Likewise.
+	* m4/getcwd-path-max.m4 (gl_FUNC_GETCWD_PATH_MAX): Likewise.
+	* m4/lseek.m4 (gl_FUNC_LSEEK): If <unistd.h> does not exist, include
+	<io.h> instead.
+	* m4/rename.m4 (gl_FUNC_RENAME): Assume rename() manages hard links
+	correctly if the system does not have hard links.
+	* m4/rmdir.m4 (gl_FUNC_RMDIR): If <unistd.h> does not exist, include
+	<direct.h> instead.
+	* m4/unistd_h.m4 (gl_UNISTD_H): If <unistd.h> does not exist, bypass
+	it when looking for function declarations.
+	* m4/unlink.m4 (gl_FUNC_UNLINK): If <unistd.h> does not exist, include
+	<direct.h> and <io.h> instead.
+	* doc/posix-headers/unistd.texi: More details about MSVC problem.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	strcase: Support for MSVC.
+	* modules/strcase (Status, Notice): Remove obsoletion mark.
+	* doc/posix-functions/strcasecmp.texi: Mention MSVC problem.
+	* doc/posix-functions/strncasecmp.texi: Likewise.
+
+	strings: Don't assume <strings.h> exists.
+	* lib/strings.in.h: Include <strings.h> only if HAVE_STRINGS_H is 1.
+	* m4/strings_h.m4 (gl_HEADER_STRINGS_H_BODY): Set HAVE_STRINGS_H.
+	* modules/strings (Makefile.am): Substitute HAVE_STRINGS_H.
+	* doc/posix-headers/strings.texi: Mention the MSVC problem.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	dirent: Don't assume <dirent.h> exists.
+	* lib/dirent.in.h: Include <dirent.h> only if HAVE_DIRENT_H is 1.
+	* m4/dirent_h.m4 (gl_DIRENT_H): Set HAVE_DIRENT_H.
+	* modules/dirent (Makefile.am): Substitute HAVE_DIRENT_H.
+	* doc/posix-headers/dirent.texi: Mention the MSVC problem.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	Fix wint_t on MSVC.
+	* lib/wchar.in.h (wint_t): On MSVC, override it.
+	* lib/wctype.in.h (wint_t): Likewise.
+	* m4/stdint.m4 (gl_STDINT_TYPE_PROPERTIES): Override BITSIZEOF_WINT_T on
+	MSVC.
+	* doc/posix-headers/wchar.texi: Mention the problem with wint_t on MSVC.
+	* doc/posix-headers/wctype.texi: Likewise.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	sys_types: Fix typo.
+	* lib/sys_types.in.h: Fix typo in comment.
+	Reported by Paul Eggert.
+
+	Support for MSVC compiler: Ensure size_t gets defined.
+	* modules/strings (Depends-on): Add 'sys_types'.
+	* modules/sys_uio (Depends-on): Likewise.
+	* lib/sys_uio.in.h: Update comment.
+
+	C++ tests for module 'sys_types'.
+	* modules/sys_types-c++-tests: New file.
+	* tests/test-sys_types-c++.cc: New file.
+
+	Tests for module 'sys_types'.
+	* modules/sys_types-tests: New file.
+	* tests/test-sys_types.c: New file.
+
+	New module 'sys_types'.
+	* lib/sys_types.in.h: New file.
+	* m4/sys_types_h.m4: New file.
+	* modules/sys_types: New file.
+	* doc/posix-headers/sys_types.texi: Mention the new module and the
+	size_t problem on MSVC 9.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	Support for MSVC compiler: Avoid division by a literal 0.
+	* lib/math.in.h (NAN): Define through a function call also on MSVC.
+	* m4/frexp.m4 (gl_FUNC_FREXP_WORKS): Divide by 'zero' instead of 0.0.
+	* m4/printf.m4 (gl_PRINTF_INFINITE, gl_PRINTF_DIRECTIVE_A,
+	gl_PRINTF_DIRECTIVE_F, gl_PRINTF_FLAG_ZERO): Likewise.
+	(gl_PRINTF_INFINITE_LONG_DOUBLE): Divide by 'zeroL' instead of 0.0L.
+	* tests/infinity.h: New file.
+	* tests/nan.h (NaNf, NaNd, NaNl): Define through a function call also
+	on MSVC.
+	* tests/test-ceilf1.c: Include infinity.h.
+	(main): Use Infinityf.
+	* tests/test-ceil1.c: Include infinity.h.
+	(main): Use Infinityd.
+	* tests/test-ceill.c: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-dprintf-posix.c: Include infinity.h.
+	(test_function): Use Infinityd.
+	* tests/test-floorf1.c: Include infinity.h.
+	(main): Use Infinityf.
+	* tests/test-floor1.c: Include infinity.h.
+	(main): Use Infinityd.
+	* tests/test-floorl.c: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-fprintf-posix.c: Include infinity.h.
+	(test_function): Use Infinityd.
+	* tests/test-frexp.c: Include infinity.h.
+	(main): Use Infinityd.
+	* tests/test-frexpl.c: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-isfinite.c: Include infinity.h.
+	(test_isfinitef): Use Infinityf.
+	(test_isfinited): Use Infinityd.
+	(test_isfinitel): Use Infinityl.
+	* tests/test-isinf.c: Include infinity.h.
+	(test_isinff): Use Infinityf.
+	(test_isinfd): Use Infinityd.
+	(test_isinfl): Use Infinityl.
+	* tests/test-isnan.c: Include infinity.h.
+	(test_float): Use Infinityf.
+	(test_double): Use Infinityd.
+	(test_long_double): Use Infinityl.
+	* tests/test-isnanf.h: Include infinity.h.
+	(main): Use Infinityf.
+	* tests/test-isnand.h: Include infinity.h.
+	(main): Use Infinityd.
+	* tests/test-isnanl.h: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-ldexpl.c: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-printf-posix.h: Include infinity.h.
+	(test_function): Use Infinityd.
+	* tests/test-roundf1.c: Include infinity.h.
+	(main): Use Infinityf.
+	* tests/test-round1.c: Include infinity.h.
+	(main): Use Infinityd.
+	* tests/test-roundl.c: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-signbit.c: Include infinity.h.
+	(test_signbitf): Use Infinityf.
+	(test_signbitd): Use Infinityd.
+	(test_signbitl): Use Infinityl.
+	* tests/test-snprintf-posix.h: Include infinity.h.
+	(test_function): Use Infinityd, Infinityl.
+	* tests/test-sprintf-posix.h: Include infinity.h.
+	(test_function): Use Infinityd, Infinityl.
+	* tests/test-truncf1.c: Include infinity.h.
+	(main): Use Infinityf.
+	* tests/test-trunc1.c: Include infinity.h.
+	(main): Use Infinityd.
+	* tests/test-truncl.c: Include infinity.h.
+	(main): Use Infinityl.
+	* tests/test-vasnprintf-posix.c: Include infinity.h.
+	(test_function): Use Infinityd, Infinityl.
+	* tests/test-vasprintf-posix.c: Include infinity.h.
+	(test_function): Use Infinityd, Infinityl.
+	* modules/ceilf-tests (Files): Add tests/infinity.h.
+	* modules/ceil-tests (Files): Likewise.
+	* modules/ceill-tests (Files): Likewise.
+	* modules/dprintf-posix-tests (Files): Likewise.
+	* modules/floorf-tests (Files): Likewise.
+	* modules/floor-tests (Files): Likewise.
+	* modules/floorl-tests (Files): Likewise.
+	* modules/fprintf-posix-tests (Files): Likewise.
+	* modules/frexp-tests (Files): Likewise.
+	* modules/frexp-nolibm-tests (Files): Likewise.
+	* modules/frexpl-tests (Files): Likewise.
+	* modules/frexpl-nolibm-tests (Files): Likewise.
+	* modules/isfinite-tests (Files): Likewise.
+	* modules/isinf-tests (Files): Likewise.
+	* modules/isnan-tests (Files): Likewise.
+	* modules/isnanf-tests (Files): Likewise.
+	* modules/isnanf-nolibm-tests (Files): Likewise.
+	* modules/isnand-tests (Files): Likewise.
+	* modules/isnand-nolibm-tests (Files): Likewise.
+	* modules/isnanl-tests (Files): Likewise.
+	* modules/isnanl-nolibm-tests (Files): Likewise.
+	* modules/ldexpl-tests (Files): Likewise.
+	* modules/printf-posix-tests (Files): Likewise.
+	* modules/roundf-tests (Files): Likewise.
+	* modules/round-tests (Files): Likewise.
+	* modules/roundl-tests (Files): Likewise.
+	* modules/signbit-tests (Files): Likewise.
+	* modules/snprintf-posix-tests (Files): Likewise.
+	* modules/sprintf-posix-tests (Files): Likewise.
+	* modules/truncf-tests (Files): Likewise.
+	* modules/trunc-tests (Files): Likewise.
+	* modules/truncl-tests (Files): Likewise.
+	* modules/vasnprintf-posix-tests (Files): Likewise.
+	* modules/vasprintf-posix-tests (Files): Likewise.
+	* modules/vdprintf-posix-tests (Files): Likewise.
+	* modules/vfprintf-posix-tests (Files): Likewise.
+	* modules/vprintf-posix-tests (Files): Likewise.
+	* modules/vsnprintf-posix-tests (Files): Likewise.
+	* modules/vsprintf-posix-tests (Files): Likewise.
+	* modules/xprintf-posix-tests (Files): Likewise.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	Ensure pid_t gets defined.
+	* m4/fcntl_h.m4 (gl_FCNTL_H): Require AC_TYPE_PID_T.
+	* m4/sched_h.m4 (gl_SCHED_H): Likewise.
+	* m4/signal_h.m4 (gl_SIGNAL_H): Likewise.
+	* m4/spawn_h.m4 (gl_SPAWN_H): Likewise.
+	* m4/sys_wait_h.m4 (gl_SYS_WAIT_H): Likewise.
+	* m4/termios_h.m4 (gl_TERMIOS_H): Likewise.
+	* m4/time_h.m4 (gl_HEADER_TIME_H_BODY): Likewise.
+	* m4/unistd_h.m4 (gl_UNISTD_H): Likewise.
+	* tests/test-fcntl-h.c: Check that pid_t is defined.
+	* tests/test-sched.c: Likewise.
+	* tests/test-termios.c: Likewise.
+	* tests/test-time.c: Likewise.
+	* doc/posix-headers/fcntl.texi: Mention lack of pid_t on MSVC platform.
+	* doc/posix-headers/signal.texi: Likewise.
+	* doc/posix-headers/sys_types.texi: Likewise.
+	* doc/posix-headers/time.texi: Likewise.
+
+2011-09-11  Bruno Haible  <bruno@clisp.org>
+
+	acl: Fix compilation on Solaris 10 (older version).
+	* lib/file-has-acl.c (acl_ace_nontrivial): Use NEW_ACE_EVERYONE instead
+	of ACE_EVERYONE.
+	* lib/set-mode-acl.c (qset_acl): Likewise.
+	Reported by Christian Jullien <eligis@orange.fr>.
+
+2011-09-10  Bruno Haible  <bruno@clisp.org>
+
+	iconv, unsetenv: Add support for MSVC compiler.
+	* m4/iconv.m4 (AM_ICONV): Use ISO C declaration syntax on MSVC.
+	* m4/setenv.m4 (gl_FUNC_UNSETENV): Drop support for K&R C compilers.
+
+2011-09-10  Bruno Haible  <bruno@clisp.org>
+
+	*printf: Add support for MSVC compiler.
+	* m4/printf.m4 (gl_PRINTF_DIRECTIVE_N): On MSVC, install a handler that
+	handles the exception caused by the %n directive. When cross-compiling,
+	guess no on native Windows.
+	(gl_SNPRINTF_TRUNCATION_C99, gl_SNPRINTF_RETVAL_C99,
+	gl_SNPRINTF_DIRECTIVE_N, gl_SNPRINTF_SIZE1): When snprintf is missing,
+	emulate it through vsnprintf.
+	* m4/vsnprintf-posix.m4 (gl_FUNC_VSNPRINTF_POSIX): Update comment.
+	* doc/posix-functions/dprintf.texi: Update documentation regarding
+	MSVC 9.
+	* doc/posix-functions/fprintf.texi: Likewise.
+	* doc/posix-functions/printf.texi: Likewise.
+	* doc/posix-functions/snprintf.texi: Likewise.
+	* doc/posix-functions/sprintf.texi: Likewise.
+	* doc/posix-functions/swprintf.texi: Likewise.
+	* doc/posix-functions/vdprintf.texi: Likewise.
+	* doc/posix-functions/vfprintf.texi: Likewise.
+	* doc/posix-functions/vprintf.texi: Likewise.
+	* doc/posix-functions/vsnprintf.texi: Likewise.
+	* doc/posix-functions/vsprintf.texi: Likewise.
+	* doc/glibc-functions/asprintf.texi: Likewise.
+	* doc/glibc-functions/obstack_printf.texi: Likewise.
+	* doc/glibc-functions/obstack_vprintf.texi: Likewise.
+	* doc/glibc-functions/vasprintf.texi: Likewise.
+
+2011-09-10  Bruno Haible  <bruno@clisp.org>
+
+	nocrash: Add support for native Windows.
+	* m4/nocrash.m4 (GL_NOCRASH): Avoid a crash also on native Windows.
+
+2011-09-10  Michael Goffioul  <michael.goffioul@gmail.com>  (tiny change)
+	    Bruno Haible  <bruno@clisp.org>
+
+	absolute-header, include-next: Add support for MSVC compiler.
+	* m4/absolute-header.m4 (gl_ABSOLUTE_HEADER_ONE): Require
+	AC_CANONICAL_HOST. On native Windows, recognize also backslash as
+	directory separator in #line directives.
+	* m4/include_next.m4 (gl_NEXT_HEADERS_INTERNAL): On native Windows,
+	recognize also backslash as directory separator in #line directives.
+
+2011-09-08  Jim Meyering  <meyering@redhat.com>
+
+	maint.mk: mark the post-release commit log with "maint: " prefix
+	* top/maint.mk (emit-commit-log): Add "maint: " prefix to the
+	one-line commit-log summary.
+
+2011-09-08  Reuben Thomas  <rrt@sc3d.org>
+	    Bruno Haible  <bruno@clisp.org>
+
+	Doc about crypt functions.
+	* doc/posix-functions/crypt.texi: Mention need for _GNU_SOURCE on glibc
+	systems.
+	* doc/posix-functions/encrypt.texi: Likewise.
+	* doc/posix-functions/setkey.texi: Likewise.
+
+2011-09-08  Simon Josefsson  <simon@josefsson.org>
+
+	* lib/gc.h: Fix copyright header.
+
+2011-09-07  Bruno Haible  <bruno@clisp.org>
+
+	pthread: Determine $(LIB_PTHREAD) correctly on OSF/1 5.1.
+	* m4/pthread.m4 (gl_PTHREAD_CHECK): Use AC_CACHE_CHECK and
+	AC_LINK_IFELSE instead of AC_SEARCH_LIBS.
+
+2011-09-07  Bruno Haible  <bruno@clisp.org>
+
+	openat: Work around compilation error with OSF/1 5.1 DTK cc.
+	* lib/fopen.c: Use different syntax for include of <stdio.h>.
+	* lib/freopen.c: Likewise.
+	* lib/fstatat.c: Use different syntax for include of <sys/stat.h>.
+	* lib/lstat.c: Likewise.
+	* lib/stat.c: Likewise.
+	* lib/open.c: Use different syntax for include of <fcntl.h>.
+	* lib/openat.c: Include fcntl.h again, explicitly.
+
+2011-09-04  J.T. Conklin  <jtc@acorntoolworks.com>
+
+	parse-datetime: document the newly accepted format
+	* doc/parse-datetime.texi (Combined date and time of day items):
+	New section.
+
+2011-09-06  Bruno Haible  <bruno@clisp.org>
+
+	acl: Fix a test failure on newer Solaris 10 with ZFS.
+	* tests/test-sameacls.c (main): Interpret acl GETACLCNT failure with
+	ENOSYS as no ACL.
+	Reported by Jim Meyering.
+
+2011-09-06  Bruno Haible  <bruno@clisp.org>
+
+	acl: Update for AIX >= 5.3 with NFS.
+	* lib/file-has-acl.c (file_has_acl): Interpret aclx_get failure with
+	ENOSYS as no ACL.
+
+	acl: Fix a test failure on AIX >= 5.3 with NFS.
+	* tests/test-sameacls.c (main): Interpret aclx_get failure with ENOSYS
+	as no ACL.
+
+2011-09-06  Bruno Haible  <bruno@clisp.org>
+
+	acl: Fix a test failure on IRIX 6.5 with NFS.
+	* lib/acl-internal.h (MODE_INSIDE_ACL): Define to 0 on IRIX.
+	* lib/set-mode-acl.c (qset_acl): Test !HAVE_ACL_TYPE_EXTENDED instead
+	of MODE_INSIDE_ACL. If !MODE_INSIDE_ACL, do a chmod_or_fchmod always.
+	* lib/copy-acl.c (qcopy_acl): Likewise.
+
+2011-09-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	openat: port to AIX 7.1 with large files
+	AIX 7.1 does a "#define openat open64at" if large files are in use,
+	so we can't simply #undef openat.  Use the orig_openat trick (similar
+	to orig_open in lib/open.c) to work around the problem.  Problem
+	reported by Kevin Brott for GNU tar, in the thread containing
+	<http://lists.gnu.org/archive/html/bug-tar/2011-09/msg00032.html>.
+	* lib/openat.c (__need_system_fcntl_h): Define first.
+	Include <fcntl.h> and <sys/types.h> before undefining.
+	(orig_openat) [HAVE_OPENAT]: New inline function.
+	(openat) [HAVE_OPENAT]: Do not undef.
+	(rpl_openat): Use orig_openat, not openat.
+
+2011-09-05  Joachim Schmitz  <schmitz@hp.com>  (tiny change)
+	    Bruno Haible  <bruno@clisp.org>
+
+	acl: Avoid errors on NonStop Kernel.
+	* lib/file-has-acl.c (file_has_acl) [NonStop Kernel]: Ignore ENOSYS and
+	ENOTSUP errors.
+
+2011-09-05  Bruno Haible  <bruno@clisp.org>
+
+	acl: Clean up Solaris code.
+	* lib/acl-internal.h: Remove no-op #if.
+	* lib/file-has-acl.c: Likewise.
+	* lib/set-mode-acl.c (qset_acl): Remove unused Solaris code.
+	* lib/copy-acl.c (qcopy_acl): Likewise.
+
+2011-09-05  Bruno Haible  <bruno@clisp.org>
+
+	acl: Fix a bug with NFSv4 ACLs on Solaris 10 (newer version) in
+	binaries built on the original Solaris 10.
+	* lib/file-has-acl.c (file_has_acl): ACLs with 4..6 ACEs can be
+	trivial.
+
+2011-09-05  Bruno Haible  <bruno@clisp.org>
+
+	acl: Improve support of NFSv4 ACLs on Solaris 10 (newer version).
+	* lib/acl-internal.h (acl_nontrivial): Declare also on newer Solaris
+	10.
+	* lib/file-has-acl.c (acl_nontrivial): Define also on newer Solaris 10.
+	(acl_ace_nontrivial): Likewise. Recognize the trivial ACLs with 6 ACEs.
+	* lib/copy-acl.c (qcopy_acl): On newer Solaris 10, use acl or facl
+	instead of acl_get, facl_get, acl_set, facl_set.
+
 2011-09-05  Bruno Haible  <bruno@clisp.org>
 
 	copy-file: Try unit tests on more file systems.

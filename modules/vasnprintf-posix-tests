@@ -4,6 +4,7 @@ tests/test-vasnprintf-posix2.sh
 tests/test-vasnprintf-posix2.c
 tests/test-vasnprintf-posix3.c
 tests/minus-zero.h
+tests/infinity.h
 tests/nan.h
 tests/macros.h
 m4/locale-fr.m4
@@ -15,6 +16,7 @@ float
 setlocale
 
 configure.ac:
+AC_REQUIRE([gl_LONG_DOUBLE_VS_DOUBLE])
 gt_LOCALE_FR
 gt_LOCALE_FR_UTF8
 
