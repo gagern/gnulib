@@ -1,5 +1,5 @@
 /* Sequential list data type implemented by a binary tree.
-   Copyright (C) 2006-2011 Free Software Foundation, Inc.
+   Copyright (C) 2006-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2006.
 
    This program is free software: you can redistribute it and/or modify
@@ -137,7 +137,7 @@ gl_tree_previous_node (gl_list_t list, gl_list_node_t node)
 }
 
 /* Return the node at the given position < gl_tree_size (list).  */
-static inline gl_list_node_t
+static gl_list_node_t
 node_at (gl_list_node_t root, size_t position)
 {
   /* Here we know that root != NULL.  */

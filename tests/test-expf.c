@@ -1,5 +1,5 @@
 /* Test of expf() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,16 @@
 #include "signature.h"
 SIGNATURE_CHECK (expf, float, (float));
 
+#include <float.h>
+
 #include "macros.h"
 
-volatile float x;
-float y;
+#define DOUBLE float
+#define L_(literal) literal##f
+#define MANT_DIG FLT_MANT_DIG
+#define EXP expf
+#define RANDOM randomf
+#include "test-exp.h"
 
 int
 main ()
@@ -35,6 +41,8 @@ main ()
   x = 0.6f;
   y = expf (x);
   ASSERT (y >= 1.8221188f && y <= 1.8221189f);
+
+  test_function ();
 
   return 0;
 }

@@ -1,5 +1,5 @@
 /* Grapheme cluster break function test.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify it
    under the terms of the GNU Lesser General Public License as published
@@ -109,7 +109,7 @@ main (int argc, char *argv[])
             }
           else
             {
-              fprintf (stderr, "%s:%d.%d: syntax error expecting `÷' or `÷'\n",
+              fprintf (stderr, "%s:%d.%d: syntax error expecting '÷' or '×'\n",
                        filename, lineno, (int) (p - line + 1));
               exit (1);
             }
@@ -124,8 +124,8 @@ main (int argc, char *argv[])
 
               if (sscanf (p, "%x%n", &next_int, &n) != 1)
                 {
-                  fprintf (stderr, "%s:%d.%d: syntax error at `%s' expecting "
-                           "hexadecimal Unicode code point number\n",
+                  fprintf (stderr, "%s:%d.%d: syntax error at '%s' "
+                           "expecting hexadecimal Unicode code point number\n",
                            filename, lineno, (int) (p - line + 1), p);
                   exit (1);
                 }

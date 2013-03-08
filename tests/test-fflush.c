@@ -1,5 +1,5 @@
 /* Test of POSIX compatible fflush() function.
-   Copyright (C) 2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -172,7 +172,9 @@ main (void)
       }
   }
   {
-    FILE *fp = fdopen (99, "w");
+    FILE *fp;
+    close (99);
+    fp = fdopen (99, "w");
     if (fp != NULL)
       {
         fputc ('x', fp);

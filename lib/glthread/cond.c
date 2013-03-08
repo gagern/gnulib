@@ -1,5 +1,5 @@
 /* Condition variables for multithreading.
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,14 +12,14 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Yoann Vandoorselaere <yoann@prelude-ids.org>, 2008,
    and Bruno Haible <bruno@clisp.org>, 2008.  */
 
 #include <config.h>
 
+#define _GLTHREAD_COND_INLINE _GL_EXTERN_INLINE
 #include "glthread/cond.h"
 
 /* ========================================================================= */
@@ -73,7 +73,7 @@ glthread_cond_timedwait_multithreaded (gl_cond_t *cond,
 
 /* ========================================================================= */
 
-#if USE_WIN32_THREADS
+#if USE_WINDOWS_THREADS
 
 #include <sys/time.h>
 
@@ -91,7 +91,7 @@ struct gl_waitqueue_element
                    This field is immutable once initialized. */
 };
 
-static inline void
+static void
 gl_waitqueue_init (gl_waitqueue_t *wq)
 {
   wq->wq_list.wql_next = &wq->wq_list;
@@ -135,7 +135,7 @@ gl_waitqueue_add (gl_waitqueue_t *wq)
 /* Removes the current thread, represented by a 'struct gl_waitqueue_element *',
    from a wait queue.
    Returns true if is was found and removed, false if it was not present.  */
-static inline bool
+static bool
 gl_waitqueue_remove (gl_waitqueue_t *wq, struct gl_waitqueue_element *elt)
 {
   if (elt->link.wql_next != NULL && elt->link.wql_prev != NULL)
@@ -154,7 +154,7 @@ gl_waitqueue_remove (gl_waitqueue_t *wq, struct gl_waitqueue_element *elt)
 }
 
 /* Notifies the first thread from a wait queue and dequeues it.  */
-static inline void
+static void
 gl_waitqueue_notify_first (gl_waitqueue_t *wq)
 {
   if (wq->wq_list.wql_next != &wq->wq_list)
@@ -179,7 +179,7 @@ gl_waitqueue_notify_first (gl_waitqueue_t *wq)
 }
 
 /* Notifies all threads from a wait queue and dequeues them all.  */
-static inline void
+static void
 gl_waitqueue_notify_all (gl_waitqueue_t *wq)
 {
   struct gl_waitqueue_link *l;

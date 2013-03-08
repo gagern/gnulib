@@ -1,6 +1,6 @@
 /* Convert string to double, using the C locale.
 
-   Copyright (C) 2003-2004, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2003-2004, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
    accepting only the ASCII digits '0'..'9', and only '.' as decimal point
    character.
    If ENDPTR is not NULL, set *ENDPTR to point to the first byte beyond the
-   parsed number or to NPTR if the string does not start with a parseable
+   parsed number or to NPTR if the string does not start with a parsable
    number.
    Return value:
    - If successful, return the value as a double or 'long double',

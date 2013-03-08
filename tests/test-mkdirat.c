@@ -1,5 +1,5 @@
 /* Tests of mkdirat.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ main (int argc _GL_UNUSED, char *argv[])
     ASSERT (errno == EBADF);
   }
   {
+    close (99);
     errno = 0;
     ASSERT (mkdirat (99, "foo", 0700) == -1);
     ASSERT (errno == EBADF);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2011 Free Software Foundation, Inc.
+/* Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #include "cloexec.h"
 
 /* The code that uses CMSG_FIRSTHDR is enabled on
-   Linux, MacOS X, FreeBSD, OpenBSD, NetBSD, AIX, OSF/1, Cygwin.
+   Linux, Mac OS X, FreeBSD, OpenBSD, NetBSD, AIX, OSF/1, Cygwin.
    The code that uses HAVE_STRUCT_MSGHDR_MSG_ACCRIGHTS is enabled on
    HP-UX, IRIX, Solaris.  */
 
@@ -101,7 +101,7 @@ sendfd (int sock _GL_UNUSED, int fd _GL_UNUSED)
 /* recvfd receives a file descriptor through the socket.
    The flags are a bitmask, possibly including O_CLOEXEC (defined in <fcntl.h>).
 
-   Return 0 on success, or -1 with errno set in case of error.
+   Return the fd on success, or -1 with errno set in case of error.
 */
 int
 recvfd (int sock, int flags)

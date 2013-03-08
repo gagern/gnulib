@@ -1,5 +1,5 @@
 /* Filtering of data through a subprocess.
-   Copyright (C) 2001-2003, 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2001-2003, 2008-2013 Free Software Foundation, Inc.
    Written by Paolo Bonzini <bonzini@gnu.org>, 2009,
    and Bruno Haible <bruno@clisp.org>, 2009.
 
@@ -81,7 +81,7 @@ struct pipe_filter_gi
 
 /* Perform additional initializations.
    Return 0 if successful, -1 upon failure.  */
-static inline int filter_init (struct pipe_filter_gi *filter);
+static int filter_init (struct pipe_filter_gi *filter);
 
 /* Write count bytes starting at buf, while at the same time invoking the
    read iterator (the functions prepare_read/done_read) when needed.  */
@@ -91,12 +91,12 @@ static void filter_loop (struct pipe_filter_gi *filter,
 /* Perform cleanup actions at the end.
    finish_reading is true if there was no error, or false if some error
    occurred already.  */
-static inline void filter_cleanup (struct pipe_filter_gi *filter,
-                                   bool finish_reading);
+static void filter_cleanup (struct pipe_filter_gi *filter,
+                            bool finish_reading);
 
 
 #if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
-/* Native Woe32 API.  */
+/* Native Windows API.  */
 
 static unsigned int WINAPI
 reader_thread_func (void *thread_arg)
@@ -136,7 +136,7 @@ reader_thread_func (void *thread_arg)
   abort ();
 }
 
-static inline int
+static int
 filter_init (struct pipe_filter_gi *filter)
 {
   InitializeCriticalSection (&filter->lock);
@@ -200,7 +200,7 @@ filter_loop (struct pipe_filter_gi *filter, const char *wbuf, size_t count)
     }
 }
 
-static inline void
+static void
 filter_cleanup (struct pipe_filter_gi *filter, bool finish_reading)
 {
   if (finish_reading)
@@ -218,7 +218,7 @@ filter_cleanup (struct pipe_filter_gi *filter, bool finish_reading)
 #else
 /* Unix API.  */
 
-static inline int
+static int
 filter_init (struct pipe_filter_gi *filter)
 {
 #if !((defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__)
@@ -459,7 +459,7 @@ filter_terminate (struct pipe_filter_gi *filter)
    Return 0 upon success, or (only if exit_on_error is false):
    - -1 with errno set upon failure,
    - the positive exit code of the subprocess if that failed.  */
-static inline int
+static int
 filter_retcode (struct pipe_filter_gi *filter)
 {
   if (filter->writer_errno != 0)

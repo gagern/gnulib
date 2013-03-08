@@ -1,5 +1,5 @@
-# cosl.m4 serial 6
-dnl Copyright (C) 2010-2011 Free Software Foundation, Inc.
+# cosl.m4 serial 8
+dnl Copyright (C) 2010-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -22,8 +22,10 @@ AC_DEFUN([gl_FUNC_COSL],
              # define __NO_MATH_INLINES 1 /* for glibc */
              #endif
              #include <math.h>
+             long double (*funcptr) (long double) = cosl;
              long double x;]],
-           [[return cosl (x) > 0.4;]])],
+           [[return funcptr (x) > 0.4
+                    || cosl (x) > 0.4;]])],
         [gl_cv_func_cosl_no_libm=yes],
         [gl_cv_func_cosl_no_libm=no])
     ])
@@ -39,8 +41,10 @@ AC_DEFUN([gl_FUNC_COSL],
                # define __NO_MATH_INLINES 1 /* for glibc */
                #endif
                #include <math.h>
+               long double (*funcptr) (long double) = cosl;
                long double x;]],
-             [[return cosl (x) > 0.4;]])],
+             [[return funcptr (x) > 0.4
+                      || cosl (x) > 0.4;]])],
           [gl_cv_func_cosl_in_libm=yes],
           [gl_cv_func_cosl_in_libm=no])
         LIBS="$save_LIBS"
@@ -52,7 +56,7 @@ AC_DEFUN([gl_FUNC_COSL],
   if test $gl_cv_func_cosl_no_libm = yes \
      || test $gl_cv_func_cosl_in_libm = yes; then
     dnl Also check whether it's declared.
-    dnl MacOS X 10.3 has cosl() in libc but doesn't declare it in <math.h>.
+    dnl Mac OS X 10.3 has cosl() in libc but doesn't declare it in <math.h>.
     AC_CHECK_DECL([cosl], , [HAVE_DECL_COSL=0], [[#include <math.h>]])
   else
     HAVE_DECL_COSL=0

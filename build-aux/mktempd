@@ -1,7 +1,7 @@
 #!/bin/sh
 # Create a temporary directory, much like mktemp -d does.
 
-# Copyright (C) 2007-2011 Free Software Foundation, Inc.
+# Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,7 +44,8 @@ rand_bytes()
   dev_rand=/dev/urandom
   if test -r "$dev_rand"; then
     # Note: 256-length($chars) == 194; 3 copies of $chars is 186 + 8 = 194.
-    dd ibs=$n count=1 if="$dev_rand" | tr -c $chars 01234567$chars$chars$chars
+    dd ibs=$n count=1 if="$dev_rand" 2>/dev/null \
+      | tr -c $chars 01234567$chars$chars$chars
     return
   fi
 

@@ -1,5 +1,5 @@
 /* Open a stream to a sub-process.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,24 @@
 /* Specification.  */
 #include <stdio.h>
 
-#if HAVE_POPEN
+#if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+/* Native Windows API.  */
+
+# include <string.h>
+
+FILE *
+popen (const char *filename, const char *mode)
+{
+  /* Use binary mode by default.  */
+  if (strcmp (mode, "r") == 0)
+    mode = "rb";
+  else if (strcmp (mode, "w") == 0)
+    mode = "wb";
+
+  return _popen (filename, mode);
+}
+
+#else
 
 # include <errno.h>
 # include <fcntl.h>
@@ -33,7 +50,7 @@
 FILE *
 rpl_popen (const char *filename, const char *mode)
 {
-  /* The mingw popen works fine, and all other platforms have fcntl.
+  /* All other platforms have popen and fcntl.
      The bug of the child clobbering its own file descriptors if stdin
      or stdout was closed in the parent can be worked around by
      opening those two fds as close-on-exec to begin with.  */
@@ -42,7 +59,7 @@ rpl_popen (const char *filename, const char *mode)
      the fd leaks into subsequent popen calls.  We could work around
      this by maintaining a list of all fd's opened by popen, and
      temporarily marking them cloexec around the real popen call, but
-     we would also have to override pclose, and the bookkeepping seems
+     we would also have to override pclose, and the bookkeeping seems
      extreme given that cygwin 1.7 no longer has the bug.  */
   FILE *result;
   int cloexec0 = fcntl (STDIN_FILENO, F_GETFD);
@@ -81,23 +98,6 @@ rpl_popen (const char *filename, const char *mode)
     close (STDOUT_FILENO);
   errno = saved_errno;
   return result;
-}
-
-#else
-/* Native Woe32 API.  */
-
-# include <string.h>
-
-FILE *
-popen (const char *filename, const char *mode)
-{
-  /* Use binary mode by default.  */
-  if (strcmp (mode, "r") == 0)
-    mode = "rb";
-  else if (strcmp (mode, "w") == 0)
-    mode = "wb";
-
-  return _popen (filename, mode);
 }
 
 #endif

@@ -1,4 +1,4 @@
-/* Copyright (C) 1999, 2001-2002, 2006, 2009-2011 Free Software Foundation,
+/* Copyright (C) 1999, 2001-2002, 2006, 2009-2013 Free Software Foundation,
    Inc.
    This file is part of the GNU C Library.
 
@@ -53,18 +53,15 @@
 # define struct_stat64 struct stat64
 #else
 # define struct_stat64 struct stat
+# define __secure_getenv secure_getenv
 # define __xstat64(version, path, buf) stat (path, buf)
-#endif
-
-#if ! (HAVE___SECURE_GETENV || _LIBC)
-# define __secure_getenv getenv
 #endif
 
 /* Pathname support.
    ISSLASH(C)           tests whether C is a directory separator character.
  */
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
-  /* Win32, Cygwin, OS/2, DOS */
+  /* Native Windows, Cygwin, OS/2, DOS */
 # define ISSLASH(C) ((C) == '/' || (C) == '\\')
 #else
   /* Unix */

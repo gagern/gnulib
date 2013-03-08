@@ -1,4 +1,4 @@
-/* Copyright (C) 1995-1997, 2000, 2006-2007, 2009-2011 Free Software
+/* Copyright (C) 1995-1997, 2000, 2006-2007, 2009-2013 Free Software
    Foundation, Inc.
    Contributed by Bernd Schmidt <crux@Pool.Informatik.RWTH-Aachen.DE>, 1997.
 
@@ -85,11 +85,11 @@
    In this case, A has been rotated left.  This preserves the ordering of the
    binary tree.  */
 
-#include <config.h>
-
 /* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
    optimizes away the rootp == NULL tests below.  */
 #define _GL_ARG_NONNULL(params)
+
+#include <config.h>
 
 /* Specification.  */
 #ifdef IN_LIBINTL

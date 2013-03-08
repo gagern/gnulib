@@ -1,5 +1,5 @@
 /* Abstract ordered set data type, with out-of-memory checking.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2009.
 
    This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,12 @@
 #include "gl_oset.h"
 #include "xalloc.h"
 
+_GL_INLINE_HEADER_BEGIN
+#ifndef GL_XOSET_INLINE
+# define GL_XOSET_INLINE _GL_INLINE
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,15 +34,14 @@ extern "C" {
 /* These functions are thin wrappers around the corresponding functions with
    _nx_ infix from gl_oset.h.  Upon out-of-memory, they invoke xalloc_die (),
    instead of returning an error indicator.  */
+#if 0 /* These are defined inline below.  */
 extern gl_oset_t gl_oset_create_empty (gl_oset_implementation_t implementation,
                                        gl_setelement_compar_fn compar_fn,
                                        gl_setelement_dispose_fn dispose_fn);
 extern bool gl_oset_add (gl_oset_t set, const void *elt);
+#endif
 
-#if HAVE_INLINE
-
-# define gl_oset_create_empty gl_oset_create_empty_inline
-static inline gl_oset_t
+GL_XOSET_INLINE gl_oset_t
 gl_oset_create_empty (gl_oset_implementation_t implementation,
                       gl_setelement_compar_fn compar_fn,
                       gl_setelement_dispose_fn dispose_fn)
@@ -48,8 +53,7 @@ gl_oset_create_empty (gl_oset_implementation_t implementation,
   return result;
 }
 
-# define gl_oset_add gl_oset_add_inline
-static inline bool
+GL_XOSET_INLINE bool
 gl_oset_add (gl_oset_t set, const void *elt)
 {
   int result = gl_oset_nx_add (set, elt);
@@ -58,10 +62,10 @@ gl_oset_add (gl_oset_t set, const void *elt)
   return result;
 }
 
-#endif
-
 #ifdef __cplusplus
 }
 #endif
+
+_GL_INLINE_HEADER_END
 
 #endif /* _GL_XOSET_H */

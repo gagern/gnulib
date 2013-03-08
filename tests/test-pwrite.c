@@ -1,5 +1,5 @@
 /* Test the pwrite function.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -86,6 +86,7 @@ main (void)
   }
   {
     char byte = 'x';
+    close (99);
     errno = 0;
     ASSERT (pwrite (99, &byte, 1, 0) == -1);
     ASSERT (errno == EBADF);

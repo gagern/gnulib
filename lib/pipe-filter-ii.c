@@ -1,5 +1,5 @@
 /* Filtering of data through a subprocess.
-   Copyright (C) 2001-2003, 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2001-2003, 2008-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2009.
 
    This program is free software: you can redistribute it and/or modify
@@ -155,7 +155,7 @@ pipe_filter_ii_execute (const char *progname,
     return -1;
 
 #if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
-  /* Native Woe32 API.  */
+  /* Native Windows API.  */
   /* Pipes have a non-blocking mode, see function SetNamedPipeHandleState and
      the article "Named Pipe Type, Read, and Wait Modes", but Microsoft's
      documentation discourages its use.  So don't use it.
@@ -348,7 +348,7 @@ pipe_filter_ii_execute (const char *progname,
             if (buf != NULL)
               {
                 /* Writing to a pipe in non-blocking mode is tricky: The
-                   write() call may fail with EAGAIN, simply because suffcient
+                   write() call may fail with EAGAIN, simply because sufficient
                    space is not available in the pipe. See POSIX:2008
                    <http://pubs.opengroup.org/onlinepubs/9699919799/functions/write.html>.
                    This happens actually on AIX and IRIX, when bufsize >= 8192

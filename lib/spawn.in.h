@@ -1,5 +1,5 @@
 /* Definitions for POSIX spawn interface.
-   Copyright (C) 2000, 2003-2004, 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2000, 2003-2004, 2008-2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    This program is free software: you can redistribute it and/or modify
@@ -118,7 +118,7 @@ typedef struct
 #endif
 
 
-/* Flags to be set in the `posix_spawnattr_t'.  */
+/* Flags to be set in the 'posix_spawnattr_t'.  */
 #if @HAVE_POSIX_SPAWN@
 /* Use the values from the system, but provide the missing ones.  */
 # ifndef POSIX_SPAWN_SETSCHEDPARAM
@@ -218,7 +218,7 @@ _GL_WARN_ON_USE (posix_spawn, "posix_spawn is unportable - "
 #endif
 
 #if @GNULIB_POSIX_SPAWNP@
-/* Similar to `posix_spawn' but search for FILE in the PATH.
+/* Similar to 'posix_spawn' but search for FILE in the PATH.
 
    This function is a possible cancellation points and therefore not
    marked with __THROW.  */
@@ -263,7 +263,7 @@ _GL_WARN_ON_USE (posix_spawnp, "posix_spawnp is unportable - "
 
 
 #if @GNULIB_POSIX_SPAWNATTR_INIT@
-/* Initialize data structure with attributes for `spawn' to default values.  */
+/* Initialize data structure with attributes for 'spawn' to default values.  */
 # if @REPLACE_POSIX_SPAWN@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define posix_spawnattr_init rpl_posix_spawnattr_init
@@ -712,7 +712,7 @@ _GL_WARN_ON_USE (posix_spawnattr_setschedparam,
 
 
 #if @GNULIB_POSIX_SPAWN_FILE_ACTIONS_INIT@
-/* Initialize data structure for file attribute for `spawn' call.  */
+/* Initialize data structure for file attribute for 'spawn' call.  */
 # if @REPLACE_POSIX_SPAWN@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define posix_spawn_file_actions_init rpl_posix_spawn_file_actions_init
@@ -773,8 +773,8 @@ _GL_WARN_ON_USE (posix_spawn_file_actions_destroy,
 
 #if @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
 /* Add an action to FILE-ACTIONS which tells the implementation to call
-   `open' for the given file during the `spawn' call.  */
-# if @REPLACE_POSIX_SPAWN@
+   'open' for the given file during the 'spawn' call.  */
+# if @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define posix_spawn_file_actions_addopen rpl_posix_spawn_file_actions_addopen
 #  endif
@@ -812,8 +812,8 @@ _GL_WARN_ON_USE (posix_spawn_file_actions_addopen,
 
 #if @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 /* Add an action to FILE-ACTIONS which tells the implementation to call
-   `close' for the given file descriptor during the `spawn' call.  */
-# if @REPLACE_POSIX_SPAWN@
+   'close' for the given file descriptor during the 'spawn' call.  */
+# if @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define posix_spawn_file_actions_addclose rpl_posix_spawn_file_actions_addclose
 #  endif
@@ -843,8 +843,8 @@ _GL_WARN_ON_USE (posix_spawn_file_actions_addclose,
 
 #if @GNULIB_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 /* Add an action to FILE-ACTIONS which tells the implementation to call
-   `dup2' for the given file descriptors during the `spawn' call.  */
-# if @REPLACE_POSIX_SPAWN@
+   'dup2' for the given file descriptors during the 'spawn' call.  */
+# if @REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   define posix_spawn_file_actions_adddup2 rpl_posix_spawn_file_actions_adddup2
 #  endif

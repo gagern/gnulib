@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ fbufmode (FILE *fp)
   if (fp->_flags & _IO_UNBUFFERED)
     return _IONBF;
   return _IOFBF;
-#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
   if (fp_->_flags & __SLBF)
     return _IOLBF;
   if (fp_->_flags & __SNBF)
@@ -79,6 +79,16 @@ fbufmode (FILE *fp)
   if (fp->__linebuf)
     return _IOLBF;
   return (fp->__bufsize > 0 ? _IOFBF : _IONBF);
+#elif HAVE___FLBF && HAVE___FBUFSIZE /* musl libc */
+  if (__flbf (fp))
+    return _IOLBF;
+  return (__fbufsize (fp) > 0 ? _IOFBF : _IONBF);
+#elif defined EPLAN9                /* Plan9 */
+  if (fp->flags & 2 /* LINEBUF */)
+    return _IOLBF;
+  if (fp->bufl)
+    return _IOFBF;
+  return _IONBF;
 #else
 # error "Please port gnulib fbufmode.c to your platform! Look at the setvbuf implementation."
 #endif

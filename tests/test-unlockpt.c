@@ -1,5 +1,5 @@
 /* Test unlocking of the slave side of a pseudo-terminal.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 SIGNATURE_CHECK (unlockpt, int, (int));
 
 #include <errno.h>
+#include <unistd.h>
 
 #include "macros.h"
 
@@ -38,6 +39,7 @@ main (void)
            );
   }
   {
+    close (99);
     errno = 0;
     ASSERT (unlockpt (99) == -1);
     ASSERT (errno == EBADF

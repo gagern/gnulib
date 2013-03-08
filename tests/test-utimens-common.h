@@ -1,5 +1,5 @@
 /* Test of file timestamp modification functions.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,5 +56,22 @@ enum {
 # else
 #  define check_ctime 1
 # endif
+
+/* Compare two st_ctime values.  Return -1, 0 or 1, respectively
+   when A's st_ctime is smaller than, equal to or greater than B's.  */
+static int
+ctime_compare (struct stat const *a, struct stat const *b)
+{
+  if (a->st_ctime < b->st_ctime)
+    return -1;
+  else if (b->st_ctime < a->st_ctime)
+    return 1;
+  else if (get_stat_ctime_ns (a) < get_stat_ctime_ns (b))
+    return -1;
+  else if (get_stat_ctime_ns (b) < get_stat_ctime_ns (a))
+    return 1;
+  else
+    return 0;
+}
 
 #endif /* GL_TEST_UTIMENS_COMMON */

@@ -1,5 +1,5 @@
 /* Test of expl() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,11 +23,17 @@
 #include "signature.h"
 SIGNATURE_CHECK (expl, long double, (long double));
 
+#include <float.h>
+
 #include "fpucw.h"
 #include "macros.h"
 
-volatile long double x;
-long double y;
+#define DOUBLE long double
+#define L_(literal) literal##L
+#define MANT_DIG LDBL_MANT_DIG
+#define EXP expl
+#define RANDOM randoml
+#include "test-exp.h"
 
 int
 main ()
@@ -40,6 +46,8 @@ main ()
   x = 0.6L;
   y = expl (x);
   ASSERT (y >= 1.822118800L && y <= 1.822118801L);
+
+  test_function ();
 
   return 0;
 }

@@ -1,5 +1,5 @@
 /* Test accepting a connection to a server socket.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ SIGNATURE_CHECK (accept4, int, (int, struct sockaddr *, socklen_t *, int));
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <unistd.h>
 
 #include "binary-io.h"
 #include "sockets.h"
@@ -33,7 +34,7 @@ SIGNATURE_CHECK (accept4, int, (int, struct sockaddr *, socklen_t *, int));
 int
 main (void)
 {
-  gl_sockets_startup (SOCKETS_1_1);
+  (void) gl_sockets_startup (SOCKETS_1_1);
 
   /* Test behaviour for invalid file descriptors.  */
   {
@@ -50,6 +51,7 @@ main (void)
     struct sockaddr_in addr;
     socklen_t addrlen = sizeof (addr);
 
+    close (99);
     errno = 0;
     ASSERT (accept4 (99, (struct sockaddr *) &addr, &addrlen,
                      O_CLOEXEC | O_BINARY)

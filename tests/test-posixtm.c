@@ -1,5 +1,5 @@
 /* Test that posixtime works as required.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ struct posixtm_test
   char const *in;
   unsigned int syntax_bits;
   bool valid;
-  int64_t t_expected;
+  int_least64_t t_expected;
 };
 
 /* Test mainly with syntax_bits == 13
@@ -49,12 +49,17 @@ static struct posixtm_test const T[] =
     /* These two tests fail on 64-bit Solaris up through at least
        Solaris 10, which is off by one day for time stamps before
        0001-01-01 00:00:00 UTC.  */
-    { "000001010000.00", 13, 1, -62167219200}, /* Sat Jan  1 00:00:00 0    */
-    { "000012312359.59", 13, 1, -62135596801}, /* Fri Dec 31 23:59:59 0    */
+    { "000001010000.00", 13, 1,
+                      - INT64_C (62167219200)},/* Sat Jan  1 00:00:00 0    */
+    { "000012312359.59", 13, 1,
+                      - INT64_C (62135596801)},/* Fri Dec 31 23:59:59 0    */
 
-    { "000101010000.00", 13, 1, -62135596800}, /* Sat Jan  1 00:00:00 1    */
-    { "190112132045.51", 13, 1,  -2147483649}, /* Fri Dec 13 20:45:51 1901 */
-    { "190112132045.52", 13, 1,  -2147483648}, /* Fri Dec 13 20:45:52 1901 */
+    { "000101010000.00", 13, 1,
+                      - INT64_C (62135596800)},/* Sat Jan  1 00:00:00 1    */
+    { "190112132045.51", 13, 1,
+                       - INT64_C (2147483649)},/* Fri Dec 13 20:45:51 1901 */
+    { "190112132045.52", 13, 1,
+                       - INT64_C (2147483648)},/* Fri Dec 13 20:45:52 1901 */
     { "190112132045.53", 13, 1,  -2147483647}, /* Fri Dec 13 20:45:53 1901 */
     { "190112132046.52", 13, 1,  -2147483588}, /* Fri Dec 13 20:46:52 1901 */
     { "190112132145.52", 13, 1,  -2147480048}, /* Fri Dec 13 21:45:52 1901 */
@@ -77,15 +82,18 @@ static struct posixtm_test const T[] =
     { "197013010000.00", 13, 0,            0}, /* -- */
     { "203801190314.06", 13, 1,   2147483646}, /* Tue Jan 19 03:14:06 2038 */
     { "203801190314.07", 13, 1,   2147483647}, /* Tue Jan 19 03:14:07 2038 */
-    { "203801190314.08", 13, 1,   2147483648}, /* Tue Jan 19 03:14:08 2038 */
-    { "999912312359.59", 13, 1, 253402300799}, /* Fri Dec 31 23:59:59 9999 */
+    { "203801190314.08", 13, 1,
+                       INT64_C (  2147483648)},/* Tue Jan 19 03:14:08 2038 */
+    { "999912312359.59", 13, 1,
+                       INT64_C (253402300799)},/* Fri Dec 31 23:59:59 9999 */
     { "1112131415",      13, 1,   1323785700}, /* Tue Dec 13 14:15:00 2011 */
     { "1112131415.16",   13, 1,   1323785716}, /* Tue Dec 13 14:15:16 2011 */
     { "201112131415.16", 13, 1,   1323785716}, /* Tue Dec 13 14:15:16 2011 */
     { "191112131415.16", 13, 1,  -1831974284}, /* Wed Dec 13 14:15:16 1911 */
     { "203712131415.16", 13, 1,   2144326516}, /* Sun Dec 13 14:15:16 2037 */
     { "3712131415.16",   13, 1,   2144326516}, /* Sun Dec 13 14:15:16 2037 */
-    { "6812131415.16",   13, 1,   3122633716}, /* Thu Dec 13 14:15:16 2068 */
+    { "6812131415.16",   13, 1,
+                       INT64_C (  3122633716)},/* Thu Dec 13 14:15:16 2068 */
     { "6912131415.16",   13, 1,     -1590284}, /* Sat Dec 13 14:15:16 1969 */
     { "7012131415.16",   13, 1,     29945716}, /* Sun Dec 13 14:15:16 1970 */
     { "1213141599",       2, 1,    945094500}, /* Mon Dec 13 14:15:00 1999 */
@@ -118,7 +126,7 @@ main (void)
   for (i = 0; T[i].in; i++)
     {
       time_t t_out;
-      time_t t_exp = T[i].t_expected;
+      time_t t_exp;
       bool ok;
 
       /* Some tests assume that time_t is signed.
@@ -130,12 +138,15 @@ main (void)
           continue;
         }
 
-      if (T[i].valid && t_exp != T[i].t_expected)
+      if (! (TYPE_MINIMUM (time_t) <= T[i].t_expected
+             && T[i].t_expected <= TYPE_MAXIMUM (time_t)))
         {
           printf ("skipping %s: result is out of range of your time_t\n",
                   T[i].in);
           continue;
         }
+
+      t_exp = T[i].t_expected;
 
       /* If an input string does not specify the year number, determine
          the expected output by calling posixtime with an otherwise

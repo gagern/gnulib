@@ -1,5 +1,5 @@
 /* Acquire ownership of the slave side of a pseudo-terminal.
-   Copyright (C) 1998-2002, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 1998-2002, 2009-2013 Free Software Foundation, Inc.
    Contributed by Zack Weinberg <zack@rabi.phys.columbia.edu>, 1998.
 
    This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -50,8 +49,6 @@ grantpt (int fd)
 #if defined __OpenBSD__
   /* On OpenBSD, master and slave of a pseudo-terminal are allocated together,
      through an ioctl on /dev/ptm.  There is no need for grantpt().  */
-  if (fcntl (fd, F_GETFD) < 0)
-    return -1;
   return 0;
 #else
   /* This function is most often called from a process without 'root'

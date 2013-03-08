@@ -1,5 +1,5 @@
 /* Round according to the current rounding mode.
-   Copyright (C) 2007, 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2010-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #if ! defined USE_LONG_DOUBLE
 # include <config.h>
@@ -52,6 +51,12 @@
 # define MINUS_ZERO (-MIN * MIN)
 #else
 # define MINUS_ZERO L_(-0.0)
+#endif
+
+/* MSVC with option -fp:strict refuses to compile constant initializers that
+   contain floating-point operations.  Pacify this compiler.  */
+#ifdef _MSC_VER
+# pragma fenv_access (off)
 #endif
 
 DOUBLE

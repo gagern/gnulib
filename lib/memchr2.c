@@ -1,4 +1,4 @@
-/* Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2004, 2006, 2008-2011
+/* Copyright (C) 1991, 1993, 1996-1997, 1999-2000, 2003-2004, 2006, 2008-2013
    Free Software Foundation, Inc.
 
    Based on strlen implementation by Torbjorn Granlund (tege@sics.se),
@@ -125,7 +125,7 @@ memchr2 (void const *s, int c1_in, int c2_in, size_t n)
      significant bytes (positions j+1..3), but it does not matter since we
      already have a non-zero bit at position 8*j+7.
 
-     Similary, we compute tmp2 =
+     Similarly, we compute tmp2 =
        ((longword2 - repeated_one) & ~longword2) & (repeated_one << 7).
 
      The test whether any byte in longword1 or longword2 is zero is equivalent

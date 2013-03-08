@@ -1,5 +1,5 @@
 /* Return the canonical absolute name of a given file.
-   Copyright (C) 1996-2011 Free Software Foundation, Inc.
+   Copyright (C) 1996-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@
 #include "pathmax.h"
 #include "xalloc.h"
 #include "xgetcwd.h"
+#include "dosname.h"
+
+#define MULTIPLE_BITS_SET(i) (((i) & ((i) - 1)) != 0)
 
 /* In this file, we cannot handle file names longer than PATH_MAX.
    On systems with no file name length limit, use a fallback.  */
@@ -41,10 +44,16 @@
 # define DOUBLE_SLASH_IS_DISTINCT_ROOT 0
 #endif
 
+#if ISSLASH ('\\')
+# define SLASHES "/\\"
+#else
+# define SLASHES "/"
+#endif
+
 #if !((HAVE_CANONICALIZE_FILE_NAME && FUNC_REALPATH_WORKS)      \
       || GNULIB_CANONICALIZE_LGPL)
 /* Return the canonical absolute name of file NAME.  A canonical name
-   does not contain any `.', `..' components nor any repeated file name
+   does not contain any ".", ".." components nor any repeated file name
    separators ('/') or symlinks.  All components must exist.
    The result is malloc'd.  */
 
@@ -81,9 +90,10 @@ seen_triple (Hash_table **ht, char const *filename, struct stat const *st)
 
 /* Return the canonical absolute name of file NAME, while treating
    missing elements according to CAN_MODE.  A canonical name
-   does not contain any `.', `..' components nor any repeated file name
-   separators ('/') or symlinks.  Whether components must exist
-   or not depends on canonicalize mode.  The result is malloc'd.  */
+   does not contain any ".", ".." components nor any repeated file name
+   separators ('/') or, depending on other CAN_MODE flags, symlinks.
+   Whether components must exist or not depends on canonicalize mode.
+   The result is malloc'd.  */
 
 char *
 canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
@@ -95,6 +105,17 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
   size_t extra_len = 0;
   Hash_table *ht = NULL;
   int saved_errno;
+  int can_flags = can_mode & ~CAN_MODE_MASK;
+  bool logical = can_flags & CAN_NOLINKS;
+  size_t prefix_len;
+
+  can_mode &= CAN_MODE_MASK;
+
+  if (MULTIPLE_BITS_SET (can_mode))
+    {
+      errno = EINVAL;
+      return NULL;
+    }
 
   if (name == NULL)
     {
@@ -108,7 +129,11 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
       return NULL;
     }
 
-  if (name[0] != '/')
+  /* This is always zero for Posix hosts, but can be 2 for MS-Windows
+     and MS-DOS X:/foo/bar file names.  */
+  prefix_len = FILE_SYSTEM_PREFIX_LEN (name);
+
+  if (!IS_ABSOLUTE_FILE_NAME (name))
     {
       rname = xgetcwd ();
       if (!rname)
@@ -125,25 +150,37 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
         {
           rname_limit = dest;
         }
+      start = name;
+      prefix_len = FILE_SYSTEM_PREFIX_LEN (rname);
     }
   else
     {
       rname = xmalloc (PATH_MAX);
       rname_limit = rname + PATH_MAX;
-      rname[0] = '/';
-      dest = rname + 1;
-      if (DOUBLE_SLASH_IS_DISTINCT_ROOT && name[1] == '/')
-        *dest++ = '/';
+      dest = rname;
+      if (prefix_len)
+        {
+          memcpy (rname, name, prefix_len);
+          dest += prefix_len;
+        }
+      *dest++ = '/';
+      if (DOUBLE_SLASH_IS_DISTINCT_ROOT)
+        {
+          if (ISSLASH (name[1]) && !ISSLASH (name[2]) && !prefix_len)
+            *dest++ = '/';
+          *dest = '\0';
+        }
+      start = name + prefix_len;
     }
 
-  for (start = name; *start; start = end)
+  for ( ; *start; start = end)
     {
       /* Skip sequence of multiple file name separators.  */
-      while (*start == '/')
+      while (ISSLASH (*start))
         ++start;
 
       /* Find end of component.  */
-      for (end = start; *end && *end != '/'; ++end)
+      for (end = start; *end && !ISSLASH (*end); ++end)
         /* Nothing.  */;
 
       if (end - start == 0)
@@ -153,17 +190,18 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
       else if (end - start == 2 && start[0] == '.' && start[1] == '.')
         {
           /* Back up to previous component, ignore if at root already.  */
-          if (dest > rname + 1)
-            while ((--dest)[-1] != '/');
+          if (dest > rname + prefix_len + 1)
+            for (--dest; dest > rname && !ISSLASH (dest[-1]); --dest)
+              continue;
           if (DOUBLE_SLASH_IS_DISTINCT_ROOT && dest == rname + 1
-              && *dest == '/')
+              && !prefix_len && ISSLASH (*dest) && !ISSLASH (dest[1]))
             dest++;
         }
       else
         {
           struct stat st;
 
-          if (dest[-1] != '/')
+          if (!ISSLASH (dest[-1]))
             *dest++ = '/';
 
           if (dest + (end - start) >= rname_limit)
@@ -185,14 +223,21 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
           dest += end - start;
           *dest = '\0';
 
-          if (lstat (rname, &st) != 0)
+          if (logical && (can_mode == CAN_MISSING))
+            {
+              /* Avoid the stat in this case as it's inconsequential.
+                 i.e. we're neither resolving symlinks or testing
+                 component existence.  */
+              st.st_mode = 0;
+            }
+          else if ((logical ? stat (rname, &st) : lstat (rname, &st)) != 0)
             {
               saved_errno = errno;
               if (can_mode == CAN_EXISTING)
                 goto error;
               if (can_mode == CAN_ALL_BUT_LAST)
                 {
-                  if (end[strspn (end, "/")] || saved_errno != ENOENT)
+                  if (end[strspn (end, SLASHES)] || saved_errno != ENOENT)
                     goto error;
                   continue;
                 }
@@ -244,20 +289,32 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
               memmove (&extra_buf[n], end, len + 1);
               name = end = memcpy (extra_buf, buf, n);
 
-              if (buf[0] == '/')
+              if (IS_ABSOLUTE_FILE_NAME (buf))
                 {
-                  dest = rname + 1;     /* It's an absolute symlink */
-                  if (DOUBLE_SLASH_IS_DISTINCT_ROOT && buf[1] == '/')
-                    *dest++ = '/';
+                  size_t pfxlen = FILE_SYSTEM_PREFIX_LEN (buf);
+
+                  if (pfxlen)
+                    memcpy (rname, buf, pfxlen);
+                  dest = rname + pfxlen;
+                  *dest++ = '/'; /* It's an absolute symlink */
+                  if (DOUBLE_SLASH_IS_DISTINCT_ROOT)
+                    {
+                      if (ISSLASH (buf[1]) && !ISSLASH (buf[2]) && !pfxlen)
+                        *dest++ = '/';
+                      *dest = '\0';
+                    }
+                  /* Install the new prefix to be in effect hereafter.  */
+                  prefix_len = pfxlen;
                 }
               else
                 {
                   /* Back up to previous component, ignore if at root
                      already: */
-                  if (dest > rname + 1)
-                    while ((--dest)[-1] != '/');
+                  if (dest > rname + prefix_len + 1)
+                    for (--dest; dest > rname && !ISSLASH (dest[-1]); --dest)
+                      continue;
                   if (DOUBLE_SLASH_IS_DISTINCT_ROOT && dest == rname + 1
-                      && *dest == '/')
+                      && ISSLASH (*dest) && !ISSLASH (dest[1]) && !prefix_len)
                     dest++;
                 }
 
@@ -273,9 +330,10 @@ canonicalize_filename_mode (const char *name, canonicalize_mode_t can_mode)
             }
         }
     }
-  if (dest > rname + 1 && dest[-1] == '/')
+  if (dest > rname + prefix_len + 1 && ISSLASH (dest[-1]))
     --dest;
-  if (DOUBLE_SLASH_IS_DISTINCT_ROOT && dest == rname + 1 && *dest == '/')
+  if (DOUBLE_SLASH_IS_DISTINCT_ROOT && dest == rname + 1 && !prefix_len
+      && ISSLASH (*dest) && !ISSLASH (dest[1]))
     dest++;
   *dest = '\0';
   if (rname_limit != dest + 1)

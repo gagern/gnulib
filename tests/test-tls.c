@@ -1,5 +1,5 @@
 /* Test of thread-local storage in multithreaded situations.
-   Copyright (C) 2005, 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 #include <config.h>
 
-#if USE_POSIX_THREADS || USE_SOLARIS_THREADS || USE_PTH_THREADS || USE_WIN32_THREADS
+#if USE_POSIX_THREADS || USE_SOLARIS_THREADS || USE_PTH_THREADS || USE_WINDOWS_THREADS
 
 #if USE_POSIX_THREADS
 # define TEST_POSIX_THREADS 1
@@ -29,8 +29,8 @@
 #if USE_PTH_THREADS
 # define TEST_PTH_THREADS 1
 #endif
-#if USE_WIN32_THREADS
-# define TEST_WIN32_THREADS 1
+#if USE_WINDOWS_THREADS
+# define TEST_WINDOWS_THREADS 1
 #endif
 
 /* Whether to help the scheduler through explicit yield().
@@ -66,7 +66,7 @@
 # define yield()
 #endif
 
-static inline void
+static void
 perhaps_yield (void)
 {
   /* Call yield () only with a certain probability, otherwise with GNU Pth

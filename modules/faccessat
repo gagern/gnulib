@@ -4,7 +4,6 @@ faccessat() function: check user's permissions for a file.
 Files:
 lib/faccessat.c
 lib/at-func.c
-lib/openat-priv.h
 m4/faccessat.m4
 
 Depends-on:
@@ -14,6 +13,7 @@ at-internal     [test $HAVE_FACCESSAT = 0]
 dosname         [test $HAVE_FACCESSAT = 0]
 errno           [test $HAVE_FACCESSAT = 0]
 fchdir          [test $HAVE_FACCESSAT = 0]
+fcntl-h         [test $HAVE_FACCESSAT = 0]
 openat-die      [test $HAVE_FACCESSAT = 0]
 openat-h        [test $HAVE_FACCESSAT = 0]
 save-cwd        [test $HAVE_FACCESSAT = 0]

@@ -1,6 +1,6 @@
 /* readtokens.c  -- Functions for reading tokens from an input stream.
 
-   Copyright (C) 1990-1991, 1999-2004, 2006, 2009-2011 Free Software
+   Copyright (C) 1990-1991, 1999-2004, 2006, 2009-2013 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
    Written by Jim Meyering. */
 
-/* This almost supercedes xreadline stuff -- using delim="\n"
+/* This almost supersedes xreadline stuff -- using delim="\n"
    gives the same functionality, except that these functions
    would never return empty lines. */
 
@@ -26,6 +26,7 @@
 
 #include "readtokens.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,6 +47,22 @@ init_tokenbuffer (token_buffer *tokenbuffer)
   tokenbuffer->buffer = NULL;
 }
 
+typedef size_t word;
+enum { bits_per_word = sizeof (word) * CHAR_BIT };
+
+static bool
+get_nth_bit (size_t n, word const *bitset)
+{
+  return bitset[n / bits_per_word] >> n % bits_per_word & 1;
+}
+
+static void
+set_nth_bit (size_t n, word *bitset)
+{
+  size_t one = 1;
+  bitset[n / bits_per_word] |= one << n % bits_per_word;
+}
+
 /* Read a token from STREAM into TOKENBUFFER.
    A token is delimited by any of the N_DELIM bytes in DELIM.
    Upon return, the token is in tokenbuffer->buffer and
@@ -57,7 +74,7 @@ init_tokenbuffer (token_buffer *tokenbuffer)
    by testing ferror (STREAM).
 
    This function works properly on lines containing NUL bytes
-   and on files do not end with a delimiter.  */
+   and on files that do not end with a delimiter.  */
 
 size_t
 readtoken (FILE *stream,
@@ -68,42 +85,17 @@ readtoken (FILE *stream,
   char *p;
   int c;
   size_t i, n;
-  static const char *saved_delim = NULL;
-  static char isdelim[256];
-  bool same_delimiters;
+  word isdelim[(UCHAR_MAX + bits_per_word) / bits_per_word];
 
-  if (delim == NULL && saved_delim == NULL)
-    abort ();
-
-  same_delimiters = false;
-  if (delim != saved_delim && saved_delim != NULL)
+  memset (isdelim, 0, sizeof isdelim);
+  for (i = 0; i < n_delim; i++)
     {
-      same_delimiters = true;
-      for (i = 0; i < n_delim; i++)
-        {
-          if (delim[i] != saved_delim[i])
-            {
-              same_delimiters = false;
-              break;
-            }
-        }
+      unsigned char ch = delim[i];
+      set_nth_bit (ch, isdelim);
     }
 
-  if (!same_delimiters)
-    {
-      size_t j;
-      saved_delim = delim;
-      memset (isdelim, 0, sizeof isdelim);
-      for (j = 0; j < n_delim; j++)
-        {
-          unsigned char ch = delim[j];
-          isdelim[ch] = 1;
-        }
-    }
-
-  /* FIXME: don't fool with this caching.  Use strchr instead.  */
   /* skip over any leading delimiters */
-  for (c = getc (stream); c >= 0 && isdelim[c]; c = getc (stream))
+  for (c = getc (stream); c >= 0 && get_nth_bit (c, isdelim); c = getc (stream))
     {
       /* empty */
     }
@@ -124,7 +116,7 @@ readtoken (FILE *stream,
           p[i] = 0;
           break;
         }
-      if (isdelim[c])
+      if (get_nth_bit (c, isdelim))
         {
           p[i] = 0;
           break;
@@ -143,7 +135,7 @@ readtoken (FILE *stream,
    All storage is obtained through calls to xmalloc-like functions.
 
    %%% Question: is it worth it to do a single
-   %%% realloc() of `tokens' just before returning? */
+   %%% realloc() of 'tokens' just before returning? */
 
 size_t
 readtokens (FILE *stream,

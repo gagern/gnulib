@@ -1,5 +1,5 @@
 /* Round toward nearest, breaking ties away from zero.
-   Copyright (C) 2007, 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2010-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Ben Pfaff <blp@gnu.org>, 2007.
    Based heavily on code by Bruno Haible. */
@@ -63,6 +62,12 @@
 # define MINUS_ZERO (-MIN * MIN)
 #else
 # define MINUS_ZERO L_(-0.0)
+#endif
+
+/* MSVC with option -fp:strict refuses to compile constant initializers that
+   contain floating-point operations.  Pacify this compiler.  */
+#ifdef _MSC_VER
+# pragma fenv_access (off)
 #endif
 
 /* If we're being included from test-round2[f].c, it already defined names for
@@ -167,4 +172,3 @@ FLOOR_FREE_ROUND (DOUBLE x)
   return z;
 }
 #endif /* FLOOR_FREE_ROUND */
-

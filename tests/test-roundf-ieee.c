@@ -1,5 +1,5 @@
 /* Test of rounding to nearest, breaking ties away from zero.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,14 +12,16 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
 #include <math.h>
 
+#include "isnanf-nolibm.h"
 #include "minus-zero.h"
+#include "infinity.h"
+#include "nan.h"
 #include "macros.h"
 
 int
@@ -39,6 +41,14 @@ main ()
   /* Negative numbers.  */
   ASSERT (!!signbit (roundf (-0.3f)) == !!signbit (minus_zerof));
   ASSERT (!!signbit (roundf (-0.7f)) == !!signbit (minus_zerof));
+
+  /* [MX] shaded specification in POSIX.  */
+
+  /* NaN.  */
+  ASSERT (isnanf (roundf (NaNf ())));
+  /* Infinity.  */
+  ASSERT (roundf (Infinityf ()) == Infinityf ());
+  ASSERT (roundf (- Infinityf ()) == - Infinityf ());
 
   return 0;
 }

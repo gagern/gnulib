@@ -1,5 +1,5 @@
 /* des.c --- DES and Triple-DES encryption/decryption Algorithm
- * Copyright (C) 1998-1999, 2001-2007, 2009-2011 Free Software Foundation, Inc.
+ * Copyright (C) 1998-1999, 2001-2007, 2009-2013 Free Software Foundation, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -12,9 +12,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
+ * along with this file; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -64,7 +62,7 @@
  *     // Encrypt the plaintext
  *     des_ecb_encrypt(&context, plaintext, ciphertext);
  *
- *     // To recover the orginal plaintext from ciphertext use:
+ *     // To recover the original plaintext from ciphertext use:
  *     des_ecb_decrypt(&context, ciphertext, recoverd);
  *
  *

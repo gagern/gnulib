@@ -1,5 +1,5 @@
 /* Test of sqrt() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,16 @@
 #include "signature.h"
 SIGNATURE_CHECK (sqrt, double, (double));
 
+#include <float.h>
+
 #include "macros.h"
 
-volatile double x;
-double y;
+#define DOUBLE double
+#define L_(literal) literal
+#define MANT_DIG DBL_MANT_DIG
+#define SQRT sqrt
+#define RANDOM randomd
+#include "test-sqrt.h"
 
 int
 main ()
@@ -35,6 +41,8 @@ main ()
   x = 0.6;
   y = sqrt (x);
   ASSERT (y >= 0.7745966692 && y <= 0.7745966693);
+
+  test_function ();
 
   return 0;
 }

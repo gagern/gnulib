@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ freadptr (FILE *fp, size_t *sizep)
     return NULL;
   *sizep = size;
   return (const char *) fp->_IO_read_ptr;
-#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
   if ((fp_->_flags & __SWR) != 0 || fp_->_r < 0)
     return NULL;
   size = fp_->_r;
@@ -101,6 +101,13 @@ freadptr (FILE *fp, size_t *sizep)
     return NULL;
   *sizep = size;
   return fp->__bufp;
+#elif defined EPLAN9                /* Plan9 */
+  if (fp->state == 4 /* WR */)
+    return NULL;
+  if (fp->rp >= fp->wp)
+    return NULL;
+  *sizep = fp->wp - fp->rp;
+  return fp->rp;
 #elif defined SLOW_BUT_NO_HACKS     /* users can define this */
   /* This implementation is correct on any ANSI C platform.  It is just
      awfully slow.  */

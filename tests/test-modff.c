@@ -1,5 +1,5 @@
 /* Test of modff() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,11 +23,16 @@
 #include "signature.h"
 SIGNATURE_CHECK (modff, float, (float, float *));
 
+#include <float.h>
+
 #include "macros.h"
 
-volatile float x;
-float y;
-float z;
+#define DOUBLE float
+#define L_(literal) literal##f
+#define MANT_DIG FLT_MANT_DIG
+#define MODF modff
+#define RANDOM randomf
+#include "test-modf.h"
 
 int
 main ()
@@ -43,6 +48,8 @@ main ()
   y = modff (x, &z);
   ASSERT (y >= -0.972408f && y <= -0.972406f);
   ASSERT (z == -5.0f);
+
+  test_function ();
 
   return 0;
 }

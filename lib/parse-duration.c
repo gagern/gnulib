@@ -1,5 +1,5 @@
 /* Parse a time duration and return a seconds count
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
    Written by Bruce Korb <bkorb@gnu.org>, 2008.
 
    This program is free software: you can redistribute it and/or modify
@@ -54,14 +54,14 @@ typedef enum {
 #define TIME_MAX        0x7FFFFFFF
 
 /* Wrapper around strtoul that does not require a cast.  */
-static unsigned long inline
+static unsigned long
 str_const_to_ul (cch_t * str, cch_t ** ppz, int base)
 {
   return strtoul (str, (char **)ppz, base);
 }
 
 /* Wrapper around strtol that does not require a cast.  */
-static long inline
+static long
 str_const_to_l (cch_t * str, cch_t ** ppz, int base)
 {
   return strtol (str, (char **)ppz, base);
@@ -70,7 +70,7 @@ str_const_to_l (cch_t * str, cch_t ** ppz, int base)
 /* Returns BASE + VAL * SCALE, interpreting BASE = BAD_TIME
    with errno set as an error situation, and returning BAD_TIME
    with errno set in an error situation.  */
-static time_t inline
+static time_t
 scale_n_add (time_t base, time_t val, int scale)
 {
   if (base == BAD_TIME)

@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-1999, 2004-2011 Free Software Foundation, Inc.
+/* Copyright (C) 1991-1999, 2004-2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    This program is free software: you can redistribute it and/or modify
@@ -28,9 +28,9 @@
 #include <fcntl.h> /* For AT_FDCWD on Solaris 9.  */
 
 /* If this host provides the openat function or if we're using the
-   gnulib replacement function, then enable code below to make getcwd
-   more efficient and robust.  */
-#if defined HAVE_OPENAT || defined GNULIB_OPENAT
+   gnulib replacement function with a native fdopendir, then enable
+   code below to make getcwd more efficient and robust.  */
+#if defined HAVE_OPENAT || (defined GNULIB_OPENAT && defined HAVE_FDOPENDIR)
 # define HAVE_OPENAT_SUPPORT 1
 #else
 # define HAVE_OPENAT_SUPPORT 0
@@ -99,7 +99,7 @@
 /* Get the name of the current working directory, and put it in SIZE
    bytes of BUF.  Returns NULL if the directory couldn't be determined or
    SIZE was too small.  If successful, returns BUF.  In GNU, if BUF is
-   NULL, an array is allocated with `malloc'; the array is SIZE bytes long,
+   NULL, an array is allocated with 'malloc'; the array is SIZE bytes long,
    unless SIZE == 0, in which case it is as big as necessary.  */
 
 char *
@@ -135,7 +135,7 @@ __getcwd (char *buf, size_t size)
   size_t allocated = size;
   size_t used;
 
-#if HAVE_RAW_DECL_GETCWD
+#if HAVE_MINIMALLY_WORKING_GETCWD
   /* If AT_FDCWD is not defined, the algorithm below is O(N**2) and
      this is much slower than the system getcwd (at least on
      GNU/Linux).  So trust the system getcwd's results unless they
@@ -143,7 +143,12 @@ __getcwd (char *buf, size_t size)
 
      Use the system getcwd even if we have openat support, since the
      system getcwd works even when a parent is unreadable, while the
-     openat-based approach does not.  */
+     openat-based approach does not.
+
+     But on AIX 5.1..7.1, the system getcwd is not even minimally
+     working: If the current directory name is slightly longer than
+     PATH_MAX, it omits the first directory component and returns
+     this wrong result with errno = 0.  */
 
 # undef getcwd
   dir = getcwd (buf, size);
@@ -405,7 +410,7 @@ __getcwd (char *buf, size_t size)
     buf = realloc (dir, used);
 
   if (buf == NULL)
-    /* Either buf was NULL all along, or `realloc' failed but
+    /* Either buf was NULL all along, or 'realloc' failed but
        we still have the original string.  */
     buf = dir;
 

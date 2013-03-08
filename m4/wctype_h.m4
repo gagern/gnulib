@@ -1,8 +1,8 @@
-# wctype_h.m4 serial 16
+# wctype_h.m4 serial 18
 
 dnl A placeholder for ISO C99 <wctype.h>, for platforms that lack it.
 
-dnl Copyright (C) 2006-2011 Free Software Foundation, Inc.
+dnl Copyright (C) 2006-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -21,8 +21,6 @@ AC_DEFUN([gl_WCTYPE_H],
     HAVE_ISWCNTRL=0
   fi
   AC_SUBST([HAVE_ISWCNTRL])
-
-  AC_REQUIRE([AC_C_INLINE])
 
   AC_REQUIRE([gt_TYPE_WINT_T])
   if test $gt_cv_c_wint_t = yes; then
@@ -57,7 +55,8 @@ AC_DEFUN([gl_WCTYPE_H],
                           #if __GNU_LIBRARY__ == 1
                           Linux libc5 i18n is broken.
                           #endif]], [])],
-              [gl_cv_func_iswcntrl_works=yes], [gl_cv_func_iswcntrl_works=no])
+              [gl_cv_func_iswcntrl_works="guessing yes"],
+              [gl_cv_func_iswcntrl_works="guessing no"])
             ])
         ])
     fi
@@ -67,11 +66,10 @@ AC_DEFUN([gl_WCTYPE_H],
   fi
   AC_SUBST([HAVE_WCTYPE_H])
 
-  if test "$gl_cv_func_iswcntrl_works" = no; then
-    REPLACE_ISWCNTRL=1
-  else
-    REPLACE_ISWCNTRL=0
-  fi
+  case "$gl_cv_func_iswcntrl_works" in
+    *yes) REPLACE_ISWCNTRL=0 ;;
+    *)    REPLACE_ISWCNTRL=1 ;;
+  esac
   AC_SUBST([REPLACE_ISWCNTRL])
 
   if test $HAVE_ISWCNTRL = 0 || test $REPLACE_ISWCNTRL = 1; then

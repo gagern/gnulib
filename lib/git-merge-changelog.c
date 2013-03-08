@@ -75,7 +75,15 @@
           $ bzr extmerge ChangeLog
 
    Additionally, for hg users:
-     - Add to your $HOME/.hgrc a couple of lines in a section [merge-tools].
+     - Add to your $HOME/.hgrc the lines
+
+        [merge-patterns]
+        ChangeLog = git-merge-changelog
+
+        [merge-tools]
+        git-merge-changelog.executable = /usr/local/bin/git-merge-changelog
+        git-merge-changelog.args = $base $local $other
+
        See <http://www.selenic.com/mercurial/hgrc.5.html> section merge-tools
        for reference.
  */
@@ -958,12 +966,12 @@ static const struct option long_options[] =
   { NULL, 0, NULL, 0 }
 };
 
-/* Print a usage mesage and exit.  */
+/* Print a usage message and exit.  */
 static void
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, "Try `%s --help' for more information.\n",
+    fprintf (stderr, "Try '%s --help' for more information.\n",
              program_name);
   else
     {
@@ -990,7 +998,7 @@ usage (int status)
       printf ("  -h, --help                  display this help and exit\n");
       printf ("  -V, --version               output version information and exit\n");
       printf ("\n");
-      fputs ("Report bugs to <bug-gnu-gettext@gnu.org>.\n",
+      fputs ("Report bugs to <bug-gnulib@gnu.org>.\n",
              stdout);
     }
 

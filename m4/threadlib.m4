@@ -1,5 +1,5 @@
-# threadlib.m4 serial 8 (gettext-0.18.2)
-dnl Copyright (C) 2005-2011 Free Software Foundation, Inc.
+# threadlib.m4 serial 10 (gettext-0.18.2)
+dnl Copyright (C) 2005-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -15,7 +15,7 @@ dnl default is 'no', otherwise it is system dependent. In both cases, the user
 dnl can change the choice through the options --enable-threads=choice or
 dnl --disable-threads.
 dnl Defines at most one of the macros USE_POSIX_THREADS, USE_SOLARIS_THREADS,
-dnl USE_PTH_THREADS, USE_WIN32_THREADS
+dnl USE_PTH_THREADS, USE_WINDOWS_THREADS
 dnl Sets the variables LIBTHREAD and LTLIBTHREAD to the linker options for use
 dnl in a Makefile (LIBTHREAD for use without libtool, LTLIBTHREAD for use with
 dnl libtool).
@@ -53,7 +53,7 @@ AC_DEFUN([gl_THREADLIB_EARLY_BODY],
     [m4_divert_text([DEFAULTS], [gl_use_threads_default=no])],
     [m4_divert_text([DEFAULTS], [gl_use_threads_default=])])
   AC_ARG_ENABLE([threads],
-AC_HELP_STRING([--enable-threads={posix|solaris|pth|win32}], [specify multithreading API])m4_ifdef([gl_THREADLIB_DEFAULT_NO], [], [
+AC_HELP_STRING([--enable-threads={posix|solaris|pth|windows}], [specify multithreading API])m4_ifdef([gl_THREADLIB_DEFAULT_NO], [], [
 AC_HELP_STRING([--disable-threads], [build without multithread safety])]),
     [gl_use_threads=$enableval],
     [if test -n "$gl_use_threads_default"; then
@@ -276,17 +276,19 @@ int main ()
       fi
     fi
     if test -z "$gl_have_pthread"; then
-      if test "$gl_use_threads" = yes || test "$gl_use_threads" = win32; then
-        if { case "$host_os" in
-               mingw*) true;;
-               *) false;;
-             esac
-           }; then
-          gl_threads_api=win32
-          AC_DEFINE([USE_WIN32_THREADS], [1],
-            [Define if the Win32 multithreading API can be used.])
-        fi
-      fi
+      case "$gl_use_threads" in
+        yes | windows | win32) # The 'win32' is for backward compatibility.
+          if { case "$host_os" in
+                 mingw*) true;;
+                 *) false;;
+               esac
+             }; then
+            gl_threads_api=windows
+            AC_DEFINE([USE_WINDOWS_THREADS], [1],
+              [Define if the native Windows multithreading API can be used.])
+          fi
+          ;;
+      esac
     fi
   fi
   AC_MSG_CHECKING([for multithread API to use])
@@ -317,50 +319,50 @@ AC_DEFUN([gl_DISABLE_THREADS], [
 
 dnl Survey of platforms:
 dnl
-dnl Platform          Available   Compiler    Supports   test-lock
-dnl                   flavours    option      weak       result
-dnl ---------------   ---------   ---------   --------   ---------
-dnl Linux 2.4/glibc   posix       -lpthread       Y      OK
+dnl Platform           Available  Compiler    Supports   test-lock
+dnl                    flavours   option      weak       result
+dnl ---------------    ---------  ---------   --------   ---------
+dnl Linux 2.4/glibc    posix      -lpthread       Y      OK
 dnl
-dnl GNU Hurd/glibc    posix
+dnl GNU Hurd/glibc     posix
 dnl
-dnl FreeBSD 5.3       posix       -lc_r           Y
-dnl                   posix       -lkse ?         Y
-dnl                   posix       -lpthread ?     Y
-dnl                   posix       -lthr           Y
+dnl FreeBSD 5.3        posix      -lc_r           Y
+dnl                    posix      -lkse ?         Y
+dnl                    posix      -lpthread ?     Y
+dnl                    posix      -lthr           Y
 dnl
-dnl FreeBSD 5.2       posix       -lc_r           Y
-dnl                   posix       -lkse           Y
-dnl                   posix       -lthr           Y
+dnl FreeBSD 5.2        posix      -lc_r           Y
+dnl                    posix      -lkse           Y
+dnl                    posix      -lthr           Y
 dnl
-dnl FreeBSD 4.0,4.10  posix       -lc_r           Y      OK
+dnl FreeBSD 4.0,4.10   posix      -lc_r           Y      OK
 dnl
-dnl NetBSD 1.6        --
+dnl NetBSD 1.6         --
 dnl
-dnl OpenBSD 3.4       posix       -lpthread       Y      OK
+dnl OpenBSD 3.4        posix      -lpthread       Y      OK
 dnl
-dnl MacOS X 10.[123]  posix       -lpthread       Y      OK
+dnl Mac OS X 10.[123]  posix      -lpthread       Y      OK
 dnl
-dnl Solaris 7,8,9     posix       -lpthread       Y      Sol 7,8: 0.0; Sol 9: OK
-dnl                   solaris     -lthread        Y      Sol 7,8: 0.0; Sol 9: OK
+dnl Solaris 7,8,9      posix      -lpthread       Y      Sol 7,8: 0.0; Sol 9: OK
+dnl                    solaris    -lthread        Y      Sol 7,8: 0.0; Sol 9: OK
 dnl
-dnl HP-UX 11          posix       -lpthread       N (cc) OK
+dnl HP-UX 11           posix      -lpthread       N (cc) OK
 dnl                                               Y (gcc)
 dnl
-dnl IRIX 6.5          posix       -lpthread       Y      0.5
+dnl IRIX 6.5           posix      -lpthread       Y      0.5
 dnl
-dnl AIX 4.3,5.1       posix       -lpthread       N      AIX 4: 0.5; AIX 5: OK
+dnl AIX 4.3,5.1        posix      -lpthread       N      AIX 4: 0.5; AIX 5: OK
 dnl
-dnl OSF/1 4.0,5.1     posix       -pthread (cc)   N      OK
+dnl OSF/1 4.0,5.1      posix      -pthread (cc)   N      OK
 dnl                               -lpthread (gcc) Y
 dnl
-dnl Cygwin            posix       -lpthread       Y      OK
+dnl Cygwin             posix      -lpthread       Y      OK
 dnl
-dnl Any of the above  pth         -lpth                  0.0
+dnl Any of the above   pth        -lpth                  0.0
 dnl
-dnl Mingw             win32                       N      OK
+dnl Mingw              windows                    N      OK
 dnl
-dnl BeOS 5            --
+dnl BeOS 5             --
 dnl
 dnl The test-lock result shows what happens if in test-lock.c EXPLICIT_YIELD is
 dnl turned off:

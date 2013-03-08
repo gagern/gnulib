@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ fwriting (FILE *fp)
      fast macros.  */
 #if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
   return (fp->_flags & (_IO_NO_READS | _IO_CURRENTLY_PUTTING)) != 0;
-#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
   return (fp_->_flags & __SWR) != 0;
 #elif defined __EMX__               /* emx+gcc */
   return (fp->_flags & _IOWRT) != 0;
@@ -52,6 +52,10 @@ fwriting (FILE *fp)
 # else
   return (fp->__buffer < fp->__put_limit /*|| fp->__bufp == fp->__get_limit ??*/);
 # endif
+#elif defined EPLAN9                /* Plan9 */
+  if (fp->state == 0 /* CLOSED */ || fp->state == 3 /* RD */)
+    return 0;
+  return (fp->state == 4 /* WR */ && (fp->bufl == 0 || fp->wp < fp->rp));
 #else
 # error "Please port gnulib fwriting.c to your platform!"
 #endif

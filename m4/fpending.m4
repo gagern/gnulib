@@ -1,6 +1,6 @@
-# serial 17
+# serial 19
 
-# Copyright (C) 2000-2001, 2004-2011 Free Software Foundation, Inc.
+# Copyright (C) 2000-2001, 2004-2013 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -61,6 +61,9 @@ AC_DEFUN([gl_PREREQ_FPENDING],
           '# Minix'                                                     \
           'fp->_ptr - fp->_buf'                                         \
                                                                         \
+          '# Plan9'                                                     \
+          'fp->wp - fp->buf'                                            \
+                                                                        \
           '# VMS'                                                       \
           '(*fp)->_ptr - (*fp)->_base'                                  \
                                                                         \
@@ -83,5 +86,5 @@ AC_DEFUN([gl_PREREQ_FPENDING],
   )
   AC_DEFINE_UNQUOTED([PENDING_OUTPUT_N_BYTES],
     $ac_cv_sys_pending_output_n_bytes,
-    [the number of pending output bytes on stream `fp'])
+    [the number of pending output bytes on stream 'fp'])
 ])

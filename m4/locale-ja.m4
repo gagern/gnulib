@@ -1,5 +1,5 @@
-# locale-ja.m4 serial 9
-dnl Copyright (C) 2003, 2005-2011 Free Software Foundation, Inc.
+# locale-ja.m4 serial 12
+dnl Copyright (C) 2003, 2005-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -28,9 +28,9 @@ int main ()
   const char *p;
   /* Check whether the given locale name is recognized by the system.  */
 #if (defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__
-  /* On native Win32, setlocale(category, "") looks at the system settings,
+  /* On native Windows, setlocale(category, "") looks at the system settings,
      not at the environment variables.  Also, when an encoding suffix such
-     as ".65001" or ".54936" is speficied, it succeeds but sets the LC_CTYPE
+     as ".65001" or ".54936" is specified, it succeeds but sets the LC_CTYPE
      category of the locale to "C".  */
   if (setlocale (LC_ALL, getenv ("LC_ALL")) == NULL
       || strcmp (setlocale (LC_CTYPE, NULL), "C") == 0)
@@ -39,7 +39,7 @@ int main ()
   if (setlocale (LC_ALL, "") == NULL) return 1;
 #endif
   /* Check whether nl_langinfo(CODESET) is nonempty and not "ASCII" or "646".
-     On MacOS X 10.3.5 (Darwin 7.5) in the fr_FR locale, nl_langinfo(CODESET)
+     On Mac OS X 10.3.5 (Darwin 7.5) in the fr_FR locale, nl_langinfo(CODESET)
      is empty, and the behaviour of Tcl 8.4 in this locale is not useful.
      On OpenBSD 4.0, when an unsupported locale is specified, setlocale()
      succeeds but then nl_langinfo(CODESET) is "646". In this situation,
@@ -84,13 +84,14 @@ changequote([,])dnl
         # "ja" as "Japanese" or "Japanese_Japan.932",
         # and similar.
         mingw*)
-          # Note that on native Win32, the Japanese locale is Japanese_Japan.932,
-          # and CP932 is very different from EUC-JP, so we cannot use it here.
+          # Note that on native Windows, the Japanese locale is
+          # Japanese_Japan.932, and CP932 is very different from EUC-JP, so we
+          # cannot use it here.
           gt_cv_locale_ja=none
           ;;
         *)
           # Setting LC_ALL is not enough. Need to set LC_TIME to empty, because
-          # otherwise on MacOS X 10.3.5 the LC_TIME=C from the beginning of the
+          # otherwise on Mac OS X 10.3.5 the LC_TIME=C from the beginning of the
           # configure script would override the LC_ALL setting. Likewise for
           # LC_CTYPE, which is also set at the beginning of the configure script.
           # Test for the AIX locale name.

@@ -1,7 +1,7 @@
-# serial 29
+# serial 30
 # Obtaining file system usage information.
 
-# Copyright (C) 1997-1998, 2000-2001, 2003-2011 Free Software Foundation, Inc.
+# Copyright (C) 1997-1998, 2000-2001, 2003-2013 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -33,7 +33,7 @@ dnl Enable large-file support. This has the effect of changing the size
 dnl of field f_blocks in 'struct statvfs' from 32 bit to 64 bit on
 dnl glibc/Hurd, HP-UX 11, Solaris (32-bit mode). It also changes the size
 dnl of field f_blocks in 'struct statfs' from 32 bit to 64 bit on
-dnl MacOS X >= 10.5 (32-bit mode).
+dnl Mac OS X >= 10.5 (32-bit mode).
 AC_REQUIRE([AC_SYS_LARGEFILE])
 
 AC_MSG_NOTICE([checking how to get file system space usage])
@@ -42,7 +42,7 @@ ac_fsusage_space=no
 # Perform only the link test since it seems there are no variants of the
 # statvfs function.  This check is more than just AC_CHECK_FUNCS([statvfs])
 # because that got a false positive on SCO OSR5.  Adding the declaration
-# of a `struct statvfs' causes this test to fail (as it should) on such
+# of a 'struct statvfs' causes this test to fail (as it should) on such
 # systems.  That system is reported to work fine with STAT_STATFS4 which
 # is what it gets when this test fails.
 if test $ac_fsusage_space = no; then
@@ -50,14 +50,6 @@ if test $ac_fsusage_space = no; then
   # OpenBSD >= 4.4, AIX, HP-UX, IRIX, Solaris, Cygwin, Interix, BeOS.
   AC_CACHE_CHECK([for statvfs function (SVR4)], [fu_cv_sys_stat_statvfs],
                  [AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
-#if (defined __GLIBC__ || defined __UCLIBC__) && defined __linux__
-Do not use statvfs on systems with GNU libc on Linux, because that function
-stats all preceding entries in /proc/mounts, and that makes df hang if even
-one of the corresponding file systems is hard-mounted, but not available.
-statvfs in GNU libc on Hurd, BeOS, Haiku operates differently: it only makes
-a system call.
-#endif
-
 #ifdef __osf__
 "Do not use Tru64's statvfs implementation"
 #endif
@@ -68,7 +60,7 @@ struct statvfs fsd;
 
 #if defined __APPLE__ && defined __MACH__
 #include <limits.h>
-/* On MacOS X >= 10.5, f_blocks in 'struct statvfs' is a 32-bit quantity;
+/* On Mac OS X >= 10.5, f_blocks in 'struct statvfs' is a 32-bit quantity;
    that commonly limits file systems to 4 TiB.  Whereas f_blocks in
    'struct statfs' is a 64-bit type, thanks to the large-file support
    that was enabled above.  In this case, don't use statvfs(); use statfs()
@@ -110,6 +102,38 @@ int check_f_blocks_size[sizeof fsd.f_blocks * CHAR_BIT <= 32 ? -1 : 1];
   fi
 fi
 
+# Check for this unconditionally so we have a
+# good fallback on glibc/Linux > 2.6 < 2.6.36
+AC_MSG_CHECKING([for two-argument statfs with statfs.f_frsize member])
+AC_CACHE_VAL([fu_cv_sys_stat_statfs2_frsize],
+[AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+#ifdef HAVE_SYS_MOUNT_H
+#include <sys/mount.h>
+#endif
+#ifdef HAVE_SYS_VFS_H
+#include <sys/vfs.h>
+#endif
+  int
+  main ()
+  {
+  struct statfs fsd;
+  fsd.f_frsize = 0;
+  return statfs (".", &fsd) != 0;
+  }]])],
+  [fu_cv_sys_stat_statfs2_frsize=yes],
+  [fu_cv_sys_stat_statfs2_frsize=no],
+  [fu_cv_sys_stat_statfs2_frsize=no])])
+AC_MSG_RESULT([$fu_cv_sys_stat_statfs2_frsize])
+if test $fu_cv_sys_stat_statfs2_frsize = yes; then
+    ac_fsusage_space=yes
+    AC_DEFINE([STAT_STATFS2_FRSIZE], [1],
+[  Define if statfs takes 2 args and struct statfs has a field named f_frsize.
+   (glibc/Linux > 2.6)])
+fi
+
 if test $ac_fsusage_space = no; then
   # DEC Alpha running OSF/1
   AC_MSG_CHECKING([for 3-argument statfs function (DEC OSF/1)])
@@ -137,7 +161,7 @@ if test $ac_fsusage_space = no; then
 fi
 
 if test $ac_fsusage_space = no; then
-  # glibc/Linux, MacOS X, FreeBSD < 5.0, NetBSD < 3.0, OpenBSD < 4.4.
+  # glibc/Linux, Mac OS X, FreeBSD < 5.0, NetBSD < 3.0, OpenBSD < 4.4.
   # (glibc/{Hurd,kFreeBSD}, FreeBSD >= 5.0, NetBSD >= 3.0,
   # OpenBSD >= 4.4, AIX, HP-UX, OSF/1, Cygwin already handled above.)
   # (On IRIX you need to include <sys/statfs.h>, not only <sys/mount.h> and

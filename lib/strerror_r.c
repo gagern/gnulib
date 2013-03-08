@@ -1,6 +1,6 @@
 /* strerror_r.c --- POSIX compatible system error routine
 
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #if (__GLIBC__ >= 2 || defined __UCLIBC__ || defined __CYGWIN__) && HAVE___XPG_STRERROR_R /* glibc >= 2.3.4, cygwin >= 1.7.9 */
 
 # define USE_XPG_STRERROR_R 1
+extern int __xpg_strerror_r (int errnum, char *buf, size_t buflen);
 
 #elif HAVE_DECL_STRERROR_R && !(__GLIBC__ >= 2 || defined __UCLIBC__ || defined __CYGWIN__)
 
@@ -161,8 +162,6 @@ strerror_r (int errnum, char *buf, size_t buflen)
 #if USE_XPG_STRERROR_R
 
     {
-      extern int __xpg_strerror_r (int errnum, char *buf, size_t buflen);
-
       ret = __xpg_strerror_r (errnum, buf, buflen);
       if (ret < 0)
         ret = errno;
@@ -241,13 +240,13 @@ strerror_r (int errnum, char *buf, size_t buflen)
     /* Try to do what strerror (errnum) does, but without clobbering the
        buffer used by strerror().  */
 
-# if defined __NetBSD__ || defined __hpux || ((defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__) || defined __CYGWIN__ /* NetBSD, HP-UX, native Win32, Cygwin */
+# if defined __NetBSD__ || defined __hpux || ((defined _WIN32 || defined __WIN32__) && !defined __CYGWIN__) || defined __CYGWIN__ /* NetBSD, HP-UX, native Windows, Cygwin */
 
-    /* NetBSD:        sys_nerr, sys_errlist are declared through _NETBSD_SOURCE
-                      and <errno.h> above.
-       HP-UX:         sys_nerr, sys_errlist are declared explicitly above.
-       native Win32:  sys_nerr, sys_errlist are declared in <stdlib.h>.
-       Cygwin:        sys_nerr, sys_errlist are declared in <errno.h>.  */
+    /* NetBSD:         sys_nerr, sys_errlist are declared through _NETBSD_SOURCE
+                       and <errno.h> above.
+       HP-UX:          sys_nerr, sys_errlist are declared explicitly above.
+       native Windows: sys_nerr, sys_errlist are declared in <stdlib.h>.
+       Cygwin:         sys_nerr, sys_errlist are declared in <errno.h>.  */
     if (errnum >= 0 && errnum < sys_nerr)
       {
 #  if HAVE_CATGETS && (defined __NetBSD__ || defined __hpux)

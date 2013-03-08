@@ -1,5 +1,5 @@
 /* An ftello() function that works around platform bugs.
-   Copyright (C) 2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +30,14 @@ ftello (FILE *fp)
 #if !HAVE_FTELLO
 # undef ftell
 # define ftello ftell
+#endif
+#if _GL_WINDOWS_64_BIT_OFF_T
+# undef ftello
+# if HAVE__FTELLI64 /* msvc, mingw64 */
+#  define ftello _ftelli64
+# else /* mingw */
+#  define ftello ftello64
+# endif
 #endif
 {
 #if LSEEK_PIPE_BROKEN

@@ -5,7 +5,7 @@
 @c For double-sided printing, uncomment:
 @c @setchapternewpage odd
 @c This date is automagically updated when you save this file:
-@set lastupdate October 12, 2011
+@set lastupdate February 13, 2013
 @c %**end of header
 
 @dircategory GNU organization
@@ -24,7 +24,7 @@ Information for maintainers of GNU software, last updated @value{lastupdate}.
 
 Copyright @copyright{} 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-2010, 2011 Free Software Foundation, Inc.
+2010, 2011, 2012, 2013 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -57,7 +57,7 @@ Texts.  A copy of the license is included in the section entitled
 @menu
 * Preface::
 * Getting Help::
-* Getting a GNU Account::
+* GNU Accounts and Resources::
 * Stepping Down::
 * Recruiting Developers::
 * Legal Matters::
@@ -69,6 +69,7 @@ Texts.  A copy of the license is included in the section entitled
 * Web Pages::
 * Ethical and Philosophical Consideration::
 * Terminology::
+* Interviews and Speeches::
 * Hosting::
 * Donations::
 * Free Software Directory::
@@ -161,23 +162,48 @@ hardware.  You can email them at @email{sysadmin@@fsf.org}, but please
 try not to burden them unnecessarily.
 
 
-@node Getting a GNU Account
-@chapter Getting a GNU Account
+@node GNU Accounts and Resources
+@chapter GNU Accounts and Resources
 @cindex shell account, on fencepost
-@cindex @code{fencepost.gnu.org} GNU machine
+@cindex @code{fencepost.gnu.org} GNU login host
+@cindex resources for GNU developers
+@cindex development resources
 
 @c We want to repeat this text later, so define a macro.
 @macro gdgnuorgtext
 The directory @file{/gd/gnuorg} mentioned throughout this document is
 available on the general GNU server, currently
 @code{fencepost.gnu.org}.  If you are the maintainer of a GNU package,
-you should have an account there.  If you don't have one already,
+you should have an account there.  If you don't have one already, see
 @url{http://www.gnu.org/software/README.accounts.html}.  You can also
 ask for accounts for people who significantly help you in working on
-the package.
+the package.  Such GNU login accounts include email
+(see @url{http://www.fsf.org/about/systems/sending-mail-via-fencepost}).
 @end macro
 
 @gdgnuorgtext{}
+
+Other resources available to GNU maintainers are described at
+@url{http://www.gnu.org/software/devel.html}, as well as throughout
+this document.  In brief:
+
+@itemize @bullet
+@item Login accounts (see above).
+
+@item Version control (@pxref{Old Versions}).
+
+@item Mailing lists (@pxref{Mail}).
+
+@item Web pages (@pxref{Web Pages}).
+
+@item Mirrored release areas (@pxref{Distributions}).
+
+@cindex Hydra
+@cindex @code{platform-testers} mailing list
+@item Pre-release portability testing, both automated (via Hydra) and
+on request (via volunteers).
+
+@end itemize
 
 
 @node Stepping Down
@@ -263,6 +289,8 @@ as you maintain the program, to avoid legal difficulties.
 @node Copyright Papers
 @section Copyright Papers
 @cindex copyright papers
+@cindex assignments, copyright
+@cindex disclaimers
 
 If you maintain an FSF-copyrighted package
 certain legal procedures are required when incorporating legally significant
@@ -272,8 +300,18 @@ GPL-covered status in court if necessary.
 
 @strong{Before} incorporating significant changes, make sure that the
 person who wrote the changes has signed copyright papers and that the
-Free Software Foundation has received and signed them.  We may also need
-an employer's disclaimer from the person's employer.
+Free Software Foundation has received and signed them.  We may also
+need an employer's disclaimer from the person's employer, which
+confirms that the work was not part of the person's job and the
+employer makes no claim on it.  However, a copy of the person's
+employment contract, showing that the employer can't claim any rights
+to this work, is often sufficient.
+
+If the employer does claim the work was part of the person's job, and
+there is no clear basis to say that claim is invalid, then we have to
+consider it valid.  Then the person cannot assign copyright, but the
+employer can.  Many companies have done this.  Please ask the
+appropriate managers to contact @code{assign@@gnu.org}.
 
 @cindex data base of GNU copyright assignments
 To check whether papers have been received, look in
@@ -344,13 +382,19 @@ papers to sign.  The @file{request-} file also raises the issue of
 getting an employer's disclaimer from the contributor's employer.
 
 When the contributor emails the form to the FSF, the FSF sends per an
-electronic (usually PDF) copy of the assignment.  All contributors
-then print the assignment and sign it.  Contributors residing outside
-the U.S. must mail the signed form to the FSF via the post.
-Contributors located in the U.S. can then email or fax a scanned copy
-back to the FSF (or use postal mail, if they prefer).  (To emphasize,
-the necessary distinction is between US residents and non-residents,
-citizenship does not matter.)
+electronic (usually PDF) copy of the assignment.  This, or whatever
+response is required, should happen within five business days of the
+initial request.  If no reply from the FSF comes after that time,
+please send a reminder.  If you still get no response after an
+additional week, please write to @email{maintainers@@gnu.org} about it.
+
+After receiving the necessary form, all contributors then print it and
+sign it.  Contributors located in the USA or Germany can then email or
+fax a scanned copy back to the FSF (or use postal mail, if they
+prefer).  Contributors residing outside the USA or Germany must mail
+the signed form to the FSF via postal mail.  To emphasize, the
+necessary distinction is between residents and non-residents of these
+countries; citizenship does not matter.
 
 For less common cases, we have template files you should send to the
 contributor.  Be sure to fill in the name of the person and the name
@@ -526,8 +570,28 @@ trivial to matter for copyright purposes.  Later on you can update the
 automatically, if you are careful about the formatting of the change
 log entries.
 
+It is ok to include other email addresses, names, and program
+information in @file{AUTHORS}, such as bug-reporting information.
+@xref{Standard Mailing Lists}.
+
+
 @node Copying from Other Packages
 @section Copying from Other Packages
+
+This section explains legal considerations when merging code from
+other packages into your package.  Using an entire module as a whole,
+and maintaining its separate identity, is a different issue;
+see @ref{External Libraries}.
+
+@menu
+* Non-FSF-Copyrighted Package::
+* FSF-Copyrighted Package::
+@end menu
+
+@node Non-FSF-Copyrighted Package
+@subsection Non-FSF-Copyrighted Package
+
+Here we suppose that your package is not FSF-copyrighted.
 
 When you copy legally significant code from another free software
 package with a GPL-compatible license, you should look in the
@@ -536,12 +600,11 @@ and list them as the contributors of the code that you copied.  If all
 you did was copy it, not write it, then for copyright purposes you are
 @emph{not} one of the contributors of @emph{this} code.
 
-Especially when code has been released into the public domain, authors
-sometimes fail to write a license statement in each file.  In this
-case, please first be sure that all the authors of the code have
-disclaimed copyright interest.  Then, when copying the new files into
-your project, add a brief note at the beginning of the files recording
-the authors, the public domain status, and anything else relevant.
+If the code is supposed to be in the public domain, make sure that is
+really true: that all the authors of the code have disclaimed
+copyright interest.  Then, when copying the new files into your
+project, add a brief note at the beginning of the files recording the
+authors, the public domain status, and anything else relevant.
 
 On the other hand, when merging some public domain code into an
 existing file covered by the GPL (or LGPL or other free software
@@ -549,13 +612,18 @@ license), there is no reason to indicate the pieces which are public
 domain.  The notice saying that the whole file is under the GPL (or
 other license) is legally sufficient.
 
-Using code that is released under a GPL-compatible free license,
-rather than being in the public domain, may require preserving
-copyright notices or other steps.  Of course, you should do what is
-needed.
+Using code that is not in the public domain, but rather released under
+a GPL-compatible free license, may require preserving copyright
+notices or other steps.  Of course, you should follow the requirements
+stated.
 
-If you are maintaining an FSF-copyrighted package, please verify we
-have papers for the code you are copying, @emph{before} copying it.
+@node FSF-Copyrighted Package
+@subsection FSF-Copyrighted Package
+
+If you are maintaining an FSF-copyrighted package, please don't copy
+in any code without verifying first that we have suitable legal papers
+for that code.
+
 If you are copying from another FSF-copyrighted package, then we
 presumably have papers for that package's own code, but you must check
 whether the code you are copying is part of an external library; if
@@ -862,12 +930,17 @@ name.
 Please adjust the list of invariant sections as appropriate for your
 manual.  If there are none, then say ``with no Invariant Sections''.
 If your manual is not published by the FSF, and under 400 pages, you
-can omit both cover texts.
+can omit both cover texts.  However, if it is copyright FSF, always
+ask the FSF what to do.
 
 @xref{GNU Sample Texts,,, texinfo, Texinfo}, for a full example in a
 Texinfo manual, and see
 @url{http://www.gnu.org/licenses/fdl-howto.html} for more advice about
 how to use the GNU FDL.
+
+If you write a manual that people might want to buy on paper, please
+write to @email{maintainers@@gnu.org} to tell the FSF about it.  We
+might want to publish it.
 
 If the manual is over 400 pages, or if the FSF thinks it might be a
 good choice for publishing on paper, then please include the GNU GPL,
@@ -915,15 +988,33 @@ want to use a general-purpose free software module which offers a
 useful functionality, as a ``library'' facility (though the module is
 not always packaged technically as a library).
 
-In a case like this, it would be unreasonable to ask the author of that
-module to assign the copyright to the FSF.  After all, person did not
-write it specifically as a contribution to your package, so it would be
-impertinent to ask per, out of the blue, ``Please give the FSF your
+Make sure the license of the module is compatible with current @emph{and
+future} GPL versions.  ``GNU GPL version 3 or later'' is good, and
+so is anything which includes permission for use under those GPL
+versions (including ``GNU GPL version 2 or later'', ``LGPL version
+@var{n} or later'', ``LGPL version 2.1'', ``GNU Affero GPL version 3
+or later'').  Lax permissive licenses are ok too, since they are
+compatible with all GPL versions.
+
+``GPL version 2 only'' is obviously unacceptable because it is
+incompatible with GPL version 3.  ``GPL version 3 only'' and ``GPL
+version 2 or 3 only'' have a subtler problem: they would be incompatible
+with GPL version 4, if we ever make one, so the module would become an
+obstacle to upgrading your package's license to ``GPL version 4 or
+later''.
+
+One package you need to avoid is @code{goffice}, since it allows only
+GPL versions 2 and 3.
+
+It would be unreasonable to ask the author of the external module to
+assign its copyright to the FSF.  After all, person did not write
+it specifically as a contribution to your package, so it would be
+impertinent to ask, out of the blue, ``Please give the FSF your
 copyright.''
 
-So the thing to do in this case is to make your program use the module,
-but not consider it a part of your program.  There are two reasonable
-methods of doing this:
+So make your program use the module but without treating the module as
+a part of your program.  There are two reasonable methods of doing
+this:
 
 @enumerate
 @item
@@ -1059,9 +1150,7 @@ programs have their own special lists for sending bug reports.  The
 advertised bug-reporting email address should always be
 @samp{bug-@var{package}@@gnu.org}, to help show users that the program
 is a GNU package, but it is ok to set up that list to forward to another
-site if you prefer.  The package distribution should state the
-name of the bug-reporting list in a prominent place, and ask users to
-help us by reporting bugs there.
+site if you prefer.
 
 @cindex @email{bug-gnu-utils@@gnu.org}
 We also have a catch-all list, @email{bug-gnu-utils@@gnu.org}, which is
@@ -1084,6 +1173,14 @@ If you wish, you can also have a mailing list
 @samp{info-@var{package}} for announcements (@pxref{Announcements}).
 Any other mailing lists you find useful can also be created.
 
+The package distribution should state the name of all the package's
+mailing lists in a prominent place, and ask users to help us by
+reporting bugs appropriately.  The top-level @file{README} file and/or
+@file{AUTHORS} file are good places.  Mailing list information should
+also be included in the manual and the package web pages (@pxref{Web
+Pages}).
+
+
 
 @node Creating Mailing Lists
 @section Creating Mailing Lists
@@ -1102,8 +1199,8 @@ default configuration for antispam purposes (see below).
 To create and maintain simple aliases and unmanaged lists, you can
 edit @file{/com/mailer/aliases} on the main GNU server.  If you don't
 have an account there, please read
-@url{http://www.gnu.org/software/README.accounts.html} (@pxref{Getting
-a GNU Account}).
+@url{http://www.gnu.org/software/README.accounts.html} (@pxref{GNU
+Accounts and Resources}).
 
 But if you don't want to learn how to do those things, you can
 alternatively ask @email{alias-file@@gnu.org} to add you to the
@@ -1223,7 +1320,7 @@ upgrades, problems, and the like.
 @node Distributions
 @chapter Distributions
 
-It is important to follow the GNU conventions when making GNU software
+Please follow the GNU conventions when making GNU software
 distributions.
 
 @menu
@@ -1322,18 +1419,21 @@ which subdirectory to find each file in.
 It's wise to test your patch by applying it to a copy of the old
 version, and checking that the result exactly matches the new version.
 
+
 @node Distribution on ftp.gnu.org
 @section Distribution on @code{ftp.gnu.org}
 @cindex GNU ftp site
 @cindex @code{ftp.gnu.org}, the GNU release site
 
-GNU packages are distributed through the directory @file{/gnu} on
-@code{ftp.gnu.org}, via both HTTP and FTP.  Each package should have a
-subdirectory named after the package, and all the distribution files
-for the package should go in that subdirectory.
+We strongly recommend using @code{ftp.gnu.org} to distribute official
+releases.  If you want to also distribute the package from a site of
+your own, that is fine.  To use some other site instead of
+@code{ftp.gnu.org} is acceptable, provided it allows connections from
+anyone anywhere.
 
-@xref{Automated FTP Uploads}, for procedural details of putting new
-versions on @code{ftp.gnu.org}.
+@xref{Automated FTP Uploads}, for the procedural details of putting
+new versions on @code{ftp.gnu.org}.
+
 
 @node Test Releases
 @section Test Releases
@@ -1348,8 +1448,8 @@ but send it only to a group of volunteers that you have recruited.  (Use
 a suitable GNU mailing list/newsgroup to recruit them.)
 
 We normally use the server @code{alpha.gnu.org} for pretests and
-prerelease versions.  @xref{Automated FTP Uploads}, for procedural details
-of putting new versions on @code{alpha.gnu.org}.
+prerelease versions.  @xref{Automated FTP Uploads}, for the procedural
+details of putting new versions on @code{alpha.gnu.org}.
 
 Once a program gets to be widely used and people expect it to work
 solidly, it is a good idea to do pretest releases before each ``real''
@@ -1392,12 +1492,17 @@ In order to upload new releases to @code{ftp.gnu.org} or
 information.  Then, you can perform uploads yourself, with no
 intervention needed by the system administrators.
 
-The general idea is that releases should be crytographically signed
+The general idea is that releases should be cryptographically signed
 before they are made publicly available.
 
 @menu
 * Automated Upload Registration::
 * Automated Upload Procedure::
+* FTP Upload Release File Triplet::
+* FTP Upload Directive File::
+* FTP Upload Directory Trees::
+* FTP Upload File Replacement::
+* FTP Upload Standalone Directives::
 * FTP Upload Directive File - v1.1::
 * FTP Upload Directive File - v1.0::
 @end menu
@@ -1413,7 +1518,6 @@ Here is how to register your information so you can perform uploads
 for your GNU package:
 
 @enumerate
-
 @item
 Create an account for yourself at @url{http://savannah.gnu.org}, if
 you don't already have one.  By the way, this is also needed to
@@ -1424,7 +1528,7 @@ maintain the web pages at @url{http://www.gnu.org} for your project
 In the @samp{My Account Conf} page on @code{savannah}, upload the GPG
 key you will use to sign your packages.  If you haven't created one
 before, you can do so with the command @code{gpg --gen-key} (you can
-accept all the default answers to its questions).
+accept and/or confirm the default answers to its questions).
 
 Optional but recommended: Send your key to a GPG public key server:
 @code{gpg --keyserver keys.gnupg.net --send-keys @var{keyid}}, where
@@ -1471,70 +1575,48 @@ when an upload is made, either successfully or unsuccessfully.
 @cindex uploads
 
 Once you have registered your information as described in the previous
-section, you will be able to do ftp uploads for yourself using the
-following procedure.
-
-For each upload destined for @code{ftp.gnu.org} or
-@code{alpha.gnu.org}, three files (a @dfn{triplet}) need to be
-uploaded via ftp to the host @code{ftp-upload.gnu.org}.
+section, you can and should do ftp uploads for your package.  There
+are two basic kinds of uploads (details in the following sections):
 
 @enumerate
 @item
-The file to be distributed; for example, @file{foo.tar.gz}.
+Three related files (a ``triplet'') to upload a file destined for
+@code{ftp.gnu.org} or @code{alpha.gnu.org}: @pxref{FTP Upload Release
+File Triplet}.
 
 @item
-Detached GPG binary signature file for (1); for example,
-@file{foo.tar.gz.sig}.  Make this with @samp{gpg -b foo.tar.gz}.
-
-@item
-A clearsigned @dfn{directive file}; for example,
-@file{foo.tar.gz.directive.asc}.  Make this by preparing the plain
-text file @file{foo.tar.gz.directive} and then run @samp{gpg
---clearsign foo.tar.gz.directive}.  @xref{FTP Upload Directive File -
-v1.1}, for the contents of the directive file.
+A single (signed) standalone ``directive file'' to perform operations
+on the server: @pxref{FTP Upload Standalone Directives}.
 @end enumerate
 
-The names of the files are important. The signature file must have the
-same name as the file to be distributed, with an additional
-@file{.sig} extension. The directive file must have the same name as
-the file to be distributed, with an additional @file{.directive.asc}
-extension. If you do not follow this naming convention, the upload
-@emph{will not be processed}.
-
-Since v1.1 of the upload script, it is also possible to upload a
-clearsigned directive file on its own (no accompanying @file{.sig} or
-any other file) to perform certain operations on the server.
-@xref{FTP Upload Directive File - v1.1}, for more information.
-
-Upload the file(s) via anonymous ftp to @code{ftp-upload.gnu.org}. If
-the upload is destined for @code{ftp.gnu.org}, place the file(s) in
-the @file{/incoming/ftp} directory. If the upload is destined for
-@code{alpha.gnu.org}, place the file(s) in the @file{/incoming/alpha}
-directory.
+In either case, you upload the file(s) via anonymous ftp to the host
+@code{ftp-upload.gnu.org}.  If the upload is destined for
+@code{ftp.gnu.org}, place the file(s) in the directory
+@file{/incoming/ftp}.  If the upload is destined for
+@code{alpha.gnu.org}, place the file(s) in the directory
+@file{/incoming/alpha}.
 
 Uploads are processed every five minutes.  Uploads that are in
 progress while the upload processing script is running are handled
-properly, so do not worry about the timing of your upload.  Uploaded
-files that belong to an incomplete triplet are deleted automatically
-after 24 hours.
+properly, so do not worry about the timing of your upload.  Spurious
+and stale uploaded files are deleted automatically after 24 hours.
 
-Your designated upload email addresses (@pxref{Automated Upload Registration})
-are sent a message if there are any problems processing an upload for your
-package. You also receive a message when your upload has been successfully
-processed.
+Your designated upload email addresses (@pxref{Automated Upload
+Registration}) are sent a message if there are problems processing an
+upload for your package.  You also receive a message when an upload
+has been successfully processed.
 
-One automated way to create and transfer the necessary files is to use
-the @code{gnupload} script, which is available from the
+One programmatic way to create and transfer the necessary files is to
+use the @code{gnupload} script, which is available from the
 @file{build-aux/} directory of the @code{gnulib} project at
-@url{http://savannah.gnu.org/projects/gnulib}.  @code{gnupload} can
-also remove uploaded files.  Run @code{gnupload --help} for a
-description and examples.
+@url{http://savannah.gnu.org/projects/gnulib}.  Run
+@code{gnupload@tie{}--help} for a description and examples.
 
-@code{gnupload} uses the @code{ncftpput} program to do the actual
+@code{gnupload} invokes the program @code{ncftpput} to do the actual
 transfers; if you don't happen to have the @code{ncftp} package
 installed, the @code{ncftpput-ftp} script in the @file{build-aux/}
-directory of @code{gnulib} serves as a replacement which uses plain
-command line @code{ftp}.
+directory of @code{gnulib} can serve as a replacement.  It uses the
+plain command line @code{ftp} program.
 
 If you have difficulties with an upload, email
 @email{ftp-upload@@gnu.org}.  You can check the archive of uploads
@@ -1542,147 +1624,309 @@ processed at
 @url{https://lists.gnu.org/archive/html/ftp-upload-report}.
 
 
-@node FTP Upload Directive File - v1.1
-@subsection FTP Upload Directive File - v1.1
+@node FTP Upload Release File Triplet
+@subsection FTP Upload Release File Triplet
 
-The directive file name must end in @file{directive.asc}.
+@cindex FTP uploads, of release files
 
-When part of a triplet, the directive file must always contain the
-directives @code{version}, @code{directory} and @code{filename}, as
-described. In addition, a 'comment' directive is allowed.
+Ordinarily, the goal is to upload a new release of your package, let's
+say, the source archive @file{foo-1.0.tar.gz}.  To do this, you
+simultaneously upload three files:
 
-The @code{version} directive must always have the value @samp{1.1}.
+@enumerate
+@item
+The file to be distributed; in our example, @file{foo-1.0.tar.gz}.
 
-The @code{directory} directive specifies the final destination
-directory where the uploaded file and its @file{.sig} companion are to
-be placed.
+@item
+Detached GPG binary signature file for (1); for example,
+@file{foo-1.0.tar.gz.sig}.  Make this with @samp{gpg -b foo-1.0.tar.gz}.
 
-The @code{filename} directive must contain the name of the file to be
-distributed (item@tie{}(1) above).
+@item
+A clearsigned @dfn{directive file}; for example,
+@file{foo-1.0.tar.gz.directive.asc}, created with @samp{gpg
+--clearsign foo-1.0.tar.gz.directive}.  Its contents are described in
+the next section.
+@end enumerate
 
-For example, as part of an uploaded triplet, a
-@file{foo.tar.gz.directive.asc} file might contain these lines (before
-being gpg clearsigned):
+The names of the files are important.  The signature file must have
+the same name as the file to be distributed, with an additional
+@file{.sig} extension.  The directive file must have the same name as
+the file to be distributed, with an additional @file{.directive.asc}
+extension.  If you do not follow this naming convention, the upload
+@emph{will not be processed}.
+
+
+@node FTP Upload Directive File
+@subsection FTP Upload Directive File
+
+@cindex directive file, for FTP uploads
+
+To repeat, a (signed) @dfn{directive file} must be part of every
+upload.  The unsigned original is just a plain text file you can
+create with any text editor.  Its name must be, e.g.,
+@file{foo-1.0.tar.gz.directive} for accompanying an upload of
+@file{foo-1.0.tar.gz}.
+
+After creating the file, run @samp{gpg --clearsign
+foo-1.0.tar.gz.directive}, which will create
+@file{foo-1.0.tar.gz.directive.asc}; this is the file to be uploaded.
+
+When part of a triplet for uploading a release file, the directive
+file must always contain the directives @code{version},
+@code{filename} and @code{directory}.  In addition, a @code{comment}
+directive is optional.  These directives can be given in any order.
+
+Continuing our example of uploading @file{foo-1.0.tar.gz} for a
+package named @code{foo} to @code{ftp.gnu.org}, the values would be as
+follows:
+
+@table @code
+@item version
+must be the value @samp{1.2} (the current version, as of May@tie{}2012):@*
+@t{version: 1.2}
+
+@item filename
+must be the name of the file to be distributed:@*
+@t{filename: foo-1.0.tar.gz}
+
+@item directory
+specifies the final destination directory where the uploaded file and
+its @file{.sig} companion are to be placed.  Here we will put our file
+in the top level directory of the package, as is the most common
+practice:@*
+@t{directory: foo}
+
+@item comment
+is optional, and ignored if present:@*
+@t{comment: let's hope this works!}
+@end table
+
+Putting the above together, the complete contents of the directive
+file @file{foo-1.0.tar.gz.directive} for our example would be:
 
 @example
-version: 1.1
-directory: bar/v1
-filename: foo.tar.gz
-comment: hello world!
+version: 1.2
+directory: foo
+filename: foo-1.0.tar.gz
+comment: let's hope this works!
 @end example
 
-This directory line indicates that @file{foo.tar.gz} and
-@file{foo.tar.gz.sig} are part of package @code{bar}.  If you uploaded
-this triplet to @file{/incoming/ftp} and the system positively
-authenticates the signatures, the files @file{foo.tar.gz} and
-@file{foo.tar.gz.sig} will be placed in the directory
-@file{gnu/bar/v1} of the @code{ftp.gnu.org} site.
+Then you @samp{gpg --clearsign} the file as given above, and upload
+(using anonymous ftp) the three files:
 
-The directive file can be used to create currently non-existent
-directory trees, as long as they are under the package directory for
-your package (in the example above, that is @code{bar}).
+@table @file
+@item foo-1.0.tar.gz
+@item foo-1.0.tar.gz.sig
+@item foo-1.0.tar.gz.directive.asc
+@end table
 
-If you upload a file that already exists in the FTP directory, the
-original will simply be archived and replaced with the new upload.
+@noindent to the host @file{ftp-upload.gnu.org}, directory
+@file{/incoming/ftp} (for official releases), or the directory
+@file{/incoming/alpha} (for test releases).
 
-@subheading Standalone directives
+After the system authenticates the signatures, the files
+@file{foo-1.0.tar.gz} and @file{foo-1.0.tar.gz.sig} are placed in
+the directory @file{gnu/foo/} on @code{ftp.gnu.org}.  That is, we'll
+have made our release available at
+@indicateurl{http://ftp.gnu.org/gnu/foo/foo-1.0.tar.gz} (and then from
+our many mirrors via
+@indicateurl{http://ftpmirror.gnu.org/foo/foo-1.0.tar.gz}).  Whew.
 
-When uploaded by itself, the directive file must contain one or more
-of the directives @code{symlink}, @code{rmsymlink} or @code{archive},
-in addition to the obligatory @code{directory} and @code{version}
-directives.  A @code{filename} directive is not allowed, and a
-@code{comment} directive remains optional.
+A common reason for the upload not succeeding is your GPG signature
+not being registered with the upload system.  There is nothing that
+makes this happen automatically.  You must email the system
+administrators as described above (@pxref{Automated Upload
+Registration}).
 
-If you use more than one directive, the directives are executed in the
-sequence they are specified in.  If a directive results in an error,
-further execution of the upload is aborted.
 
-Removing a symbolic link (with @code{rmsymlink}) which does not exist
-results in an error.  However, attempting to create a symbolic link
-that already exists (with @code{symlink}) is not an error.  In this
-case @code{symlink} behaves like the command @command{ln -s -f}: any
-existing symlink is removed before creating the link.  (But an
-existing regular file or directory is not removed.)
+@node FTP Upload Directory Trees
+@subsection FTP Upload Directory Trees
 
-Here are a few examples.  The first removes a symlink:
+@cindex directory trees, in ftp uploads
+@cindex hierarchy, under ftp upload directory
+@cindex uploads, directory trees in
+
+You can make any directory hierarchy you like under your package
+directory.  The system automatically creates any intermediate
+directories you specify in the @code{directory} directive.
+
+Slightly modifying the example above, the following directive file:
 
 @example
-version: 1.1
-directory: bar/v1
-rmsymlink: foo-latest.tgz
+version: 1.2
+directory: foo/foo-1.0
+filename: foo-1.0.tar.gz
+comment: creates per-version subdirectory as needed
+@end example
+
+@noindent
+would put the tar file in the @file{foo-1.0/} subdirectory of the
+package @code{foo}, thus ending up at
+@indicateurl{ftp.gnu.org:gnu/foo/foo-1.0/foo-1.0.tar.gz}.
+
+However, to keep things simpler for users, we recommend not using
+subdirectories, unless perhaps each release of your package consists
+of many separate files.
+
+
+@node FTP Upload File Replacement
+@subsection FTP Upload File Replacement
+
+@cindex replacing uploaded files
+@cindex uploads, replacing
+
+You can replace existing files that have already been uploaded by
+including a directive line @code{replace:@tie{}true}.  For example,
+you might like to provide a README file in the release directory and
+update it from time to time.  The full directive file for that would
+look like this:
+
+@example
+replace: true
+version: 1.2
+directory: foo
+filename: README
+comment: replaces an existing README
+@end example
+
+It is ok if the file to be replaced doesn't already exist; then the
+new file is simply added, i.e., the @file{replace} directive has no
+effect.
+
+When an existing file is replaced, the original is archived to a
+private location.  There is no automated or public access to such
+archived files; if you want to retrieve or view them, please email
+@email{sysadmin@@fsf.org}.
+
+We very strongly discourage replacing an actual software release file,
+such as @file{foo-1.0.tar.gz}.  Releases should be unique, and
+forever.  If you need to make fixes, make another release.  If you
+have an exigent reason for a particular release file to no longer be
+available, it can be explicitly archived, as described in the next
+section.
+
+If you want to make the current release available under a generic
+name, such as @code{foo-latest.tar.gz}, that is better done with
+symlinks, also as described in the next section.
+
+
+@node FTP Upload Standalone Directives
+@subsection FTP Upload Standalone Directives
+
+@cindex standalone directives, for ftp uploads
+@cindex directives for ftp uploads, standalone
+
+The previous sections describe how to upload a file to be publicly
+released.  It's also possible to upload a directive file by itself to
+perform a few operations on the upload directory.  The supported
+directives are:
+
+@table @code
+@item symlink
+creates a symlink.
+
+@item rmsymlink
+removes a symlink.
+
+@item archive
+takes a file or directory offline.
+@end table
+
+As for the directives described above, the @code{directory} and
+@code{version} directives are still required, the @code{comment}
+directive remains optional, and the @code{filename} directive is not
+allowed.
+
+When uploaded by itself, the name of the directive file is not
+important.  But it must be still be signed, using @samp{gpg
+--clearsign}; the resulting @file{.asc} file is what should be
+uploaded.
+
+Here's an example of the full directive file to create a
+@file{foo-latest.tar.gz} symlink:
+
+@example
+version: 1.2
+directory: foo
+symlink: foo-1.1.tar.gz foo-latest.tar.gz
+comment: create a symlink
+@end example
+
+If you include more than one directive in a standalone upload, the
+directives are executed in the sequence they are specified in.  If a
+directive results in an error, further execution of the upload is
+aborted.
+
+Removing a symbolic link (with @code{rmsymlink}) which does not exist
+results in an error.  On the other hand, attempting to create a
+symbolic link that already exists (with @code{symlink}) is not an
+error.  In this case @code{symlink} behaves like the command
+@command{ln -s -f}: any existing symlink is removed before creating
+the link.  (But an existing regular file or directory is not replaced.)
+
+Here's an example of removing a symlink, e.g., if you decide not to
+maintain a @file{foo-latest} link any more:
+
+@example
+version: 1.2
+directory: foo
+rmsymlink: foo-latest.tar.gz
 comment: remove a symlink
 @end example
 
 @noindent
-Archive an old file, taking it offline:
+And here's an example of archiving a file, e.g., an unintended upload:
 
 @example
-version: 1.1
-directory: bar/v1
-archive: foo-1.1.tar.gz
+version: 1.2
+directory: foo
+archive: foo-1.1x.tar.gz
 comment: archive an old file; it will not be
-comment: available through FTP any more.
+comment: publicly available any more.
 @end example
 
-@noindent
-Archive an old directory (with all contents), taking it offline:
+The @code{archive} directive causes the specified items to become
+inaccessible.  This should only be used when it is actively bad for
+them to be available, e.g., you uploaded something by mistake.
 
-@example
-version: 1.1
-directory: bar/v1
-archive: foo
-comment: archive an old directory; it and its entire
-comment: contents will not be available through FTP anymore
-@end example
+If all you want to do is reduce how much stuff is in your release
+directory, an alternative is to email @email{sysadmin@@fsf.org} and
+ask them to move old items to the @file{http://ftp.gnu.org/old-gnu/}
+directory; then they will still be available.  In general, however, we
+recommend leaving all official releases in the main release directory.
 
-@noindent
-Create a new symlink:
 
-@example
-version: 1.1
-directory: bar/v1
-symlink: foo-1.2.tar.gz foo-latest.tgz
-comment: create a new symlink
-@end example
+@node FTP Upload Directive File - v1.1
+@subsection FTP Upload Directive File - v1.1
 
-@noindent
-Do everything at once:
-
-@example
-version: 1.1
-directory: bar/v1
-rmsymlink: foo-latest.tgz
-symlink: foo-1.2.tar.gz foo-latest.tgz
-archive: foo-1.1.tar.gz
-comment: now do everything at once
-@end example
+The v1.1 protocol for uploads lacked the @code{replace} directive;
+instead, file replacements were done automatically and silently
+(clearly undesirable).  This is the only difference between v1.2 and
+v1.1.
 
 
 @node FTP Upload Directive File - v1.0
 @subsection FTP Upload Directive File - v1.0
 
-@dfn{As of June 2006, the upload script is running in compatibility
-mode, allowing uploads with either version@tie{}1.1 or
-version@tie{}1.0 of the directive file syntax.  Support for v1.0
-uploads will be phased out by the end of 2006, so please upgrade
-to@tie{}v1.1.}
+Support for v1.0 uploads was discontinued in May 2012; please upgrade
+to@tie{}v1.2.
 
-The directive file should contain one line, excluding the clearsigned
-data GPG that inserts, which specifies the final destination directory
-where items (1) and (2) are to be placed.
+In v1.0, the directive file contained one line, excluding the
+clearsigned data GPG that inserts, which specifies the final
+destination directory where items (1) and (2) are to be placed.
 
-For example, the @file{foo.tar.gz.directive.asc} file might contain the
+For example, the @file{foo-1.0.tar.gz.directive.asc} file might contain the
 single line:
 
 @example
 directory: bar/v1
 @end example
 
-This directory line indicates that @file{foo.tar.gz} and
-@file{foo.tar.gz.sig} are part of package @code{bar}.  If you were to
+This directory line indicates that @file{foo-1.0.tar.gz} and
+@file{foo-1.0.tar.gz.sig} are part of package @code{bar}.  If you were to
 upload the triplet to @file{/incoming/ftp}, and the system can
 positively authenticate the signatures, then the files
-@file{foo.tar.gz} and @file{foo.tar.gz.sig} will be placed in the
+@file{foo-1.0.tar.gz} and @file{foo-1.0.tar.gz.sig} will be placed in the
 directory @file{gnu/bar/v1} of the @code{ftp.gnu.org} site.
 
 The directive file can be used to create currently non-existent
@@ -1715,7 +1959,7 @@ on the GNU Planet web page.
 
 @cindex announcement mailing list, project-specific
 You can maintain your own mailing list (typically
-@email{info-@var{package}@@gnu.org}) for announcements as well if you
+@indicateurl{info-@var{package}@@gnu.org}) for announcements as well if you
 like.  For your own list, of course you decide as you see fit what
 events are worth announcing.  (@xref{Mail}, for setting this up, and
 more suggestions on handling mail for your package.)
@@ -1737,13 +1981,18 @@ Your package's download location (normally
 @indicateurl{http://ftp.gnu.org/gnu/@var{package}/}).  It is also
 useful to mention the mirror list at
 @url{http://www.gnu.org/order/ftp.html}, and that
-@url{http://ftpmirror.gnu.org/@var{package/}} will automatically
+@indicateurl{http://ftpmirror.gnu.org/@var{package/}} will automatically
 redirect to a nearby mirror.
 
 @item
 The @t{NEWS} (@pxref{NEWS File,,, standards, GNU Coding Standards}) for
 the present release.
 @end itemize
+
+You may find the @file{announce-gen} script useful for creating
+announcements, which is available from the @file{build-aux/} directory
+of the @code{gnulib} project at
+@url{http://savannah.gnu.org/projects/gnulib}.
 
 
 @node Web Pages
@@ -1778,6 +2027,7 @@ on @code{www.gnu.org} link to that site.
 
 @node Hosting for Web Pages
 @section Hosting for Web Pages
+@cindex web pages, hosting for
 
 The best way to maintain the web pages for your project is to register
 the project on @code{savannah.gnu.org}.  Then you can edit the pages
@@ -1802,6 +2052,7 @@ For details, see
 
 @node Freedom for Web Pages
 @section Freedom for Web Pages
+@cindex web pages, freedom for
 
 If you use a site other than @code{www.gnu.org}, please make sure that
 the site runs on free software alone.  (It is ok if the site uses
@@ -1825,11 +2076,14 @@ generally superior.  See @url{http://www.gnu.org/philosophy/gif.html}.
 
 @node Manuals on Web Pages
 @section Manuals on Web Pages
+@cindex web pages, including manuals on
+@cindex formats for documentation, desired
 
 The web pages for the package should include its manuals, in HTML,
-DVI, Info, PostScript, PDF, plain ASCII, and Texinfo format (source).
-All of these can be generated automatically from the Texinfo source
-using Makeinfo and other programs.
+DVI, Info, PDF, plain ASCII, and the source Texinfo.  All of these can
+be generated automatically from Texinfo using Makeinfo and other
+programs.  If the Texinfo itself is generated from some other source
+format, include that too.
 
 When there is only one manual, put it in a subdirectory called
 @file{manual}; the file @file{manual/index.html} should have a link to
@@ -1857,6 +2111,7 @@ will do so based on the contents of your @file{manual} directory.
 @subsection Invoking @command{gendocs.sh}
 @pindex gendocs.sh
 @cindex generating documentation output
+@cindex documentation output, generating
 
 The script @command{gendocs.sh} eases the task of generating the
 Texinfo documentation output for your web pages
@@ -1923,9 +2178,9 @@ gendocs.sh --email bug-texinfo@@gnu.org -o info info "GNU Info manual"
 gendocs.sh --email bug-texinfo@@gnu.org -o info-stnd info-stnd "GNU info-stnd manual"
 @end smallexample
 
-By default, the script uses @command{makeinfo} for generating
-@acronym{HTML} output.  If you prefer to use @command{texi2html}, use
-the @option{--texi2html} command line option, e.g.:
+By default, the script uses @command{makeinfo} for generating HTML
+output.  If you prefer to use @command{texi2html}, use the
+@option{--texi2html} command line option, e.g.:
 
 @smallexample
 gendocs --texi2html -o texinfo texinfo "GNU Texinfo manual"
@@ -1936,15 +2191,15 @@ HTML output generated by @command{texi2html} (i.e., split by sections
 and chapters).
 
 You can set the environment variables @env{MAKEINFO}, @env{TEXI2DVI},
-@env{TEXI2HTML} and @env{DVIPS} to control the programs that get
-executed, and @env{GENDOCS_TEMPLATE_DIR} to control where the
+etc., to control the programs that get executed, and
+@env{GENDOCS_TEMPLATE_DIR} to control where the
 @file{gendocs_template} file is found.
 
 As usual, run @samp{gendocs.sh --help} for a description of all the
 options, environment variables, and more information.
 
 Please email bug reports, enhancement requests, or other
-correspondence to @email{bug-texinfo@@gnu.org}.
+correspondence about @command{gendocs} to @email{bug-texinfo@@gnu.org}.
 
 
 @node CVS Keywords in Web Pages
@@ -2036,6 +2291,18 @@ software is now a major focus of the GNU project; to show that we are
 serious about the need for free documentation, we must not contradict
 our position by recommending use of documentation that isn't free.
 
+Please don't host discussions about your package in a service that
+requires nonfree software.  For instance, Google+ ``communities''
+require running a nonfree Javascript program to post a message, so
+they can't be used in the Free World.  To host discussions there would
+be excluding people who live by free software principles.
+
+Of course, you can't order people not to use such services to talk
+with each other.  What you can do is not legitimize them, and use your
+influence to lead people away from them.  For instance, where you say
+where to have discussions related to the program, don't list such a
+place.
+
 Finally, new issues concerning the ethics of software freedom come up
 frequently.  We ask that GNU maintainers, at least on matters that
 pertain specifically to their package, stand with the rest of the GNU
@@ -2115,6 +2382,17 @@ role as the maintainer of a GNU package.  If you want to explain the
 terminology and its reasons, you can refer to the URL
 @url{http://www.gnu.org/gnu/linux-and-gnu.html}.
 
+To make it clear that Linux is a kernel, not an operating system,
+please take care to avoid using the term ``Linux system'' in those
+materials.  If you want to have occasion to make a statement about
+systems in which the kernel is Linux, write ``systems in which the
+kernel is Linux'' or ``systems with Linux as the kernel.''  That
+explicitly contrasts the system and the kernel, and will help readers
+understand the difference between the two.  Please avoid simplified
+forms such as ``Linux-based systems'' because those fail to highlight
+the difference between the kernel and the system, and could encourage
+readers to overlook the distinction.
+
 To contrast the GNU system properly with respect to GNU/Linux, you can
 call it ``GNU/Hurd'' or ``the GNU/Hurd system''.  However, when that
 contrast is not specifically the focus, please call it just ``GNU'' or
@@ -2124,6 +2402,74 @@ When referring to the collection of servers that is the higher level
 of the GNU kernel, please call it ``the Hurd'' or ``the GNU Hurd''.
 Note that this uses a space, not a slash.
 
+
+@node Interviews and Speeches
+@chapter Interviews and Speeches
+
+Interviews and speeches about your package are an important channel
+for informing the public about the GNU system and the ideas of the
+free software movement.  Please avoid saying ``open source'' and avoid
+calling the GNU system ``Linux'', just as you would in the package
+itself (@pxref{Terminology}).  Likewise, avoid promoting nonfree
+programs (@pxref{References,,, standards, GNU Coding
+Standards}) as you would in the package itself.
+
+Many GNU users have erroneous ideas about GNU.  Outside of our
+community, most people think it is Linux.  Please use your opportunity
+to set them straight.  Start the presentation with the answers to
+these basic questions:
+
+@itemize @bullet
+@item
+What GNU is (an operating system developed to be Unix-like and totally
+free software).  It is good to mention @url{http://www.gnu.org}.
+
+@item
+What free software is (the users control it, so it doesn't control
+them).  It is good to state the four freedoms and/or refer to
+@url{http://www.gnu.org/philosophy/free-sw.html}.
+
+@item
+What GNU/Linux is (Linux filled the last gap in GNU).  It is useful to
+refer to @url{http://www.gnu.org/gnu/linux-and-gnu.html}.
+
+@item
+What the GNU Project is (the project to develop GNU).
+
+@item
+How your package fits in (it's part of GNU, and the work is part of
+the GNU Project).
+@end itemize
+
+If you feel a social pressure not to say these things, you may be
+coming in contact with some who would prefer that these things not be
+said.  That's precisely when we need your support most.
+
+Please don't include advertisements or plugs for any company, product
+or service.  Even if the product would meet the standards for the FSF
+to endorse it, an ad for it is out of place in a presentation about a
+GNU package.  Likewise, please don't include company slogans.  Mention
+a company only when called for by the subject matter.
+
+A few GNU packages are actually business activities of a particular
+company.  In that case, it is ok to say so at the start.  Otherwise,
+please show that this is a project of the GNU Project, and avoid
+suggesting it is any company's project.
+
+If you are paid by a company to work on the GNU package, it is
+appropriate to thank the company in a discreet way, but please don't
+go beyond that.
+
+Before you do a speech or interview, please contact the GNU Project
+leadership.  We can give you advice on how to deal with various
+eventualities.
+
+When your interviews and speech recordings or transcript are posted,
+please tell us about them.  Then we can publicize them.
+
+Please post them in formats that are friendly to free software: not in
+Doc or Docx format, not with Flash, not with QuickTime, not with MP3,
+MPEG2 or MPEG4.  Plain text, HTML and PDF are good.
 
 @node Hosting
 @chapter Hosting
@@ -2208,9 +2554,14 @@ We don't recommend any specific payment service.  However, GNU
 developers should not use a service that requires them to sign a
 proprietary software license, such as Google's payment service.
 
-Of course, it is also good to encourage people to join or contribute
-to the FSF (@url{http://www.fsf.org}), either instead of or as well as
-package-specific donations.
+The FSF can collect donations for a limited number of projects; if you
+want to propose that for your project, write to
+@email{maintainers@@gnu.org}.  The FSF is required to supervise the
+spending of these funds.
+
+Of course, it is also good to encourage people to join the FSF
+(@url{http://www.fsf.org}) or make a general donation, either instead
+of or as well as package-specific donations.
 
 
 @node Free Software Directory

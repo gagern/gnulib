@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (C) 2002-2011 Free Software Foundation, Inc.
+# Copyright (C) 2002-2013 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1755,6 +1755,7 @@ func_all_modules ()
   func_echo "$element"
 
   func_begin_table
+  func_module count-leading-zeros
   func_module count-one-bits
   func_module ffs
   func_module ffsl
@@ -1771,6 +1772,7 @@ func_all_modules ()
 
   func_begin_table
   func_module putenv
+  func_module secure_getenv
   func_module setenv
   func_module unsetenv
   func_module xsetenv
@@ -1999,6 +2001,7 @@ func_all_modules ()
   func_module crc
   func_module diacrit
   func_module diffseq
+  func_module execinfo
   func_module getline
   func_module getdelim
   func_module getnline
@@ -2009,6 +2012,7 @@ func_all_modules ()
   func_module obstack-printf
   func_module obstack-printf-posix
   func_module hash-pjw
+  func_module hash-pjw-bare
   func_module hash
   func_module readline
   func_module readtokens
@@ -2329,14 +2333,14 @@ func_all_modules ()
   func_module mbfile
   func_end_table
 
-  element="Support for systems lacking draft ISO C 1X"
-  func_section_wrap c1x_sup
+  element="Support for systems lacking ISO C11"
+  func_section_wrap c11_sup
   func_wrap H2
   func_echo "$element"
 
   element="Core language properties"
   element=`printf "%s" "$element" | sed -e "$sed_lt" -e "$sed_gt"`
-  func_section_wrap c1x_core_properties
+  func_section_wrap c11_core_properties
   func_wrap H3
   func_echo "$element"
 
@@ -2428,6 +2432,7 @@ func_all_modules ()
   func_module mkfifo
   func_module mknod
   func_module mkstemp
+  func_module net_if
   func_module netdb
   func_module netinet_in
   func_module nl_langinfo
@@ -3471,7 +3476,6 @@ func_all_modules ()
   func_module config-h
   func_module configmake
   func_module dummy
-  func_module elisp-comp
   func_module gperf
   func_module havelib
   func_module include_next
@@ -3504,6 +3508,7 @@ func_all_modules ()
   func_module gpl-2.0
   func_module gpl-3.0
   func_module lgpl-2.1
+  func_module lgpl-3.0
   func_module pmccabe2html
   func_module regexprops-generic
   func_end_table
@@ -3524,7 +3529,9 @@ func_all_modules ()
   func_module gnupload
   func_module maintainer-makefile
   func_module mktempd
+  func_module non-recursive-gnulib-prefix-hack
   func_module readme-release
+  func_module test-framework-sh
   func_module update-copyright
   func_module useless-if-before-free
   func_module vc-list-files

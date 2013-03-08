@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
    STREAM must not be wide-character oriented.
    The result doesn't change until the stream is closed or re-opened.  */
 
-#if HAVE___FWRITABLE /* glibc >= 2.2, Solaris >= 7 */
+#if HAVE___FWRITABLE /* glibc >= 2.2, Solaris >= 7, musl libc */
 
 # include <stdio_ext.h>
 # define fwritable(stream) (__fwritable (stream) != 0)

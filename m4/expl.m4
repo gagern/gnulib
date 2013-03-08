@@ -1,5 +1,5 @@
-# expl.m4 serial 5
-dnl Copyright (C) 2010-2011 Free Software Foundation, Inc.
+# expl.m4 serial 8
+dnl Copyright (C) 2010-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -22,8 +22,10 @@ AC_DEFUN([gl_FUNC_EXPL],
              # define __NO_MATH_INLINES 1 /* for glibc */
              #endif
              #include <math.h>
+             long double (*funcptr) (long double) = expl;
              long double x;]],
-           [[return expl (x) > 1.5;]])],
+           [[return funcptr (x) > 1.5
+                    || expl (x) > 1.5;]])],
         [gl_cv_func_expl_no_libm=yes],
         [gl_cv_func_expl_no_libm=no])
     ])
@@ -39,8 +41,10 @@ AC_DEFUN([gl_FUNC_EXPL],
                # define __NO_MATH_INLINES 1 /* for glibc */
                #endif
                #include <math.h>
+               long double (*funcptr) (long double) = expl;
                long double x;]],
-             [[return expl (x) > 1.5;]])],
+             [[return funcptr (x) > 1.5
+                      || expl (x) > 1.5;]])],
           [gl_cv_func_expl_in_libm=yes],
           [gl_cv_func_expl_in_libm=no])
         LIBS="$save_LIBS"
@@ -52,7 +56,7 @@ AC_DEFUN([gl_FUNC_EXPL],
   if test $gl_cv_func_expl_no_libm = yes \
      || test $gl_cv_func_expl_in_libm = yes; then
     dnl Also check whether it's declared.
-    dnl MacOS X 10.3 has expl() in libc but doesn't declare it in <math.h>.
+    dnl Mac OS X 10.3 has expl() in libc but doesn't declare it in <math.h>.
     AC_CHECK_DECL([expl], , [HAVE_DECL_EXPL=0], [[#include <math.h>]])
   else
     HAVE_DECL_EXPL=0
@@ -62,8 +66,25 @@ AC_DEFUN([gl_FUNC_EXPL],
       AC_REQUIRE([gl_FUNC_EXP])
       EXPL_LIBM="$EXP_LIBM"
     else
-      AC_REQUIRE([gl_FUNC_FLOORL])
-      EXPL_LIBM="$FLOORL_LIBM"
+      AC_REQUIRE([gl_FUNC_ISNANL])
+      AC_REQUIRE([gl_FUNC_ROUNDL])
+      AC_REQUIRE([gl_FUNC_LDEXPL])
+      EXPL_LIBM=
+      dnl Append $ISNANL_LIBM to EXPL_LIBM, avoiding gratuitous duplicates.
+      case " $EXPL_LIBM " in
+        *" $ISNANL_LIBM "*) ;;
+        *) EXPL_LIBM="$EXPL_LIBM $ISNANL_LIBM" ;;
+      esac
+      dnl Append $ROUNDL_LIBM to EXPL_LIBM, avoiding gratuitous duplicates.
+      case " $EXPL_LIBM " in
+        *" $ROUNDL_LIBM "*) ;;
+        *) EXPL_LIBM="$EXPL_LIBM $ROUNDL_LIBM" ;;
+      esac
+      dnl Append $LDEXPL_LIBM to EXPL_LIBM, avoiding gratuitous duplicates.
+      case " $EXPL_LIBM " in
+        *" $LDEXPL_LIBM "*) ;;
+        *) EXPL_LIBM="$EXPL_LIBM $LDEXPL_LIBM" ;;
+      esac
     fi
   fi
   AC_SUBST([EXPL_LIBM])

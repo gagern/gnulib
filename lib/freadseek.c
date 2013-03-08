@@ -1,5 +1,5 @@
 /* Skipping input from a FILE stream.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,13 +30,15 @@
 /* Increment the in-memory pointer.  INCREMENT must be at most the buffer size
    returned by freadptr().
    This is very cheap (no system calls).  */
-static inline void
+static void
 freadptrinc (FILE *fp, size_t increment)
 {
   /* Keep this code in sync with freadptr!  */
-#if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
+#if HAVE___FREADPTRINC              /* musl libc */
+  __freadptrinc (fp, increment);
+#elif defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
   fp->_IO_read_ptr += increment;
-#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
   fp_->_p += increment;
   fp_->_r -= increment;
 #elif defined __EMX__               /* emx+gcc */
@@ -58,6 +60,8 @@ freadptrinc (FILE *fp, size_t increment)
   fp->_Next += increment;
 #elif defined __MINT__              /* Atari FreeMiNT */
   fp->__bufp += increment;
+#elif defined EPLAN9                /* Plan9 */
+  fp->rp += increment;
 #elif defined SLOW_BUT_NO_HACKS     /* users can define this */
 #else
  #error "Please port gnulib freadseek.c to your platform! Look at the definition of getc, getc_unlocked on your system, then report this to bug-gnulib."

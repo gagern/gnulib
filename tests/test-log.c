@@ -1,5 +1,5 @@
 /* Test of log() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,19 @@
 #include "signature.h"
 SIGNATURE_CHECK (log, double, (double));
 
+#include <float.h>
+
+#include "minus-zero.h"
 #include "macros.h"
 
-volatile double x;
-double y;
+#define DOUBLE double
+#define HUGEVAL HUGE_VAL
+#define L_(literal) literal
+#define MANT_DIG DBL_MANT_DIG
+#define MINUS_ZERO minus_zerod
+#define LOG log
+#define RANDOM randomd
+#include "test-log.h"
 
 int
 main ()
@@ -35,6 +44,8 @@ main ()
   x = 0.6;
   y = log (x);
   ASSERT (y >= -0.5108256238 && y <= -0.5108256237);
+
+  test_function ();
 
   return 0;
 }

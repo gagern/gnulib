@@ -1,5 +1,5 @@
 /* Check the access rights of a file relative to an open directory.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #include <config.h>
 
 #include <unistd.h>
+#include <fcntl.h>
 
 #ifndef HAVE_ACCESS
 /* Mingw lacks access, but it also lacks real vs. effective ids, so

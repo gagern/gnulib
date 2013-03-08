@@ -10,7 +10,7 @@ Portability problems fixed by Gnulib:
 @itemize
 @item
 This function is missing on some platforms:
-glibc 2.3.6, MacOS X 10.5, FreeBSD 6.0, NetBSD 5.0, OpenBSD 3.8, Minix 3.1.8,
+glibc 2.3.6, Mac OS X 10.5, FreeBSD 6.0, NetBSD 5.0, OpenBSD 3.8, Minix 3.1.8,
 AIX 5.1, HP-UX 11, IRIX 6.5, OSF/1 5.1, Cygwin 1.5.x, mingw, MSVC 9, Interix 3.5, BeOS.
 But the replacement function is not safe to be used in libraries and is not multithread-safe.
 @item
@@ -30,9 +30,5 @@ Solaris 9.
 Portability problems not fixed by Gnulib:
 @itemize
 @item
-On Windows platforms (excluding Cygwin), @code{st_ino} is always 0.
-@item
-On some file systems, @code{st_size} contains bogus information for
-symlinks; use the gnulib module areadlink-with-size for a better way
-to get symlink contents.
+@xref{sys/stat.h}, for general portability problems with @code{struct stat}.
 @end itemize

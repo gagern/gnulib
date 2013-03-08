@@ -1,5 +1,5 @@
-# roundl.m4 serial 13
-dnl Copyright (C) 2007, 2009-2011 Free Software Foundation, Inc.
+# roundl.m4 serial 15
+dnl Copyright (C) 2007, 2009-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -13,14 +13,22 @@ AC_DEFUN([gl_FUNC_ROUNDL],
   dnl Persuade glibc <math.h> to declare roundl().
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
 
-  AC_CHECK_DECLS([roundl], , , [[#include <math.h>]])
-  if test "$ac_cv_have_decl_roundl" = yes; then
-    gl_CHECK_MATH_LIB([ROUNDL_LIBM], [x = roundl (x);])
-    if test "$ROUNDL_LIBM" = missing; then
-      REPLACE_ROUNDL=1
-    fi
+  gl_CHECK_MATH_LIB([ROUNDL_LIBM], [x = roundl (x);],
+    [extern
+     #ifdef __cplusplus
+     "C"
+     #endif
+     long double roundl (long double);
+    ])
+  if test "$ROUNDL_LIBM" != missing; then
+    HAVE_ROUNDL=1
+    dnl Also check whether it's declared.
+    dnl IRIX 6.5 has roundl() in libm but doesn't declare it in <math.h>.
+    AC_CHECK_DECLS([roundl], , [HAVE_DECL_ROUNDL=0], [[#include <math.h>]])
+
     m4_ifdef([gl_FUNC_ROUNDL_IEEE], [
       if test $gl_roundl_required = ieee && test $REPLACE_ROUNDL = 0; then
+        AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
         AC_CACHE_CHECK([whether roundl works according to ISO C 99 with IEC 60559],
           [gl_cv_func_roundl_ieee],
           [
@@ -32,6 +40,11 @@ AC_DEFUN([gl_FUNC_ROUNDL],
 # define __NO_MATH_INLINES 1 /* for glibc */
 #endif
 #include <math.h>
+extern
+#ifdef __cplusplus
+"C"
+#endif
+long double roundl (long double);
 ]gl_LONG_DOUBLE_MINUS_ZERO_CODE[
 ]gl_LONG_DOUBLE_SIGNBIT_CODE[
 static long double dummy (long double f) { return 0; }
@@ -50,7 +63,13 @@ int main (int argc, char *argv[])
               ]])],
               [gl_cv_func_roundl_ieee=yes],
               [gl_cv_func_roundl_ieee=no],
-              [gl_cv_func_roundl_ieee="guessing no"])
+              [case "$host_os" in
+                         # Guess yes on glibc systems.
+                 *-gnu*) gl_cv_func_roundl_ieee="guessing yes" ;;
+                         # If we don't know, assume the worst.
+                 *)      gl_cv_func_roundl_ieee="guessing no" ;;
+               esac
+              ])
             LIBS="$save_LIBS"
           ])
         case "$gl_cv_func_roundl_ieee" in
@@ -60,9 +79,10 @@ int main (int argc, char *argv[])
       fi
     ])
   else
+    HAVE_ROUNDL=0
     HAVE_DECL_ROUNDL=0
   fi
-  if test $HAVE_DECL_ROUNDL = 0 || test $REPLACE_ROUNDL = 1; then
+  if test $HAVE_ROUNDL = 0 || test $REPLACE_ROUNDL = 1; then
     dnl Find libraries needed to link lib/roundl.c.
     if test $HAVE_SAME_LONG_DOUBLE_AS_DOUBLE = 1; then
       AC_REQUIRE([gl_FUNC_ROUND])

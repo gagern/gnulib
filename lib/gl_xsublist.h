@@ -1,6 +1,6 @@
 /* Sequential list data type backed by another list, with out-of-memory
    checking.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2009.
 
    This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,11 @@
 #include "gl_sublist.h"
 #include "xalloc.h"
 
+_GL_INLINE_HEADER_BEGIN
+#ifndef GL_XSUBLIST_INLINE
+# define GL_XSUBLIST_INLINE _GL_INLINE
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -29,13 +34,7 @@ extern "C" {
 /* These functions are thin wrappers around the corresponding functions with
    _nx_ infix from gl_sublist.h.  Upon out-of-memory, they invoke
    xalloc_die (), instead of returning an error indicator.  */
-extern gl_list_t gl_sublist_create (gl_list_t whole_list,
-                                    size_t start_index, size_t end_index);
-
-#if HAVE_INLINE
-
-# define gl_sublist_create gl_sublist_create_inline
-static inline gl_list_t
+GL_XSUBLIST_INLINE gl_list_t
 gl_sublist_create (gl_list_t whole_list, size_t start_index, size_t end_index)
 {
   gl_list_t result = gl_sublist_nx_create (whole_list, start_index, end_index);
@@ -44,10 +43,10 @@ gl_sublist_create (gl_list_t whole_list, size_t start_index, size_t end_index)
   return result;
 }
 
-#endif
-
 #ifdef __cplusplus
 }
 #endif
+
+_GL_INLINE_HEADER_END
 
 #endif /* _GL_XSUBLIST_H */

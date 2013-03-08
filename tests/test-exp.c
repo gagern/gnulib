@@ -1,5 +1,5 @@
 /* Test of exp() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,16 @@
 #include "signature.h"
 SIGNATURE_CHECK (exp, double, (double));
 
+#include <float.h>
+
 #include "macros.h"
 
-volatile double x;
-double y;
+#define DOUBLE double
+#define L_(literal) literal
+#define MANT_DIG DBL_MANT_DIG
+#define EXP exp
+#define RANDOM randomd
+#include "test-exp.h"
 
 int
 main ()
@@ -35,6 +41,8 @@ main ()
   x = 0.6;
   y = exp (x);
   ASSERT (y >= 1.822118800 && y <= 1.822118801);
+
+  test_function ();
 
   return 0;
 }

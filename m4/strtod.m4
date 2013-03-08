@@ -1,5 +1,5 @@
-# strtod.m4 serial 21
-dnl Copyright (C) 2002-2003, 2006-2011 Free Software Foundation, Inc.
+# strtod.m4 serial 22
+dnl Copyright (C) 2002-2003, 2006-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -112,11 +112,14 @@ numeric_equal (double x, double y)
  #endif
 #endif
            ],
-           [gl_cv_func_strtod_works=yes],
+           [gl_cv_func_strtod_works="guessing yes"],
            [gl_cv_func_strtod_works="guessing no"])])])
-    if test "$gl_cv_func_strtod_works" != yes; then
-      REPLACE_STRTOD=1
-    fi
+    case "$gl_cv_func_strtod_works" in
+      *yes) ;;
+      *)
+        REPLACE_STRTOD=1
+        ;;
+    esac
   fi
 ])
 

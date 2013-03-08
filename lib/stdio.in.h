@@ -1,6 +1,6 @@
 /* A GNU-like <stdio.h>.
 
-   Copyright (C) 2004, 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2007-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,8 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
@@ -53,7 +52,8 @@
 #include <stddef.h>
 
 /* Get off_t and ssize_t.  Needed on many systems, including glibc 2.8
-   and eglibc 2.11.2.  */
+   and eglibc 2.11.2.
+   May also define off_t to a 64-bit type on native Windows.  */
 #include <sys/types.h>
 
 /* The __attribute__ feature is available in gcc versions 2.5 and later.
@@ -186,7 +186,7 @@ _GL_CXXALIASWARN (fdopen);
 #elif defined GNULIB_POSIXCHECK
 # undef fdopen
 /* Assume fdopen is always declared.  */
-_GL_WARN_ON_USE (fdopen, "fdopen on Win32 platforms is not POSIX compatible - "
+_GL_WARN_ON_USE (fdopen, "fdopen on native Windows platforms is not POSIX compliant - "
                  "use gnulib module fdopen for portability");
 #endif
 
@@ -259,7 +259,7 @@ _GL_CXXALIASWARN (fopen);
 #elif defined GNULIB_POSIXCHECK
 # undef fopen
 /* Assume fopen is always declared.  */
-_GL_WARN_ON_USE (fopen, "fopen on Win32 platforms is not POSIX compatible - "
+_GL_WARN_ON_USE (fopen, "fopen on native Windows platforms is not POSIX compliant - "
                  "use gnulib module fopen for portability");
 #endif
 
@@ -387,7 +387,7 @@ _GL_CXXALIASWARN (freopen);
 # undef freopen
 /* Assume freopen is always declared.  */
 _GL_WARN_ON_USE (freopen,
-                 "freopen on Win32 platforms is not POSIX compatible - "
+                 "freopen on native Windows platforms is not POSIX compliant - "
                  "use gnulib module freopen for portability");
 #endif
 
@@ -575,21 +575,17 @@ _GL_CXXALIAS_RPL (fwrite, size_t,
 _GL_CXXALIAS_SYS (fwrite, size_t,
                   (const void *ptr, size_t s, size_t n, FILE *stream));
 
-/* Work around glibc bug 11959
+/* Work around bug 11959 when fortifying glibc 2.4 through 2.15
    <http://sources.redhat.com/bugzilla/show_bug.cgi?id=11959>,
    which sometimes causes an unwanted diagnostic for fwrite calls.
-   This affects only function declaration attributes, so it's not
-   needed for C++.  */
-#  if !defined __cplusplus && 0 < __USE_FORTIFY_LEVEL
-static inline size_t _GL_ARG_NONNULL ((1, 4))
-rpl_fwrite (const void *ptr, size_t s, size_t n, FILE *stream)
-{
-  size_t r = fwrite (ptr, s, n, stream);
-  (void) r;
-  return r;
-}
+   This affects only function declaration attributes under certain
+   versions of gcc, and is not needed for C++.  */
+#  if (0 < __USE_FORTIFY_LEVEL                                          \
+       && __GLIBC__ == 2 && 4 <= __GLIBC_MINOR__ && __GLIBC_MINOR__ <= 15 \
+       && 3 < __GNUC__ + (4 <= __GNUC_MINOR__)                          \
+       && !defined __cplusplus)
 #   undef fwrite
-#   define fwrite rpl_fwrite
+#   define fwrite(a, b, c, d) ({size_t __r = fwrite (a, b, c, d); __r; })
 #  endif
 # endif
 _GL_CXXALIASWARN (fwrite);
@@ -699,22 +695,11 @@ _GL_WARN_ON_USE (getline, "getline is unportable - "
 # endif
 #endif
 
-#if @GNULIB_GETS@
-# if @REPLACE_STDIO_READ_FUNCS@ && @GNULIB_STDIO_H_NONBLOCKING@
-#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
-#   undef gets
-#   define gets rpl_gets
-#  endif
-_GL_FUNCDECL_RPL (gets, char *, (char *s) _GL_ARG_NONNULL ((1)));
-_GL_CXXALIAS_RPL (gets, char *, (char *s));
-# else
-_GL_CXXALIAS_SYS (gets, char *, (char *s));
-#  undef gets
-# endif
-_GL_CXXALIASWARN (gets);
 /* It is very rare that the developer ever has full control of stdin,
-   so any use of gets warrants an unconditional warning.  Assume it is
-   always declared, since it is required by C89.  */
+   so any use of gets warrants an unconditional warning; besides, C11
+   removed it.  */
+#undef gets
+#if HAVE_RAW_DECL_GETS
 _GL_WARN_ON_USE (gets, "gets is a security hole - use fgets instead");
 #endif
 
@@ -779,7 +764,7 @@ _GL_CXXALIASWARN (pclose);
 #elif defined GNULIB_POSIXCHECK
 # undef pclose
 # if HAVE_RAW_DECL_PCLOSE
-_GL_WARN_ON_USE (pclose, "popen is unportable - "
+_GL_WARN_ON_USE (pclose, "pclose is unportable - "
                  "use gnulib module pclose for more portability");
 # endif
 #endif
@@ -1054,9 +1039,9 @@ _GL_WARN_ON_USE (snprintf, "snprintf is unportable - "
 # endif
 #endif
 
-/* Some people would argue that sprintf should be handled like gets
-   (for example, OpenBSD issues a link warning for both functions),
-   since both can cause security holes due to buffer overruns.
+/* Some people would argue that all sprintf uses should be warned about
+   (for example, OpenBSD issues a link warning for it),
+   since it can cause security holes due to buffer overruns.
    However, we believe that sprintf can be used safely, and is more
    efficient than snprintf in those safe cases; and as proof of our
    belief, we use sprintf in several gnulib modules.  So this header
@@ -1343,7 +1328,6 @@ _GL_WARN_ON_USE (vsprintf, "vsprintf is not always POSIX compliant - "
                  "use gnulib module vsprintf-posix for portable "
                       "POSIX compliance");
 #endif
-
 
 #endif /* _@GUARD_PREFIX@_STDIO_H */
 #endif /* _@GUARD_PREFIX@_STDIO_H */

@@ -1,6 +1,6 @@
 /* mkdir-p.c -- Ensure that a directory and its parents exist.
 
-   Copyright (C) 1990, 1997-2000, 2002-2007, 2009-2011 Free Software
+   Copyright (C) 1990, 1997-2000, 2002-2007, 2009-2013 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -115,7 +115,7 @@ make_dir_parents (char *dir,
       if (0 <= prefix_len)
         {
           /* If the ownership might change, or if the directory will be
-             writeable to other users and its special mode bits may
+             writable to other users and its special mode bits may
              change after the directory is created, create it with
              more restrictive permissions at first, so unauthorized
              users cannot nip in before the directory is ready.  */

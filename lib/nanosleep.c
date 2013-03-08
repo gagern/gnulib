@@ -1,6 +1,6 @@
 /* Provide a replacement for the POSIX nanosleep function.
 
-   Copyright (C) 1999-2000, 2002, 2004-2011 Free Software Foundation, Inc.
+   Copyright (C) 1999-2000, 2002, 2004-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* written by Jim Meyering
-   and Bruno Haible for the Woe32 part */
+   and Bruno Haible for the native Windows part */
 
 #include <config.h>
 
@@ -87,12 +87,12 @@ nanosleep (const struct timespec *requested_delay,
 }
 
 #elif (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
-/* Windows platforms.  */
+/* Native Windows platforms.  */
 
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 
-/* The Win32 function Sleep() has a resolution of about 15 ms and takes
+/* The Windows API function Sleep() has a resolution of about 15 ms and takes
    at least 5 ms to execute.  We use this function for longer time periods.
    Additionally, we use busy-looping over short time periods, to get a
    resolution of about 0.01 ms.  In order to measure such short timespans,

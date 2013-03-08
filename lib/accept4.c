@@ -1,5 +1,5 @@
 /* Accept a connection on a socket, with specific opening flags.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -67,7 +66,7 @@ accept4 (int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
 
 #if SOCK_CLOEXEC
 # if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
-/* Native Woe32 API.  */
+/* Native Windows API.  */
   if (flags & SOCK_CLOEXEC)
     {
       HANDLE curr_process = GetCurrentProcess ();
@@ -91,7 +90,7 @@ accept4 (int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags)
       /* Closing fd before allocating the new fd ensures that the new fd will
          have the minimum possible value.  */
       close (fd);
-      nfd = _open_osfhandle ((long) new_handle,
+      nfd = _open_osfhandle ((intptr_t) new_handle,
                              O_NOINHERIT | (flags & (O_TEXT | O_BINARY)));
       if (nfd < 0)
         {

@@ -1,5 +1,5 @@
 /* Test of ptsname_r(3).
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -151,7 +151,7 @@ main (void)
     char buffer[256];
     int result;
 
-    /* Open the controlling tty of the current process.  */
+    /* Open a pty master.  */
     fd = open ("/dev/ptmx", O_RDWR | O_NOCTTY);
     if (fd < 0)
       {
@@ -168,9 +168,35 @@ main (void)
     close (fd);
   }
 
+#elif defined _AIX
+  /* AIX has BSD-style /dev/ptyp[0-9a-f] files, but the modern way to open
+     a pty is to go through /dev/ptc.  */
+  {
+    int fd;
+    char buffer[256];
+    int result;
+
+    /* Open a pty master.  */
+    fd = open ("/dev/ptc", O_RDWR | O_NOCTTY);
+    if (fd < 0)
+      {
+        fprintf (stderr, "Skipping test: cannot open pseudo-terminal\n");
+        return 77;
+      }
+
+    result = ptsname_r (fd, buffer, sizeof buffer);
+    ASSERT (result == 0);
+    ASSERT (memcmp (buffer, "/dev/pts/", 9) == 0);
+
+    test_errors (fd, buffer);
+
+    /* This call hangs on AIX.  */
+    close (fd);
+  }
+
 #else
 
-  /* Try various master names of MacOS X: /dev/pty[p-w][0-9a-f]  */
+  /* Try various master names of Mac OS X: /dev/pty[p-w][0-9a-f]  */
   {
     int char1;
     int char2;
@@ -196,6 +222,7 @@ main (void)
 
               test_errors (fd, buffer);
 
+              /* This call hangs on AIX.  */
               close (fd);
             }
         }

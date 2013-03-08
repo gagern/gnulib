@@ -1,6 +1,6 @@
 /* Case-insensitive buffer comparator.
 
-   Copyright (C) 1996, 1998, 2003, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2003, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,4 +19,4 @@
 
 #include <stddef.h>
 
-int memcasecmp (const void *vs1, const void *vs2, size_t n);
+int memcasecmp (const void *vs1, const void *vs2, size_t n) _GL_ATTRIBUTE_PURE;

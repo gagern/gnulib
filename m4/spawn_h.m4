@@ -1,5 +1,5 @@
-# spawn_h.m4 serial 15
-dnl Copyright (C) 2008-2011 Free Software Foundation, Inc.
+# spawn_h.m4 serial 16
+dnl Copyright (C) 2008-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -108,4 +108,10 @@ AC_DEFUN([gl_SPAWN_H_DEFAULTS],
   HAVE_POSIX_SPAWN_FILE_ACTIONS_T=1;
                              AC_SUBST([HAVE_POSIX_SPAWN_FILE_ACTIONS_T])
   REPLACE_POSIX_SPAWN=0;     AC_SUBST([REPLACE_POSIX_SPAWN])
+  REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE=0;
+                             AC_SUBST([REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDCLOSE])
+  REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2=0;
+                             AC_SUBST([REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDDUP2])
+  REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN=0;
+                             AC_SUBST([REPLACE_POSIX_SPAWN_FILE_ACTIONS_ADDOPEN])
 ])

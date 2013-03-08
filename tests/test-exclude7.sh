@@ -1,6 +1,6 @@
 #! /bin/sh
 # Test suite for exclude.
-# Copyright (C) 2009-2011 Free Software Foundation, Inc.
+# Copyright (C) 2009-2013 Free Software Foundation, Inc.
 # This file is part of the GNUlib Library.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -28,8 +28,8 @@ Baz
 EOT
 
 cat > expected <<EOT
-bar: 1
 bar: 0
+bar: 1
 EOT
 
 test-exclude in -include in -- bar > out || exit $?

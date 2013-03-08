@@ -1,5 +1,5 @@
 /* Temporary directories and temporary files with automatic cleanup.
-   Copyright (C) 2001, 2003, 2006-2007, 2009-2011 Free Software Foundation,
+   Copyright (C) 2001, 2003, 2006-2007, 2009-2013 Free Software Foundation,
    Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2006.
 
@@ -556,7 +556,10 @@ cleanup_temp_dir (struct temp_dir *dir)
           }
         else
           cleanup_list.tempdir_list[i] = NULL;
-        /* Now only we can free the tmpdir->dirname and tmpdir itself.  */
+        /* Now only we can free the tmpdir->dirname, tmpdir->subdirs,
+           tmpdir->files, and tmpdir itself.  */
+        gl_list_free (tmpdir->files);
+        gl_list_free (tmpdir->subdirs);
         free (tmpdir->dirname);
         free (tmpdir);
         return err;
@@ -582,6 +585,11 @@ supports_delete_on_close ()
   if (!known)
     {
       OSVERSIONINFO v;
+
+      /* According to
+         <http://msdn.microsoft.com/en-us/library/windows/desktop/ms724451(v=vs.85).aspx>
+         this structure must be initialised as follows:  */
+      v.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
 
       if (GetVersionEx (&v))
         known = (v.dwPlatformId == VER_PLATFORM_WIN32_NT ? 1 : -1);

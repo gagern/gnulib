@@ -1,6 +1,6 @@
 /* Locale-specific memory comparison.
 
-   Copyright (C) 1999, 2002-2004, 2006, 2009-2011 Free Software Foundation,
+   Copyright (C) 1999, 2002-2004, 2006, 2009-2013 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@
    nonzero sizes, and the last byte in each block must be a null byte.
    Set errno to an error number if there is an error, and to zero
    otherwise.  */
-static inline int
+static int
 strcoll_loop (char const *s1, size_t s1size, char const *s2, size_t s2size)
 {
   int diff;

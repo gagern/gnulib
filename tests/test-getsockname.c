@@ -1,5 +1,5 @@
 /* Test getsockname() function.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ SIGNATURE_CHECK (getsockname, int, (int, struct sockaddr *, socklen_t *));
 
 #include <errno.h>
 #include <netinet/in.h>
+#include <unistd.h>
 
 #include "sockets.h"
 #include "macros.h"
@@ -30,7 +31,7 @@ SIGNATURE_CHECK (getsockname, int, (int, struct sockaddr *, socklen_t *));
 int
 main (void)
 {
-  gl_sockets_startup (SOCKETS_1_1);
+  (void) gl_sockets_startup (SOCKETS_1_1);
 
   /* Test behaviour for invalid file descriptors.  */
   {
@@ -45,6 +46,7 @@ main (void)
     struct sockaddr_in addr;
     socklen_t addrlen = sizeof (addr);
 
+    close (99);
     errno = 0;
     ASSERT (getsockname (99, (struct sockaddr *) &addr, &addrlen) == -1);
     ASSERT (errno == EBADF);

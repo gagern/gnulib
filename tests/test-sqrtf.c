@@ -1,5 +1,5 @@
 /* Test of sqrtf() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,16 @@
 #include "signature.h"
 SIGNATURE_CHECK (sqrtf, float, (float));
 
+#include <float.h>
+
 #include "macros.h"
 
-volatile float x;
-float y;
+#define DOUBLE float
+#define L_(literal) literal##f
+#define MANT_DIG FLT_MANT_DIG
+#define SQRT sqrtf
+#define RANDOM randomf
+#include "test-sqrt.h"
 
 int
 main ()
@@ -35,6 +41,8 @@ main ()
   x = 0.6f;
   y = sqrtf (x);
   ASSERT (y >= 0.7745966f && y <= 0.7745967f);
+
+  test_function ();
 
   return 0;
 }

@@ -1,11 +1,11 @@
-# Having a separate GNUmakefile lets me `include' the dynamically
+# Having a separate GNUmakefile lets me 'include' the dynamically
 # generated rules created via cfg.mk (package-local configuration)
 # as well as maint.mk (generic maintainer rules).
 # This makefile is used only if you run GNU Make.
 # It is necessary if you want to build targets usually of interest
 # only to the maintainer.
 
-# Copyright (C) 2001, 2003, 2006-2011 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2003, 2006-2013 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,20 +20,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Systems where /bin/sh is not the default shell need this.  The $(shell)
-# command below won't work with e.g. stock DOS/Windows shells.
-ifeq ($(wildcard /bin/s[h]),/bin/sh)
-SHELL = /bin/sh
-else
-# will be used only with the next shell-test line, then overwritten
-# by a configured-in value
-SHELL = sh
-endif
-
 # If the user runs GNU make but has not yet run ./configure,
 # give them a diagnostic.
-_have-Makefile := $(shell test -f Makefile && echo yes)
-ifeq ($(_have-Makefile),yes)
+_gl-Makefile := $(wildcard [M]akefile)
+ifneq ($(_gl-Makefile),)
 
 # Make tar archive easier to reproduce.
 export TAR_OPTIONS = --owner=0 --group=0 --numeric-owner
@@ -114,7 +104,7 @@ endif
 
 abort-due-to-no-makefile:
 	@echo There seems to be no Makefile in this directory.   1>&2
-	@echo "You must run ./configure before running \`make'." 1>&2
+	@echo "You must run ./configure before running 'make'." 1>&2
 	@exit 1
 
 endif

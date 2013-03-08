@@ -1,6 +1,6 @@
 /* Declare __fpending.
 
-   Copyright (C) 2000, 2003, 2005-2006, 2009-2011 Free Software Foundation,
+   Copyright (C) 2000, 2003, 2005-2006, 2009-2013 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -20,10 +20,6 @@
 
 #include <stddef.h>
 #include <stdio.h>
-
-#ifndef HAVE_DECL___FPENDING
-"this configure-time declaration test was not run"
-#endif
 
 #if HAVE_DECL___FPENDING
 # if HAVE_STDIO_EXT_H

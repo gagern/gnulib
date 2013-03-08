@@ -1,5 +1,5 @@
 /* Test of fabsf() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,17 @@
 #include "signature.h"
 SIGNATURE_CHECK (fabsf, float, (float));
 
-#include "macros.h"
+#include <string.h>
 
-volatile float x;
-float y;
+#include "macros.h"
+#include "minus-zero.h"
+
+#define DOUBLE float
+#define L_(literal) literal##f
+#define MINUS_ZERO minus_zerof
+#define FABS fabsf
+#define RANDOM randomf
+#include "test-fabs.h"
 
 int
 main ()
@@ -40,6 +47,8 @@ main ()
   x = -0.6f;
   y = fabsf (x);
   ASSERT (y == 0.6f);
+
+  test_function ();
 
   return 0;
 }

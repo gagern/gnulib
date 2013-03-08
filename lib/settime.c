@@ -1,6 +1,6 @@
 /* settime -- set the system clock
 
-   Copyright (C) 2002, 2004-2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004-2007, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ settime (struct timespec const *ts)
   }
 #elif HAVE_STIME
   /* This fails to compile on OSF1 V5.1, due to stime requiring
-     a `long int*' and tv_sec is `int'.  But that system does provide
+     a 'long int*' and tv_sec is 'int'.  But that system does provide
      settimeofday.  */
   return stime (&ts->tv_sec);
 #else

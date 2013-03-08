@@ -1,5 +1,5 @@
 /* Test of rintl() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,6 +32,18 @@ SIGNATURE_CHECK (rintl, long double, (long double));
 #include "infinity.h"
 #include "nan.h"
 #include "macros.h"
+
+#undef INFINITY
+#undef NAN
+
+#define DOUBLE long double
+#define ISNAN isnanl
+#define INFINITY Infinityl ()
+#define NAN NaNl ()
+#define L_(literal) literal##L
+#define RINT rintl
+#define RANDOM randoml
+#include "test-rint.h"
 
 int
 main ()
@@ -80,11 +92,8 @@ main ()
       ASSERT (rintl (-65536.0L) == -65536.0L);
       ASSERT (rintl (-65536.001L) == -65536.0L);
       ASSERT (rintl (-2.341e31L) == -2.341e31L);
-      /* Infinite numbers.  */
-      ASSERT (rintl (Infinityl ()) == Infinityl ());
-      ASSERT (rintl (- Infinityl ()) == - Infinityl ());
-      /* NaNs.  */
-      ASSERT (isnanl (rintl (NaNl ())));
+
+      test_function ();
 
       return 0;
     }

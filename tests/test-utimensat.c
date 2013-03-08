@@ -1,5 +1,5 @@
 /* Tests of utimensat.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -76,6 +76,7 @@ main (void)
     ASSERT (errno == EBADF);
   }
   {
+    close (99);
     errno = 0;
     ASSERT (utimensat (99, "foo", NULL, 0) == -1);
     ASSERT (errno == EBADF);

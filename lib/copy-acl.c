@@ -1,6 +1,6 @@
 /* copy-acl.c - copy access control list from one file to another file
 
-   Copyright (C) 2002-2003, 2005-2011 Free Software Foundation, Inc.
+   Copyright (C) 2002-2003, 2005-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,13 +38,13 @@
    Return -2 and set errno for an error relating to the source file.
    Return -1 and set errno for an error relating to the destination file.  */
 
-static int
+int
 qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
            int dest_desc, mode_t mode)
 {
 #if USE_ACL && HAVE_ACL_GET_FILE
   /* POSIX 1003.1e (draft 17 -- abandoned) specific version.  */
-  /* Linux, FreeBSD, MacOS X, IRIX, Tru64 */
+  /* Linux, FreeBSD, Mac OS X, IRIX, Tru64 */
 # if !HAVE_ACL_TYPE_EXTENDED
   /* Linux, FreeBSD, IRIX, Tru64 */
 
@@ -116,19 +116,19 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
   return 0;
 
 # else /* HAVE_ACL_TYPE_EXTENDED */
-  /* MacOS X */
+  /* Mac OS X */
 
-  /* On MacOS X,  acl_get_file (name, ACL_TYPE_ACCESS)
-     and          acl_get_file (name, ACL_TYPE_DEFAULT)
+  /* On Mac OS X,  acl_get_file (name, ACL_TYPE_ACCESS)
+     and           acl_get_file (name, ACL_TYPE_DEFAULT)
      always return NULL / EINVAL.  You have to use
-                  acl_get_file (name, ACL_TYPE_EXTENDED)
-     or           acl_get_fd (open (name, ...))
+                   acl_get_file (name, ACL_TYPE_EXTENDED)
+     or            acl_get_fd (open (name, ...))
      to retrieve an ACL.
      On the other hand,
-                  acl_set_file (name, ACL_TYPE_ACCESS, acl)
-     and          acl_set_file (name, ACL_TYPE_DEFAULT, acl)
+                   acl_set_file (name, ACL_TYPE_ACCESS, acl)
+     and           acl_set_file (name, ACL_TYPE_DEFAULT, acl)
      have the same effect as
-                  acl_set_file (name, ACL_TYPE_EXTENDED, acl):
+                   acl_set_file (name, ACL_TYPE_EXTENDED, acl):
      Each of these calls sets the file's ACL.  */
 
   acl_t acl;
@@ -235,10 +235,22 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
           return -2;
         }
 
-      if ((source_desc != -1
-           ? facl (source_desc, ACE_GETACL, ace_count, ace_entries)
-           : acl (src_name, ACE_GETACL, ace_count, ace_entries))
-          == ace_count)
+      ret = (source_desc != -1
+             ? facl (source_desc, ACE_GETACL, ace_count, ace_entries)
+             : acl (src_name, ACE_GETACL, ace_count, ace_entries));
+      if (ret < 0)
+        {
+          free (ace_entries);
+          if (errno == ENOSYS || errno == EINVAL)
+            {
+              ace_count = 0;
+              ace_entries = NULL;
+              break;
+            }
+          else
+            return -2;
+        }
+      if (ret == ace_count)
         break;
       /* Huh? The number of ACL entries changed since the last call.
          Repeat.  */
@@ -365,77 +377,49 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
 
 #elif USE_ACL && HAVE_GETACL /* HP-UX */
 
-  int count;
   struct acl_entry entries[NACLENTRIES];
+  int count;
 # if HAVE_ACLV_H
-  int aclv_count;
   struct acl aclv_entries[NACLVENTRIES];
+  int aclv_count;
 # endif
   int did_chmod;
   int saved_errno;
   int ret;
 
-  for (;;)
+  count = (source_desc != -1
+           ? fgetacl (source_desc, NACLENTRIES, entries)
+           : getacl (src_name, NACLENTRIES, entries));
+
+  if (count < 0)
     {
-      count = (source_desc != -1
-               ? fgetacl (source_desc, 0, NULL)
-               : getacl (src_name, 0, NULL));
-
-      if (count < 0)
-        {
-          if (errno == ENOSYS || errno == EOPNOTSUPP || errno == ENOTSUP)
-            {
-              count = 0;
-              break;
-            }
-          else
-            return -2;
-        }
-
-      if (count == 0)
-        break;
-
+      if (errno == ENOSYS || errno == EOPNOTSUPP || errno == ENOTSUP)
+        count = 0;
+      else
+        return -2;
+    }
+  else if (count > 0)
+    {
       if (count > NACLENTRIES)
         /* If NACLENTRIES cannot be trusted, use dynamic memory allocation.  */
         abort ();
-
-      if ((source_desc != -1
-           ? fgetacl (source_desc, count, entries)
-           : getacl (src_name, count, entries))
-          == count)
-        break;
-      /* Huh? The number of ACL entries changed since the last call.
-         Repeat.  */
     }
 
 # if HAVE_ACLV_H
-  for (;;)
+  aclv_count = acl ((char *) src_name, ACL_GET, NACLVENTRIES, aclv_entries);
+
+  if (aclv_count < 0)
     {
-      aclv_count = acl ((char *) src_name, ACL_CNT, NACLVENTRIES, aclv_entries);
-
-      if (aclv_count < 0)
-        {
-          if (errno == ENOSYS || errno == EOPNOTSUPP || errno == EINVAL)
-            {
-              count = 0;
-              break;
-            }
-          else
-            return -2;
-        }
-
-      if (aclv_count == 0)
-        break;
-
+      if (errno == ENOSYS || errno == EOPNOTSUPP || errno == EINVAL)
+        count = 0;
+      else
+        return -2;
+    }
+  else if (aclv_count > 0)
+    {
       if (aclv_count > NACLVENTRIES)
         /* If NACLVENTRIES cannot be trusted, use dynamic memory allocation.  */
         abort ();
-
-      if (acl ((char *) src_name, ACL_GET, aclv_count, aclv_entries)
-          == aclv_count)
-        break;
-      /* Huh? The number of ACL entries changed since the last call.
-         Repeat.  */
     }
 # endif
 
@@ -546,36 +530,24 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
 
 #elif USE_ACL && HAVE_ACLSORT /* NonStop Kernel */
 
-  int count;
   struct acl entries[NACLENTRIES];
+  int count;
   int ret;
 
-  for (;;)
+  count = acl ((char *) src_name, ACL_GET, NACLENTRIES, entries);
+
+  if (count < 0)
     {
-      count = acl ((char *) src_name, ACL_CNT, NACLENTRIES, NULL);
-
-      if (count < 0)
-        {
-          if (0)
-            {
-              count = 0;
-              break;
-            }
-          else
-            return -2;
-        }
-
-      if (count == 0)
-        break;
-
+      if (0)
+        count = 0;
+      else
+        return -2;
+    }
+  else if (count > 0)
+    {
       if (count > NACLENTRIES)
         /* If NACLENTRIES cannot be trusted, use dynamic memory allocation.  */
         abort ();
-
-      if (acl ((char *) src_name, ACL_GET, count, entries) == count)
-        break;
-      /* Huh? The number of ACL entries changed since the last call.
-         Repeat.  */
     }
 
   if (count == 0)
@@ -621,7 +593,8 @@ qcopy_acl (const char *src_name, int source_desc, const char *dst_name,
    If access control lists are not available, fchmod the target file to
    MODE.  Also sets the non-permission bits of the destination file
    (S_ISUID, S_ISGID, S_ISVTX) to those from MODE if any are set.
-   Return 0 if successful, otherwise output a diagnostic and return -1.  */
+   Return 0 if successful, otherwise output a diagnostic and return a
+   negative error code.  */
 
 int
 copy_acl (const char *src_name, int source_desc, const char *dst_name,
@@ -632,13 +605,14 @@ copy_acl (const char *src_name, int source_desc, const char *dst_name,
     {
     case -2:
       error (0, errno, "%s", quote (src_name));
-      return -1;
+      break;
 
     case -1:
       error (0, errno, _("preserving permissions for %s"), quote (dst_name));
-      return -1;
+      break;
 
     default:
-      return 0;
+      break;
     }
+  return ret;
 }

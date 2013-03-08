@@ -1,5 +1,5 @@
 /* Test of ldexpf() function.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,9 +40,10 @@ SIGNATURE_CHECK (ldexpf, float, (float, int));
 #define NAN NaNf ()
 #define L_(literal) literal##f
 #define MINUS_ZERO minus_zerof
-#define LDEXP ldexpf
 #define MIN_EXP FLT_MIN_EXP
 #define MAX_EXP FLT_MAX_EXP
+#define LDEXP ldexpf
+#define RANDOM randomf
 #include "test-ldexp.h"
 
 int

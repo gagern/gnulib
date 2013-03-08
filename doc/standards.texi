@@ -3,7 +3,7 @@
 @setfilename standards.info
 @settitle GNU Coding Standards
 @c This date is automagically updated when you save this file:
-@set lastupdate September 25, 2011
+@set lastupdate February 13, 2013
 @c %**end of header
 
 @dircategory GNU organization
@@ -27,8 +27,8 @@
 The GNU coding standards, last updated @value{lastupdate}.
 
 Copyright @copyright{} 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
-Free Software Foundation, Inc.
+2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+2011, 2012, 2013 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -339,20 +339,21 @@ system.
 
 @node Compatibility
 @section Compatibility with Other Implementations
-@cindex compatibility with C and @sc{posix} standards
-@cindex @sc{posix} compatibility
+@cindex compatibility with C and POSIX standards
+@cindex C compatibility
+@cindex POSIX compatibility
 
 With occasional exceptions, utility programs and libraries for GNU
 should be upward compatible with those in Berkeley Unix, and upward
 compatible with Standard C if Standard C specifies their
-behavior, and upward compatible with @sc{posix} if @sc{posix} specifies
+behavior, and upward compatible with POSIX if POSIX specifies
 their behavior.
 
 When these standards conflict, it is useful to offer compatibility
 modes for each of them.
 
 @cindex options for compatibility
-Standard C and @sc{posix} prohibit many kinds of extensions.  Feel
+Standard C and POSIX prohibit many kinds of extensions.  Feel
 free to make the extensions anyway, and include a @samp{--ansi},
 @samp{--posix}, or @samp{--compatible} option to turn them off.
 However, if the extension has a significant chance of breaking any real
@@ -360,7 +361,7 @@ programs or scripts, then it is not really upward compatible.  So you
 should try to redesign its interface to make it upward compatible.
 
 @cindex @code{POSIXLY_CORRECT}, environment variable
-Many GNU programs suppress extensions that conflict with @sc{posix} if the
+Many GNU programs suppress extensions that conflict with POSIX if the
 environment variable @code{POSIXLY_CORRECT} is defined (even if it is
 defined with a null value).  Please make your program recognize this
 variable if appropriate.
@@ -408,18 +409,24 @@ already.  That would be extremely troublesome in certain cases.
 
 @node Standard C
 @section Standard C and Pre-Standard C
-@cindex @sc{ansi} C standard
+@cindex ANSI C standard
 
 1989 Standard C is widespread enough now that it is ok to use its
-features in new programs.  There is one exception: do not ever use the
+features in programs.  There is one exception: do not ever use the
 ``trigraph'' feature of Standard C.
 
-1999 Standard C is not widespread yet, so please do not require its
-features in programs.  It is ok to use its features if they are present.
+The 1999 and 2011 editions of Standard C are not fully supported
+on all platforms.  If you aim to support compilation by
+compilers other than GCC, you should not require these C
+features in your programs.  It is ok to use these features
+conditionally when the compiler supports them.
+
+If your program is only meant to compile with GCC, then you can
+use these features if GCC supports them, when they give substantial
+benefit.
 
 However, it is easy to support pre-standard compilers in most programs,
-so if you know how to do that, feel free.  If a program you are
-maintaining has such support, you should try to keep it working.
+so if you know how to do that, feel free.
 
 @cindex function prototypes
 To support pre-standard C, instead of writing function definitions in
@@ -611,11 +618,10 @@ are silently truncated''.  This is not acceptable in a GNU utility.
 Utilities reading files should not drop NUL characters, or any other
 nonprinting characters @emph{including those with codes above 0177}.
 The only sensible exceptions would be utilities specifically intended
-for interface to certain types of terminals or printers
-that can't handle those characters.
-Whenever possible, try to make programs work properly with
-sequences of bytes that represent multibyte characters, using encodings
-such as UTF-8 and others.
+for interface to certain types of terminals or printers that can't
+handle those characters.  Whenever possible, try to make programs work
+properly with sequences of bytes that represent multibyte characters;
+UTF-8 is the most important.
 
 @cindex error messages
 Check every system call for an error return, unless you know you wish
@@ -665,10 +671,10 @@ These are supported compatibly by GNU.
 
 @cindex signal handling
 The preferred signal handling facilities are the BSD variant of
-@code{signal}, and the @sc{posix} @code{sigaction} function; the
+@code{signal}, and the POSIX @code{sigaction} function; the
 alternative USG @code{signal} interface is an inferior design.
 
-Nowadays, using the @sc{posix} signal functions may be the easiest way
+Nowadays, using the POSIX signal functions may be the easiest way
 to make a program portable.  If you use @code{signal}, then on GNU/Linux
 systems running GNU libc version 1, you should include
 @file{bsd/signal.h} instead of @file{signal.h}, so as to get BSD
@@ -752,24 +758,27 @@ fit any naming convention.
 Error messages from compilers should look like this:
 
 @example
-@var{source-file-name}:@var{lineno}: @var{message}
+@var{sourcefile}:@var{lineno}: @var{message}
 @end example
 
 @noindent
 If you want to mention the column number, use one of these formats:
 
 @example
-@var{source-file-name}:@var{lineno}:@var{column}: @var{message}
-@var{source-file-name}:@var{lineno}.@var{column}: @var{message}
+@var{sourcefile}:@var{lineno}:@var{column}: @var{message}
+@var{sourcefile}:@var{lineno}.@var{column}: @var{message}
 
 @end example
 
 @noindent
 Line numbers should start from 1 at the beginning of the file, and
-column numbers should start from 1 at the beginning of the line.  (Both
-of these conventions are chosen for compatibility.)  Calculate column
-numbers assuming that space and all ASCII printing characters have
-equal width, and assuming tab stops every 8 columns.
+column numbers should start from 1 at the beginning of the line.
+(Both of these conventions are chosen for compatibility.)  Calculate
+column numbers assuming that space and all ASCII printing characters
+have equal width, and assuming tab stops every 8 columns.  For
+non-ASCII characters, Unicode character widths should be used when in
+a UTF-8 locale; GNU libc and GNU gnulib provide suitable
+@code{wcwidth} functions.
 
 The error message can also give both the starting and ending positions
 of the erroneous text.  There are several formats so that you can
@@ -777,22 +786,22 @@ avoid redundant information such as a duplicate line number.
 Here are the possible formats:
 
 @example
-@var{source-file-name}:@var{lineno-1}.@var{column-1}-@var{lineno-2}.@var{column-2}: @var{message}
-@var{source-file-name}:@var{lineno-1}.@var{column-1}-@var{column-2}: @var{message}
-@var{source-file-name}:@var{lineno-1}-@var{lineno-2}: @var{message}
+@var{sourcefile}:@var{line1}.@var{column1}-@var{line2}.@var{column2}: @var{message}
+@var{sourcefile}:@var{line1}.@var{column1}-@var{column2}: @var{message}
+@var{sourcefile}:@var{line1}-@var{line2}: @var{message}
 @end example
 
 @noindent
 When an error is spread over several files, you can use this format:
 
 @example
-@var{file-1}:@var{lineno-1}.@var{column-1}-@var{file-2}:@var{lineno-2}.@var{column-2}: @var{message}
+@var{file1}:@var{line1}.@var{column1}-@var{file2}:@var{line2}.@var{column2}: @var{message}
 @end example
 
 Error messages from other noninteractive programs should look like this:
 
 @example
-@var{program}:@var{source-file-name}:@var{lineno}: @var{message}
+@var{program}:@var{sourcefile}:@var{lineno}: @var{message}
 @end example
 
 @noindent
@@ -808,7 +817,7 @@ when there is no relevant source file.
 If you want to mention the column number, use this format:
 
 @example
-@var{program}:@var{source-file-name}:@var{lineno}:@var{column}: @var{message}
+@var{program}:@var{sourcefile}:@var{lineno}:@var{column}: @var{message}
 @end example
 
 In an interactive program (one that is reading commands from a
@@ -892,17 +901,16 @@ keyboard-driven console interface (for use by users from console
 mode).  Once you are doing the work to provide the functionality and
 the graphical interface, these won't be much extra work.
 
-
 @node Command-Line Interfaces
 @section Standards for Command Line Interfaces
 @cindex command-line interface
 
 @findex getopt
-It is a good idea to follow the @sc{posix} guidelines for the
+It is a good idea to follow the POSIX guidelines for the
 command-line options of a program.  The easiest way to do this is to use
 @code{getopt} to parse them.  Note that the GNU version of @code{getopt}
 will normally permit options anywhere among the arguments unless the
-special argument @samp{--} is used.  This is not what @sc{posix}
+special argument @samp{--} is used.  This is not what POSIX
 specifies; it is a GNU extension.
 
 @cindex long-named options
@@ -996,7 +1004,7 @@ copyright notice.  If more than one copyright notice is called for, put
 each on a separate line.
 
 Next should follow a line stating the license, preferably using one of
-abbrevations below, and a brief statement that the program is free
+abbreviations below, and a brief statement that the program is free
 software, and that users are free to copy and change it.  Also mention
 that there is no warranty, to the extent permitted by law.  See
 recommended wording below.
@@ -1045,7 +1053,8 @@ have legal significance.
 Finally, here is the table of our suggested license abbreviations.
 Any abbreviation can be followed by @samp{v@var{version}[+]}, meaning
 that particular version, or later versions with the @samp{+}, as shown
-above.
+above.  In the case of a GNU license, @emph{always} indicate the permitted
+versions in this way.
 
 In the case of exceptions for extra permissions with the GPL, we use
 @samp{/} for a separator; the version number can follow the license
@@ -2372,7 +2381,7 @@ when writing GNU software.
 * System Functions::            Portability and ``standard'' library functions.
 * Internationalization::        Techniques for internationalization.
 * Character Set::               Use ASCII by default.
-* Quote Characters::            Use `...' in the C locale.
+* Quote Characters::            Use "..." or '...' in the C locale.
 * Mmap::                        How you can safely use @code{mmap}.
 @end menu
 
@@ -2382,6 +2391,7 @@ when writing GNU software.
 
 @cindex open brace
 @cindex braces, in C source
+@cindex function definitions, formatting
 It is important to put the open-brace that starts the body of a C
 function in column one, so that they will start a defun.  Several
 tools look for open-braces in column one to find the beginnings of C
@@ -2426,6 +2436,20 @@ int
 lots_of_args (int an_integer, long a_long, short a_short,
               double a_double, float a_float)
 @dots{}
+@end example
+
+@cindex @code{struct} types, formatting
+@cindex @code{enum} types, formatting
+For @code{struct} and @code{enum} types, likewise put the braces in
+column one, unless the whole contents fits on one line:
+
+@example
+struct foo
+@{
+  int a, b;
+@}
+@exdent @r{or}
+struct foo @{ int a, b; @}
 @end example
 
 The rest of this section gives our recommendations for other aspects of
@@ -2574,7 +2598,7 @@ about the value rather than the variable itself.  Thus, ``the inode
 number NODE_NUM'' rather than ``an inode''.
 
 There is usually no purpose in restating the name of the function in
-the comment before it, because the reader can see that for himself.
+the comment before it, because readers can see that for themselves.
 There might be an exception when the comment is so long that the function
 itself would be off the bottom of the screen.
 
@@ -2653,10 +2677,10 @@ Don't make the program ugly just to placate static analysis tools such
 as @command{lint}, @command{clang}, and GCC with extra warnings
 options such as @option{-Wconversion} and @option{-Wundef}.  These
 tools can help find bugs and unclear code, but they can also generate
-so many false alarms that that it hurts readability to silence them
-with unnecessary casts, wrappers, and other complications.  For
-example, please don't insert casts to @code{void} or calls to
-do-nothing functions merely to pacify a lint checker.
+so many false alarms that it hurts readability to silence them with
+unnecessary casts, wrappers, and other complications.  For example,
+please don't insert casts to @code{void} or calls to do-nothing
+functions merely to pacify a lint checker.
 
 Declarations of external functions and functions to appear later in the
 source file should all go in one place near the beginning of the file
@@ -2847,7 +2871,7 @@ versions.  For a GNU program, this kind of portability is desirable, but
 not paramount.
 
 The primary purpose of GNU software is to run on top of the GNU kernel,
-compiled with the GNU C compiler, on various types of @sc{cpu}.  So the
+compiled with the GNU C compiler, on various types of CPU.  So the
 kinds of portability that are absolutely necessary are quite limited.
 But it is important to support Linux-based GNU systems, since they
 are the form of GNU that is popular.
@@ -2869,7 +2893,7 @@ written.
 Avoid using the format of semi-internal data bases (e.g., directories)
 when there is a higher-level alternative (@code{readdir}).
 
-@cindex non-@sc{posix} systems, and portability
+@cindex non-POSIX systems, and portability
 As for systems that are not like Unix, such as MSDOS, Windows, VMS, MVS,
 and older Macintosh systems, supporting them is often a lot of work.
 When that is the case, it is better to spend your time adding features
@@ -2898,11 +2922,11 @@ using their names for any other meanings.  Doing so would make it hard
 to move your code into other GNU programs.
 
 @node CPU Portability
-@section Portability between @sc{cpu}s
+@section Portability between CPUs
 
 @cindex data types, and portability
 @cindex portability, and data types
-Even GNU systems will differ because of differences among @sc{cpu}
+Even GNU systems will differ because of differences among CPU
 types---for example, difference in byte ordering and alignment
 requirements.  It is absolutely essential to handle these differences.
 However, don't make any effort to cater to the possibility that an
@@ -2973,12 +2997,12 @@ from zero.
 
 Historically, C implementations differed substantially, and many
 systems lacked a full implementation of ANSI/ISO C89.  Nowadays,
-however, very few systems lack a C89 compiler and GNU C supports
-almost all of C99.  Similarly, most systems implement POSIX.1-1993
-libraries and tools, and many have POSIX.1-2001.
+however, all practical systems have a C89 compiler and GNU C supports
+almost all of C99 and some of C11.  Similarly, most systems implement
+POSIX.1-2001 libraries and tools, and many have POSIX.1-2008.
 
 Hence, there is little reason to support old C or non-POSIX systems,
-and you may want to take advantage of C99 and POSIX-1.2001 to write
+and you may want to take advantage of standard C and POSIX to write
 clearer, more portable, or faster code.  You should use standard
 interfaces where possible; but if GNU extensions make your program
 more maintainable, powerful, or otherwise better, don't hesitate to
@@ -3047,12 +3071,12 @@ Using GNU gettext involves putting a call to the @code{gettext} macro
 around each string that might need translation---like this:
 
 @example
-printf (gettext ("Processing file `%s'..."));
+printf (gettext ("Processing file '%s'..."), file);
 @end example
 
 @noindent
 This permits GNU gettext to replace the string @code{"Processing file
-`%s'..."} with a translated version.
+'%s'..."} with a translated version.
 
 Once a program uses gettext, please make a point of writing calls to
 @code{gettext} when you add new strings that call for translation.
@@ -3170,11 +3194,12 @@ contexts, unless there is good reason to do something else because of
 the application domain.  For example, if source code deals with the
 French Revolutionary calendar, it is OK if its literal strings contain
 accented characters in month names like ``Flor@'eal''.  Also, it is OK
-to use non-ASCII characters to represent proper names of contributors in
-change logs (@pxref{Change Logs}).
+(but not required) to use non-ASCII characters to represent proper
+names of contributors in change logs (@pxref{Change Logs}).
 
-If you need to use non-ASCII characters, you should normally stick with
-one encoding, as one cannot in general mix encodings reliably.
+If you need to use non-ASCII characters, you should normally stick
+with one encoding, certainly within a single file.  UTF-8 is likely to
+be the best choice.
 
 
 @node Quote Characters
@@ -3182,35 +3207,50 @@ one encoding, as one cannot in general mix encodings reliably.
 @cindex quote characters
 @cindex locale-specific quote characters
 @cindex left quote
+@cindex right quote
+@cindex opening quote
+@cindex single quote
+@cindex double quote
 @cindex grave accent
+@set txicodequoteundirected
+@set txicodequotebacktick
 
-In the C locale, GNU programs should stick to plain ASCII for quotation
-characters in messages to users: preferably 0x60 (@samp{`}) for left
-quotes and 0x27 (@samp{'}) for right quotes.  It is ok, but not
-required, to use locale-specific quotes in other locales.
+In the C locale, the output of GNU programs should stick to plain
+ASCII for quotation characters in messages to users: preferably 0x22
+(@samp{"}) or 0x27 (@samp{'}) for both opening and closing quotes.
+Although GNU programs traditionally used 0x60 (@samp{`}) for opening
+and 0x27 (@samp{'}) for closing quotes, nowadays quotes @samp{`like
+this'} are typically rendered asymmetrically, so quoting @samp{"like
+this"} or @samp{'like this'} typically looks better.
 
-The @uref{http://www.gnu.org/software/gnulib/, Gnulib} @code{quote} and
-@code{quotearg} modules provide a reasonably straightforward way to
-support locale-specific quote characters, as well as taking care of
-other issues, such as quoting a filename that itself contains a quote
-character.  See the Gnulib documentation for usage details.
+It is ok, but not required, for GNU programs to generate
+locale-specific quotes in non-C locales.  For example:
 
-In any case, the documentation for your program should clearly specify
-how it does quoting, if different than the preferred method of @samp{`}
-and @samp{'}.  This is especially important if the output of your
-program is ever likely to be parsed by another program.
+@example
+printf (gettext ("Processing file '%s'..."), file);
+@end example
 
-Quotation characters are a difficult area in the computing world at
-this time: there are no true left or right quote characters in Latin1;
-the @samp{`} character we use was standardized there as a grave
-accent.  Moreover, Latin1 is still not universally usable.
+@noindent
+Here, a French translation might cause @code{gettext} to return the
+string @code{"Traitement de fichier
+@guilsinglleft{}@tie{}%s@tie{}@guilsinglright{}..."}, yielding quotes
+more appropriate for a French locale.
 
-Unicode contains the unambiguous quote characters required, and its
-common encoding UTF-8 is upward compatible with Latin1.  However,
-Unicode and UTF-8 are not universally well-supported, either.
+Sometimes a program may need to use opening and closing quotes
+directly.  By convention, @code{gettext} translates the string
+@samp{"`"} to the opening quote and the string @samp{"'"} to the
+closing quote, and a program can use these translations.  Generally,
+though, it is better to translate quote characters in the context of
+longer strings.
 
-This may change over the next few years, and then we will revisit
-this.
+If the output of your program is ever likely to be parsed by another
+program, it is good to provide an option that makes this parsing
+reliable.  For example, you could escape special characters using
+conventions from the C language or the Bourne shell.  See for example
+the option @option{--quoting-style} of GNU @code{ls}.
+
+@clear txicodequoteundirected
+@clear txicodequotebacktick
 
 
 @node Mmap
@@ -3498,11 +3538,26 @@ history of how the conflicting concepts arose and who they came from.
 @node Change Log Concepts
 @subsection Change Log Concepts
 
+@cindex change set
+@cindex batch of changes
 You can think of the change log as a conceptual ``undo list'' which
 explains how earlier versions were different from the current version.
-People can see the current version; they don't need the change log
-to tell them what is in it.  What they want from a change log is a
-clear explanation of how the earlier version differed.
+People can see the current version; they don't need the change log to
+tell them what is in it.  What they want from a change log is a clear
+explanation of how the earlier version differed.  Each @dfn{entry} in
+a change log describes either an individual change or the smallest
+batch of changes that belong together, also known as a @dfn{change
+set}.
+@cindex title, change log entry
+@cindex description, change log entry
+For later reference or for summarizing, sometimes it is useful to
+start the entry with a one-line description (sometimes called a
+@dfn{title}) to describe its overall purpose.
+
+In the past, we recommended not mentioning changes in non-software
+files (manuals, help files, media files, etc.)@: in change logs.
+However, we've been advised that it is a good idea to include them,
+for the sake of copyright records.
 
 The change log file is normally called @file{ChangeLog} and covers an
 entire directory.  Each directory can have its own change log, or a
@@ -3514,26 +3569,26 @@ control system such as RCS or CVS.  This can be converted automatically
 to a @file{ChangeLog} file using @code{rcs2log}; in Emacs, the command
 @kbd{C-x v a} (@code{vc-update-change-log}) does the job.
 
-There's no need to describe the full purpose of the changes or how
-they work together.  However, sometimes it is useful to write one line
-to describe the overall purpose of a change or a batch of changes.  If
-you think that a change calls for explanation, you're probably right.
-Please do explain it---but please put the full explanation in comments
-in the code, where people will see it whenever they see the code.  For
-example, ``New function'' is enough for the change log when you add a
-function, because there should be a comment before the function
-definition to explain what it does.
+For changes to code, there's no need to describe the full purpose of
+the changes or how they work together.  If you think that a change
+calls for explanation, you're probably right.  Please do explain
+it---but please put the full explanation in comments in the code,
+where people will see it whenever they see the code.  For example,
+``New function'' is enough for the change log when you add a function,
+because there should be a comment before the function definition to
+explain what it does.
 
-In the past, we recommended not mentioning changes in non-software
-files (manuals, help files, etc.) in change logs.  However, we've been
-advised that it is a good idea to include them, for the sake of
-copyright records.
+For changes to files that do not support a comment syntax (e.g., media
+files), it is ok to include the full explanation in the change log file,
+after the title and before the list of individual changes.
 
 The easiest way to add an entry to @file{ChangeLog} is with the Emacs
-command @kbd{M-x add-change-log-entry}.  An entry should have an
-asterisk, the name of the changed file, and then in parentheses the name
-of the changed functions, variables or whatever, followed by a colon.
-Then describe the changes you made to that function or variable.
+command @kbd{M-x add-change-log-entry}.  An individual change should
+have an asterisk, the name of the changed file, and then in
+parentheses the name of the changed functions, variables or whatever,
+followed by a colon.  Then describe the changes you made to that
+function or variable.
+
 
 @node Style of Change Logs
 @subsection Style of Change Logs
@@ -3572,10 +3627,10 @@ names by writing @samp{* register.el (@{insert,jump-to@}-register)};
 this is not a good idea, since searching for @code{jump-to-register} or
 @code{insert-register} would not find that entry.
 
-Separate unrelated change log entries with blank lines.  When two
-entries represent parts of the same change, so that they work together,
-then don't put blank lines between them.  Then you can omit the file
-name and the asterisk when successive entries are in the same file.
+Separate unrelated change log entries with blank lines.  Don't put
+blank lines between individual changes of an entry.  You can omit the
+file name and the asterisk when successive individual changes are in
+the same file.
 
 Break long lists of function names by closing continued lines with
 @samp{)}, rather than @samp{,}, and opening the continuation with
@@ -3583,7 +3638,7 @@ Break long lists of function names by closing continued lines with
 
 @example
 * keyboard.c (menu_bar_items, tool_bar_items)
-(Fexecute_extended_command): Deal with `keymap' property.
+(Fexecute_extended_command): Deal with 'keymap' property.
 @end example
 
 When you install someone else's changes, put the contributor's name in
@@ -3645,43 +3700,64 @@ make the records of authorship more accurate.
 @cindex conditional changes, and change logs
 @cindex change logs, conditional changes
 
-C programs often contain compile-time @code{#if} conditionals.  Many
-changes are conditional; sometimes you add a new definition which is
-entirely contained in a conditional.  It is very useful to indicate in
-the change log the conditions for which the change applies.
+Source files can often contain code that is conditional to build-time
+or static conditions.  For example, C programs can contain
+compile-time @code{#if} conditionals; programs implemented in
+interpreted languages can contain module imports of function
+definitions that are only performed for certain versions of the
+interpreter; and Automake @file{Makefile.am} files can contain
+variable definitions or target declarations that are only to be
+considered if a configure-time Automake conditional is true.
 
-Our convention for indicating conditional changes is to use square
-brackets around the name of the condition.
+Many changes are conditional as well: sometimes you add a new variable,
+or function, or even a new program or library, which is entirely
+dependent on a build-time condition.  It is useful to indicate
+in the change log the conditions for which a change applies.
 
-Here is a simple example, describing a change which is conditional but
-does not have a function or entity name associated with it:
+Our convention for indicating conditional changes is to use
+@emph{square brackets around the name of the condition}.
+
+Conditional changes can happen in numerous scenarios and with many
+variations, so here are some examples to help clarify.  This first
+example describes changes in C, Perl, and Python files which are
+conditional but do not have an associated function or entity name:
 
 @example
-* xterm.c [SOLARIS2]: Include string.h.
+* xterm.c [SOLARIS2]: Include <string.h>.
+* FilePath.pm [$^O eq 'VMS']: Import the VMS::Feature module.
+* framework.py [sys.version_info < (2, 6)]: Make "with" statement
+  available by importing it from __future__,
+  to support also python 2.5.
 @end example
 
-Here is an entry describing a new definition which is entirely
-conditional.  This new definition for the macro @code{FRAME_WINDOW_P} is
-used only when @code{HAVE_X_WINDOWS} is defined:
+Our other examples will for simplicity be limited to C, as the minor
+changes necessary to adapt them to other languages should be
+self-evident.
+
+Next, here is an entry describing a new definition which is entirely
+conditional: the C macro @code{FRAME_WINDOW_P} is defined (and used)
+only when the macro @code{HAVE_X_WINDOWS} is defined:
 
 @example
 * frame.h [HAVE_X_WINDOWS] (FRAME_WINDOW_P): Macro defined.
 @end example
 
-Here is an entry for a change within the function @code{init_display},
-whose definition as a whole is unconditional, but the changes themselves
-are contained in a @samp{#ifdef HAVE_LIBNCURSES} conditional:
+Next, an entry for a change within the function @code{init_display},
+whose definition as a whole is unconditional, but the changes
+themselves are contained in a @samp{#ifdef HAVE_LIBNCURSES}
+conditional:
 
 @example
 * dispnew.c (init_display) [HAVE_LIBNCURSES]: If X, call tgetent.
 @end example
 
-Here is an entry for a change that takes affect only when
+Finally, here is an entry for a change that takes effect only when
 a certain macro is @emph{not} defined:
 
 @example
-(gethostname) [!HAVE_SOCKETS]: Replace with winsock version.
+* host.c (gethostname) [!HAVE_SOCKETS]: Replace with winsock version.
 @end example
+
 
 @node Indicating the Part Changed
 @subsection Indicating the Part Changed
@@ -3994,6 +4070,7 @@ ignore most of its arguments.
 @section Making Releases
 @cindex packaging
 
+@cindex version numbers, for releases
 You should identify each release with a pair of version numbers, a
 major version and a minor.  We have no objection to using more than
 two numbers, but it is very unlikely that you really need them.
@@ -4010,20 +4087,28 @@ and never changed automatically; non-source files are produced from
 source files by programs under the control of the Makefile.
 
 @cindex @file{README} file
-The distribution should contain a file named @file{README} which gives
-the name of the package, and a general description of what it does.  It
-is also good to explain the purpose of each of the first-level
-subdirectories in the package, if there are any.  The @file{README} file
-should either state the version number of the package, or refer to where
-in the package it can be found.
+The distribution should contain a file named @file{README} with a
+general overview of the package:
 
-The @file{README} file should refer to the file @file{INSTALL}, which
-should contain an explanation of the installation procedure.
+@itemize
+@item the name of the package;
 
-The @file{README} file should also refer to the file which contains the
-copying conditions.  The GNU GPL, if used, should be in a file called
-@file{COPYING}.  If the GNU LGPL is used, it should be in a file called
+@item the version number of the package, or refer to where in the
+package the version can be found;
+
+@item a general description of what the package does;
+
+@item a reference to the file @file{INSTALL}, which
+should in turn contain an explanation of the installation procedure;
+
+@item a brief explanation of any unusual top-level directories or
+files, or other hints for readers to find their way around the source;
+
+@item a reference to the file which contains the copying conditions.
+The GNU GPL, if used, should be in a file called @file{COPYING}.  If
+the GNU LGPL is used, it should be in a file called
 @file{COPYING.LESSER}.
+@end itemize
 
 Naturally, all the source files must be in the distribution.  It is
 okay to include non-source files in the distribution along with the
@@ -4031,9 +4116,10 @@ source files they are generated from, provided they are up-to-date
 with the source they are made from, and machine-independent, so that
 normal building of the distribution will never modify them.  We
 commonly include non-source files produced by Autoconf, Automake,
-Bison, @code{lex}, @TeX{}, and @code{makeinfo}; this helps avoid
+Bison, @code{flex}, @TeX{}, and @code{makeinfo}; this helps avoid
 unnecessary dependencies between our distributions, so that users can
-install whichever packages they want to install.
+install whichever versions of whichever packages they like.  Do not
+induce new dependencies on other software lightly.
 
 Non-source files that might actually be modified by building and
 installing the program should @strong{never} be included in the
@@ -4163,7 +4249,7 @@ things in the GNU system even if they are free---they are outside the
 scope of what a software distribution needs to include.
 
 Referring to a web site that describes or recommends a non-free
-program is promoting that program, so please do not make links (or
+program is promoting that program, so please do not make links to (or
 mention by name) web sites that contain such material.  This policy is
 relevant particularly for the web pages for a GNU package.
 

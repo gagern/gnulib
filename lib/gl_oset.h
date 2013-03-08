@@ -1,5 +1,5 @@
 /* Abstract ordered set data type.
-   Copyright (C) 2006-2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2006-2007, 2009-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2006.
 
    This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,11 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+
+_GL_INLINE_HEADER_BEGIN
+#ifndef GL_OSET_INLINE
+# define GL_OSET_INLINE _GL_INLINE
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,15 +90,16 @@ struct gl_oset_implementation;
 /* Type representing a ordered set datatype implementation.  */
 typedef const struct gl_oset_implementation * gl_oset_implementation_t;
 
+#if 0 /* Unless otherwise specified, these are defined inline below.  */
+
 /* Create an empty set.
    IMPLEMENTATION is one of GL_ARRAY_OSET, GL_AVLTREE_OSET, GL_RBTREE_OSET.
    COMPAR_FN is an element comparison function or NULL.
    DISPOSE_FN is an element disposal function or NULL.  */
-#if 0 /* declared in gl_xoset.h */
+/* declared in gl_xoset.h */
 extern gl_oset_t gl_oset_create_empty (gl_oset_implementation_t implementation,
                                        gl_setelement_compar_fn compar_fn,
                                        gl_setelement_dispose_fn dispose_fn);
-#endif
 /* Likewise.  Return NULL upon out-of-memory.  */
 extern gl_oset_t gl_oset_nx_create_empty (gl_oset_implementation_t implementation,
                                           gl_setelement_compar_fn compar_fn,
@@ -118,9 +124,8 @@ extern bool gl_oset_search_atleast (gl_oset_t set,
 
 /* Add an element to an ordered set.
    Return true if it was not already in the set and added, false otherwise.  */
-#if 0 /* declared in gl_xoset.h */
+/* declared in gl_xoset.h */
 extern bool gl_oset_add (gl_oset_t set, const void *elt);
-#endif
 /* Likewise.  Return -1 upon out-of-memory.  */
 extern int gl_oset_nx_add (gl_oset_t set, const void *elt)
 #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
@@ -135,6 +140,8 @@ extern bool gl_oset_remove (gl_oset_t set, const void *elt);
 /* Free an entire ordered set.
    (But this call does not free the elements of the set.)  */
 extern void gl_oset_free (gl_oset_t set);
+
+#endif /* End of inline and gl_xlist.h-defined functions.  */
 
 /* --------------------- gl_oset_iterator_t Data Type --------------------- */
 
@@ -155,6 +162,8 @@ typedef struct
   size_t i; size_t j;
 } gl_oset_iterator_t;
 
+#if 0 /* These are defined inline below.  */
+
 /* Create an iterator traversing an ordered set.
    The set's contents must not be modified while the iterator is in use,
    except for removing the last returned element.  */
@@ -167,6 +176,8 @@ extern bool gl_oset_iterator_next (gl_oset_iterator_t *iterator,
 
 /* Free an iterator.  */
 extern void gl_oset_iterator_free (gl_oset_iterator_t *iterator);
+
+#endif /* End of inline functions.  */
 
 /* ------------------------ Implementation Details ------------------------ */
 
@@ -197,14 +208,10 @@ struct gl_oset_impl_base
   gl_setelement_dispose_fn dispose_fn;
 };
 
-#if HAVE_INLINE
+/* Define all functions of this file as accesses to the
+   struct gl_oset_implementation.  */
 
-/* Define all functions of this file as inline accesses to the
-   struct gl_oset_implementation.
-   Use #define to avoid a warning because of extern vs. static.  */
-
-# define gl_oset_nx_create_empty gl_oset_nx_create_empty_inline
-static inline gl_oset_t
+GL_OSET_INLINE gl_oset_t
 gl_oset_nx_create_empty (gl_oset_implementation_t implementation,
                          gl_setelement_compar_fn compar_fn,
                          gl_setelement_dispose_fn dispose_fn)
@@ -213,22 +220,19 @@ gl_oset_nx_create_empty (gl_oset_implementation_t implementation,
                                           dispose_fn);
 }
 
-# define gl_oset_size gl_oset_size_inline
-static inline size_t
+GL_OSET_INLINE size_t
 gl_oset_size (gl_oset_t set)
 {
   return ((const struct gl_oset_impl_base *) set)->vtable->size (set);
 }
 
-# define gl_oset_search gl_oset_search_inline
-static inline bool
+GL_OSET_INLINE bool
 gl_oset_search (gl_oset_t set, const void *elt)
 {
   return ((const struct gl_oset_impl_base *) set)->vtable->search (set, elt);
 }
 
-# define gl_oset_search_atleast gl_oset_search_atleast_inline
-static inline bool
+GL_OSET_INLINE bool
 gl_oset_search_atleast (gl_oset_t set,
                         gl_setelement_threshold_fn threshold_fn,
                         const void *threshold, const void **eltp)
@@ -237,53 +241,50 @@ gl_oset_search_atleast (gl_oset_t set,
          ->search_atleast (set, threshold_fn, threshold, eltp);
 }
 
-# define gl_oset_nx_add gl_oset_nx_add_inline
-static inline int
+GL_OSET_INLINE int
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+  __attribute__ ((__warn_unused_result__))
+#endif
 gl_oset_nx_add (gl_oset_t set, const void *elt)
 {
   return ((const struct gl_oset_impl_base *) set)->vtable->nx_add (set, elt);
 }
 
-# define gl_oset_remove gl_oset_remove_inline
-static inline bool
+GL_OSET_INLINE bool
 gl_oset_remove (gl_oset_t set, const void *elt)
 {
   return ((const struct gl_oset_impl_base *) set)->vtable
          ->remove_elt (set, elt);
 }
 
-# define gl_oset_free gl_oset_free_inline
-static inline void
+GL_OSET_INLINE void
 gl_oset_free (gl_oset_t set)
 {
   ((const struct gl_oset_impl_base *) set)->vtable->oset_free (set);
 }
 
-# define gl_oset_iterator gl_oset_iterator_inline
-static inline gl_oset_iterator_t
+GL_OSET_INLINE gl_oset_iterator_t
 gl_oset_iterator (gl_oset_t set)
 {
   return ((const struct gl_oset_impl_base *) set)->vtable->iterator (set);
 }
 
-# define gl_oset_iterator_next gl_oset_iterator_next_inline
-static inline bool
+GL_OSET_INLINE bool
 gl_oset_iterator_next (gl_oset_iterator_t *iterator, const void **eltp)
 {
   return iterator->vtable->iterator_next (iterator, eltp);
 }
 
-# define gl_oset_iterator_free gl_oset_iterator_free_inline
-static inline void
+GL_OSET_INLINE void
 gl_oset_iterator_free (gl_oset_iterator_t *iterator)
 {
   iterator->vtable->iterator_free (iterator);
 }
 
-#endif
-
 #ifdef __cplusplus
 }
 #endif
+
+_GL_INLINE_HEADER_END
 
 #endif /* _GL_OSET_H */

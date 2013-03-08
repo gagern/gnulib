@@ -1,5 +1,5 @@
-# po.m4 serial 17a
-dnl Copyright (C) 1995-2011 Free Software Foundation, Inc.
+# po.m4 serial 20 (gettext-0.18.2)
+dnl Copyright (C) 1995-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -17,14 +17,14 @@ dnl Authors:
 dnl   Ulrich Drepper <drepper@cygnus.com>, 1995-2000.
 dnl   Bruno Haible <haible@clisp.cons.org>, 2000-2003.
 
-AC_PREREQ([2.50])
+AC_PREREQ([2.60])
 
 dnl Checks for all prerequisites of the po subdirectory.
 AC_DEFUN([AM_PO_SUBDIRS],
 [
   AC_REQUIRE([AC_PROG_MAKE_SET])dnl
   AC_REQUIRE([AC_PROG_INSTALL])dnl
-  AC_REQUIRE([AM_PROG_MKDIR_P])dnl defined by automake
+  AC_REQUIRE([AC_PROG_MKDIR_P])dnl
   AC_REQUIRE([AM_NLS])dnl
 
   dnl Release version of the gettext macros. This is used to ensure that
@@ -102,7 +102,7 @@ changequote([,])dnl
       case "$ac_file" in */Makefile.in)
         # Adjust a relative srcdir.
         ac_dir=`echo "$ac_file"|sed 's%/[^/][^/]*$%%'`
-        ac_dir_suffix="/`echo "$ac_dir"|sed 's%^\./%%'`"
+        ac_dir_suffix=/`echo "$ac_dir"|sed 's%^\./%%'`
         ac_dots=`echo "$ac_dir_suffix"|sed 's%/[^/]*%../%g'`
         # In autoconf-2.13 it is called $ac_given_srcdir.
         # In autoconf-2.50 it is called $srcdir.
@@ -130,12 +130,12 @@ changequote([,])dnl
               test -n "$as_me" && echo "$as_me: setting ALL_LINGUAS in configure.in is obsolete" || echo "setting ALL_LINGUAS in configure.in is obsolete"
             fi
             ALL_LINGUAS_=`sed -e "/^#/d" -e "s/#.*//" "$ac_given_srcdir/$ac_dir/LINGUAS"`
-            # Hide the ALL_LINGUAS assigment from automake < 1.5.
+            # Hide the ALL_LINGUAS assignment from automake < 1.5.
             eval 'ALL_LINGUAS''=$ALL_LINGUAS_'
             POMAKEFILEDEPS="$POMAKEFILEDEPS LINGUAS"
           else
             # The set of available languages was given in configure.in.
-            # Hide the ALL_LINGUAS assigment from automake < 1.5.
+            # Hide the ALL_LINGUAS assignment from automake < 1.5.
             eval 'ALL_LINGUAS''=$OBSOLETE_ALL_LINGUAS'
           fi
           # Compute POFILES
@@ -227,7 +227,7 @@ AC_DEFUN([AM_POSTPROCESS_PO_MAKEFILE],
 changequote(,)dnl
   # Adjust a relative srcdir.
   ac_dir=`echo "$ac_file"|sed 's%/[^/][^/]*$%%'`
-  ac_dir_suffix="/`echo "$ac_dir"|sed 's%^\./%%'`"
+  ac_dir_suffix=/`echo "$ac_dir"|sed 's%^\./%%'`
   ac_dots=`echo "$ac_dir_suffix"|sed 's%/[^/]*%../%g'`
   # In autoconf-2.13 it is called $ac_given_srcdir.
   # In autoconf-2.50 it is called $srcdir.
@@ -317,7 +317,7 @@ changequote([,])dnl
     sed_x_LINGUAS=`$gt_echo "$sed_x_variable" | sed -e '/^ *#/d' -e 's/VARIABLE/LINGUAS/g'`
     ALL_LINGUAS_=`sed -n -e "$sed_x_LINGUAS" < "$ac_file"`
   fi
-  # Hide the ALL_LINGUAS assigment from automake < 1.5.
+  # Hide the ALL_LINGUAS assignment from automake < 1.5.
   eval 'ALL_LINGUAS''=$ALL_LINGUAS_'
   # Compute POFILES
   # as      $(foreach lang, $(ALL_LINGUAS), $(srcdir)/$(lang).po)

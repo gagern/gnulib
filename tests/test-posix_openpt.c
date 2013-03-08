@@ -1,5 +1,5 @@
 /* Test of posix_openpt function.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ main (void)
   ASSERT (isatty (slave));
 
   /* Close the master side before the slave side gets closed.
-     This is necessary on MacOS X 10.4.11.  */
+     This is necessary on Mac OS X 10.4.11.  */
   ASSERT (close (master) == 0);
   ASSERT (close (slave) == 0);
 

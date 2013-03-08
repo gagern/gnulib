@@ -1,7 +1,7 @@
 /* sha1.c - Functions to compute SHA1 message digest of files or
    memory blocks according to the NIST specification FIPS-180-1.
 
-   Copyright (C) 2000-2001, 2003-2006, 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2000-2001, 2003-2006, 2008-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -14,8 +14,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Scott G. Miller
    Credits:
@@ -71,7 +70,7 @@ sha1_init_ctx (struct sha1_ctx *ctx)
 /* Copy the 4 byte value from v into the memory location pointed to by *cp,
    If your architecture allows unaligned access this is equivalent to
    * (uint32_t *) cp = v  */
-static inline void
+static void
 set_uint32 (char *cp, uint32_t v)
 {
   memcpy (cp, &v, sizeof v);
@@ -306,13 +305,13 @@ sha1_process_block (const void *buffer, size_t len, struct sha1_ctx *ctx)
   uint32_t c = ctx->C;
   uint32_t d = ctx->D;
   uint32_t e = ctx->E;
+  uint32_t lolen = len;
 
   /* First increment the byte count.  RFC 1321 specifies the possible
      length of the file up to 2^64 bits.  Here we only compute the
      number of bytes.  Do a double word increment.  */
-  ctx->total[0] += len;
-  if (ctx->total[0] < len)
-    ++ctx->total[1];
+  ctx->total[0] += lolen;
+  ctx->total[1] += (len >> 31 >> 1) + (ctx->total[0] < lolen);
 
 #define rol(x, n) (((x) << (n)) | ((uint32_t) (x) >> (32 - (n))))
 

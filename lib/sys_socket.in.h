@@ -1,6 +1,6 @@
 /* Provide a sys/socket header file for systems lacking it (read: MinGW)
    and for systems where it is incomplete.
-   Copyright (C) 2005-2011 Free Software Foundation, Inc.
+   Copyright (C) 2005-2013 Free Software Foundation, Inc.
    Written by Simon Josefsson.
 
    This program is free software; you can redistribute it and/or modify
@@ -14,8 +14,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* This file is supposed to be used on platforms that lack <sys/socket.h>,
    on platforms where <sys/socket.h> cannot be included standalone, and on
@@ -63,6 +62,11 @@
 
 #ifndef _@GUARD_PREFIX@_SYS_SOCKET_H
 #define _@GUARD_PREFIX@_SYS_SOCKET_H
+
+_GL_INLINE_HEADER_BEGIN
+#ifndef _GL_SYS_SOCKET_INLINE
+# define _GL_SYS_SOCKET_INLINE _GL_INLINE
+#endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
@@ -143,7 +147,7 @@ struct sockaddr_storage
    that you can influence which definitions you get by setting the
    WINVER symbol before including these two files.  For example,
    getaddrinfo is only available if _WIN32_WINNT >= 0x0501 (that
-   symbol is set indiriectly through WINVER).  You can set this by
+   symbol is set indirectly through WINVER).  You can set this by
    adding AC_DEFINE(WINVER, 0x0501) to configure.ac.  Note that your
    code may not run on older Windows releases then.  My Windows 2000
    box was not able to run the code, for example.  The situation is
@@ -202,7 +206,7 @@ struct msghdr {
 
 /* Re-define FD_ISSET to avoid a WSA call while we are not using
    network sockets.  */
-static inline int
+_GL_SYS_SOCKET_INLINE int
 rpl_fd_isset (SOCKET fd, fd_set * set)
 {
   u_int i;
@@ -677,6 +681,8 @@ _GL_WARN_ON_USE (accept4, "accept4 is unportable - "
                  "use gnulib module accept4 for portability");
 # endif
 #endif
+
+_GL_INLINE_HEADER_END
 
 #endif /* _@GUARD_PREFIX@_SYS_SOCKET_H */
 #endif /* _@GUARD_PREFIX@_SYS_SOCKET_H */

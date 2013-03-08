@@ -1,6 +1,6 @@
 # serial 9
 
-# Copyright (C) 1998-2001, 2003-2004, 2007, 2009-2011 Free Software Foundation,
+# Copyright (C) 1998-2001, 2003-2004, 2007, 2009-2013 Free Software Foundation,
 # Inc.
 #
 # This file is free software; the Free Software Foundation
@@ -9,7 +9,7 @@
 
 dnl From Jim Meyering
 
-dnl Define HAVE_STRUCT_UTIMBUF if `struct utimbuf' is declared --
+dnl Define HAVE_STRUCT_UTIMBUF if 'struct utimbuf' is declared --
 dnl usually in <utime.h>.
 dnl Some systems have utime.h but don't declare the struct anywhere.
 

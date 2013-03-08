@@ -2,7 +2,7 @@
 @section gcd: greatest common divisor
 @findex gcd
 
-@c Copyright (C) 2006, 2009-2011 Free Software Foundation, Inc.
+@c Copyright (C) 2006, 2009-2013 Free Software Foundation, Inc.
 
 @c Permission is granted to copy, distribute and/or modify this document
 @c under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -35,8 +35,8 @@ WORD_T GCD (WORD_T a, WORD_T b);
 If you need the least common multiple of two numbers, it can be computed
 like this: @code{lcm(a,b) = (a / gcd(a,b)) * b} or
 @code{lcm(a,b) = a * (b / gcd(a,b))}.
-Avoid the formula @code{lcm(a,b) = (a * b) / gcd(a,b)} because - although
-mathematically correct - it can yield a wrong result, due to integer overflow.
+Avoid the formula @code{lcm(a,b) = (a * b) / gcd(a,b)} because---although
+mathematically correct---it can yield a wrong result, due to integer overflow.
 
 In some applications it is useful to have a function taking the gcd of two
 signed numbers. In this case, the gcd function result is usually normalized

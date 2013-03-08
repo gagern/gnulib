@@ -37,12 +37,16 @@ mingw, MSVC 9, BeOS.
 @item
 printf @code{"%f"}, @code{"%e"}, @code{"%g"} of Infinity and NaN yields an
 incorrect result on some platforms:
-AIX 5.2, OSF/1 5.1, Solaris 11 2010-11, mingw, MSVC 9.
+AIX 5.2, OSF/1 5.1, Solaris 11 2011-11, mingw, MSVC 9.
+@item
+printf of @samp{long double} numbers outside the IEEE 754 range produces
+no meaningful results on some platforms:
+glibc and others, on x86, x86_64, IA-64 CPUs.
 @item
 This function does not support the @samp{a} and @samp{A} directives on some
 platforms:
-glibc-2.3.6, MacOS X 10.5, NetBSD 5.0, OpenBSD 4.0, AIX 5.2, HP-UX 11,
-IRIX 6.5, OSF/1 5.1, Solaris 11 2010-11, Cygwin 1.5.x, mingw, MSVC 9, BeOS.
+glibc-2.3.6, Mac OS X 10.5, NetBSD 5.0, OpenBSD 4.0, AIX 5.2, HP-UX 11,
+IRIX 6.5, OSF/1 5.1, Solaris 11 2011-11, Cygwin 1.5.x, mingw, MSVC 9, BeOS.
 @item
 This function does not support the @samp{F} directive on some platforms:
 NetBSD 3.0, AIX 5.1, HP-UX 11.23, IRIX 6.5, OSF/1 5.1, Solaris 9,
@@ -56,7 +60,7 @@ OpenBSD 4.0, IRIX 6.5, Solaris 2.6, Cygwin 1.5.x, Haiku.
 @item
 This function does not support precisions in the @samp{ls} directive correctly
 on some platforms:
-Solaris 11 2010-11.
+Solaris 11 2011-11.
 @item
 This function doesn't support the @code{'} flag on some platforms:
 NetBSD 3.0, Cygwin 1.5.24, mingw, MSVC 9.
@@ -67,7 +71,7 @@ HP-UX 10.20.
 @item
 printf @code{"%010f"} of NaN and Infinity yields an incorrect result (padded
 with zeroes) on some platforms:
-MacOS X 10.5, FreeBSD 6.0, NetBSD 5.0, AIX 5.2, IRIX 6.5, OSF/1 5.1, Solaris 11 2010-11, Cygwin 1.5.x, mingw, MSVC 9.
+Mac OS X 10.5, FreeBSD 6.0, NetBSD 5.0, AIX 5.2, IRIX 6.5, OSF/1 5.1, Solaris 11 2011-11, Cygwin 1.5.x, mingw, MSVC 9.
 @item
 This function does not support precisions larger than 512 or 1024 in integer,
 floating-point and pointer output on some platforms:
@@ -79,7 +83,7 @@ on some platforms:
 Solaris 10.
 @item
 This function can crash in out-of-memory conditions on some platforms:
-MacOS X 10.3, FreeBSD 6.0, NetBSD 5.0.
+Mac OS X 10.3, FreeBSD 6.0, NetBSD 5.0.
 @item
 This function does not truncate the result as specified in C99 on some platforms:
 mingw, MSVC 9.
@@ -94,4 +98,8 @@ OSF/1 5.1.
 
 Portability problems not fixed by Gnulib:
 @itemize
+@item
+When formatting an integer with grouping flag, this function inserts thousands
+separators even in the "C" locale on some platforms:
+NetBSD 5.1.
 @end itemize

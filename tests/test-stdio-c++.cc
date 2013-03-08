@@ -1,5 +1,5 @@
 /* Test of <stdio.h> substitute in C++ mode.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -122,9 +122,7 @@ SIGNATURE_CHECK (GNULIB_NAMESPACE::getline, ssize_t,
                  (char **, size_t *, FILE *));
 #endif
 
-#if GNULIB_TEST_GETS
-SIGNATURE_CHECK (GNULIB_NAMESPACE::gets, char *, (char *));
-#endif
+/* Don't bother testing gets; it should never be used.  */
 
 #if GNULIB_TEST_OBSTACK_PRINTF || GNULIB_TEST_OBSTACK_PRINTF_POSIX
 SIGNATURE_CHECK (GNULIB_NAMESPACE::obstack_printf, int,

@@ -1,5 +1,5 @@
 /* Getter for RLIMIT_AS.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2011.
 
    This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@
      get_rusage_as_via_iterator() is 4 KB higher than
      get_rusage_as_via_setrlimit().
 
-   MacOS X:
+   Mac OS X:
      a) setrlimit with RLIMIT_AS succeeds but does not really work: The OS
         ignores RLIMIT_AS. mmap() of a page always succeeds, therefore
         get_rusage_as_via_setrlimit() is always 0.
@@ -98,11 +98,11 @@
         get_rusage_as_via_setrlimit() therefore produces a wrong value.
      b) The /proc/$pid/maps file lists only the memory areas belonging to
         the executable and shared libraries, not the anonymous memory.
-        But the native Win32 API works.
+        But the native Windows API works.
 
    mingw:
      a) There is no setrlimit function.
-     b) The native Win32 API works.
+     b) The native Windows API works.
 
    BeOS, Haiku:
      a) On BeOS, there is no setrlimit function.
@@ -146,7 +146,7 @@
 
 #if HAVE_SETRLIMIT && defined RLIMIT_AS && HAVE_SYS_MMAN_H && HAVE_MPROTECT
 
-static inline uintptr_t
+static uintptr_t
 get_rusage_as_via_setrlimit (void)
 {
   uintptr_t result;
@@ -310,7 +310,7 @@ get_rusage_as_via_setrlimit (void)
 
 #else
 
-static inline uintptr_t
+static uintptr_t
 get_rusage_as_via_setrlimit (void)
 {
   return 0;
@@ -331,7 +331,7 @@ vma_iterate_callback (void *data, uintptr_t start, uintptr_t end,
   return 0;
 }
 
-static inline uintptr_t
+static uintptr_t
 get_rusage_as_via_iterator (void)
 {
   uintptr_t total = 0;
@@ -343,7 +343,7 @@ get_rusage_as_via_iterator (void)
 
 #else
 
-static inline uintptr_t
+static uintptr_t
 get_rusage_as_via_iterator (void)
 {
   return 0;
@@ -355,7 +355,7 @@ get_rusage_as_via_iterator (void)
 uintptr_t
 get_rusage_as (void)
 {
-#if (defined __APPLE__ && defined __MACH__) || defined _AIX || defined __CYGWIN__ /* MacOS X, AIX, Cygwin */
+#if (defined __APPLE__ && defined __MACH__) || defined _AIX || defined __CYGWIN__ /* Mac OS X, AIX, Cygwin */
   /* get_rusage_as_via_setrlimit() does not work.
      Prefer get_rusage_as_via_iterator().  */
   return get_rusage_as_via_iterator ();

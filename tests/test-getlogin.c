@@ -1,5 +1,5 @@
 /* Test of getting user name.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,9 +39,17 @@ main (void)
   buf = getlogin ();
   if (buf == NULL)
     {
+      if (errno == ENOENT)
+        {
+          /* This can happen on GNU/Linux.  */
+          fprintf (stderr, "Skipping test: no entry in utmp file.\n");
+          return 77;
+        }
+
       /* getlogin() fails when stdin is not connected to a tty.  */
       ASSERT (errno == ENOTTY
               || errno == EINVAL /* seen on Linux/SPARC */
+              || errno == ENXIO
              );
 #if !defined __hpux /* On HP-UX 11.11 it fails anyway.  */
       ASSERT (! isatty (0));

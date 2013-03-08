@@ -1,5 +1,5 @@
 /* Test program for tsearch et al.
-   Copyright (C) 1997, 2000-2001, 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 1997, 2000-2001, 2007-2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software: you can redistribute it and/or
@@ -75,7 +75,7 @@ static int error = 0;
 /* The keys we add to the tree.  */
 static int x[SIZE];
 
-/* Pointers into the key array, possibly permutated, to define an order
+/* Pointers into the key array, possibly permuted, to define an order
    for insertion/removal.  */
 static int y[SIZE];
 

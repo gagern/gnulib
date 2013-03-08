@@ -1,6 +1,6 @@
 /* Memory allocation aligned to system page boundaries.
 
-   Copyright (C) 2005-2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2005-2007, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -123,6 +123,9 @@ void *
 pagealign_alloc (size_t size)
 {
   void *ret;
+  /* We prefer the mmap() approach over the posix_memalign() or malloc()
+     based approaches, since the latter often waste an entire memory page
+     per call.  */
 #if HAVE_MMAP
 # ifdef HAVE_MAP_ANONYMOUS
   const int fd = -1;

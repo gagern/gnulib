@@ -1,5 +1,5 @@
 /* POSIX compatible FILE stream read function.
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2011.
 
    This program is free software: you can redistribute it and/or modify
@@ -72,6 +72,9 @@
       return ret;                                                             \
     }
 
+/* Enable this function definition only if gnulib's <stdio.h> has prepared it.
+   Otherwise we get a function definition conflict with mingw64's <stdio.h>.  */
+#  if GNULIB_SCANF
 int
 scanf (const char *format, ...)
 {
@@ -84,7 +87,11 @@ scanf (const char *format, ...)
 
   return retval;
 }
+#  endif
 
+/* Enable this function definition only if gnulib's <stdio.h> has prepared it.
+   Otherwise we get a function definition conflict with mingw64's <stdio.h>.  */
+#  if GNULIB_FSCANF
 int
 fscanf (FILE *stream, const char *format, ...)
 {
@@ -97,19 +104,28 @@ fscanf (FILE *stream, const char *format, ...)
 
   return retval;
 }
+#  endif
 
+/* Enable this function definition only if gnulib's <stdio.h> has prepared it.
+   Otherwise we get a function definition conflict with mingw64's <stdio.h>.  */
+#  if GNULIB_VSCANF
 int
 vscanf (const char *format, va_list args)
 {
   return vfscanf (stdin, format, args);
 }
+#  endif
 
+/* Enable this function definition only if gnulib's <stdio.h> has prepared it.
+   Otherwise we get a function definition conflict with mingw64's <stdio.h>.  */
+#  if GNULIB_VFSCANF
 int
 vfscanf (FILE *stream, const char *format, va_list args)
 #undef vfscanf
 {
   CALL_WITH_ERRNO_FIX (int, vfscanf (stream, format, args), ret == EOF)
 }
+#  endif
 
 int
 getchar (void)
@@ -131,13 +147,7 @@ fgets (char *s, int n, FILE *stream)
   CALL_WITH_ERRNO_FIX (char *, fgets (s, n, stream), ret == NULL)
 }
 
-char *
-gets (char *s)
-#undef gets
-{
-  FILE *stream = stdin;
-  CALL_WITH_ERRNO_FIX (char *, gets (s), ret == NULL)
-}
+/* We intentionally don't bother to fix gets.  */
 
 size_t
 fread (void *ptr, size_t s, size_t n, FILE *stream)

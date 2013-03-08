@@ -1,7 +1,7 @@
 /* Duplicate a file descriptor result, avoiding clobbering
    STD{IN,OUT,ERR}_FILENO, with specific flags.
 
-   Copyright (C) 2001, 2004-2006, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2004-2006, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,8 +25,6 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-
-#include "cloexec.h"
 
 /* Like dup, but do not return STDIN_FILENO, STDOUT_FILENO, or
    STDERR_FILENO.  If FLAG contains O_CLOEXEC, behave like

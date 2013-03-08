@@ -1,7 +1,7 @@
 /* sha256.c - Functions to compute SHA256 and SHA224 message digest of files or
    memory blocks according to the NIST specification FIPS-180-2.
 
-   Copyright (C) 2005-2006, 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2005-2006, 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ static const unsigned char fillbuf[64] = { 0x80, 0 /* , 0, 0, ...  */ };
 
 /*
   Takes a pointer to a 256 bit block of data (eight 32 bit ints) and
-  intializes it to the start constants of the SHA256 algorithm.  This
+  initializes it to the start constants of the SHA256 algorithm.  This
   must be called before using hash in the call to sha256_hash
 */
 void
@@ -90,7 +90,7 @@ sha224_init_ctx (struct sha256_ctx *ctx)
 /* Copy the value from v into the memory location pointed to by *cp,
    If your architecture allows unaligned access this is equivalent to
    * (uint32_t *) cp = v  */
-static inline void
+static void
 set_uint32 (char *cp, uint32_t v)
 {
   memcpy (cp, &v, sizeof v);
@@ -454,13 +454,13 @@ sha256_process_block (const void *buffer, size_t len, struct sha256_ctx *ctx)
   uint32_t f = ctx->state[5];
   uint32_t g = ctx->state[6];
   uint32_t h = ctx->state[7];
+  uint32_t lolen = len;
 
   /* First increment the byte count.  FIPS PUB 180-2 specifies the possible
      length of the file up to 2^64 bits.  Here we only compute the
      number of bytes.  Do a double word increment.  */
-  ctx->total[0] += len;
-  if (ctx->total[0] < len)
-    ++ctx->total[1];
+  ctx->total[0] += lolen;
+  ctx->total[1] += (len >> 31 >> 1) + (ctx->total[0] < lolen);
 
 #define rol(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 #define S0(x) (rol(x,25)^rol(x,14)^(x>>3))

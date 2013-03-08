@@ -1,6 +1,22 @@
 Important notes
 ---------------
 
+Date        Modules         Changes
+
+2012-06-27  elisp-comp      The module 'elisp-comp' is removed; the script is
+                            not independently useful outside of automake.
+
+2012-06-21  gnulib-tool     The option --with-tests is now implied by the
+                            options --create-testdir, --test,
+                            --create-megatestdir, --megatest.
+
+2012-01-07  quotearg        In the C locale, the function will no longer use
+                            the grave accent character to begin a quoted
+                            string (`like this').  It will use apostrophes
+                            'like these' or, in Unicode locales, single quotes
+                            ‘like these’.  You may want to adjust any error
+                            messages that hard code the quoting characters.
+
 2010-09-04  gnulib-tool     The option '--import' is no longer cumulative; it
                             now expects the complete list of modules and other
                             options on the command line. If you want to
@@ -11,6 +27,26 @@ User visible incompatible changes
 ---------------------------------
 
 Date        Modules         Changes
+
+2013-02-08  careadlinkat    This module no longer provides the careadlinkatcwd
+                            function.
+
+2012-06-26  getopt-posix    This module no longer guarantees that option
+                            processing is resettable.  If your code uses
+                            'optreset' or 'optind = 0;', rewrite it to make
+                            only one pass over the argument array.
+
+2012-02-24  streq           This module no longer provides the STREQ macro.
+                            Use STREQ_OPT instead.
+
+2012-01-10  ignore-value    This module no longer provides the ignore_ptr
+                            function.  It was deprecated a year ago, but existed
+                            so briefly before then that it never came into use.
+                            Now, the ignore_value function does its job.
+
+2011-11-18  hash            This module deprecates the hash_insert0 function
+                            using gcc's "deprecated" attribute.  Use the better-
+                            named hash_insert_if_absent equivalent.
 
 2011-11-04  openat          This module no longer provides the mkdirat()
                             function. If you need this function, you now need
@@ -362,7 +398,7 @@ Date        Modules         Changes
 2008-09-28  sockets         When using this module, you now need to link with
                             $(LIBSOCKET).
 
-2008-09-24  sys_select      The limitation on `select', introduced 2008-09-23,
+2008-09-24  sys_select      The limitation on 'select', introduced 2008-09-23,
                             was removed.  sys_select now includes a select
                             wrapper for Winsock.  The wrapper expects socket
                             and file descriptors to be compatible as arranged
@@ -525,12 +561,12 @@ Date        Modules         Changes
                             <unistd.h>.
 
 2007-06-09  xallocsa        Renamed to xmalloca. The include file "xallocsa.h"
-                            was remamed to "xmalloca.h". The function was
+                            was renamed to "xmalloca.h". The function was
                             renamed:
                               xallocsa -> xmalloca
 
 2007-06-09  allocsa         Renamed to malloca. The include file "allocsa.h"
-                            was remamed to "malloca.h". The function-like
+                            was renamed to "malloca.h". The function-like
                             macros were renamed:
                               allocsa -> malloca
                               freesa -> freea

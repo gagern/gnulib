@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2011 Free Software Foundation, Inc.
+   Copyright (C) 2004-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
  *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
  * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
@@ -98,8 +98,8 @@ typedef struct {
      The lazy way (which works only with FTS_PHYSICAL),
      with which one may process a directory that is a
      part of the cycle several times before detecting the cycle.
-     The `tight' way, whereby fts uses more memory (proportional
-     to number of `active' directories, aka distance from root
+     The "tight" way, whereby fts uses more memory (proportional
+     to number of "active" directories, aka distance from root
      of current tree to current directory -- see active_dir_ht)
      to detect any cycle right away.  For example, du must use
      this option to avoid counting disk space in a cycle multiple
@@ -145,10 +145,14 @@ typedef struct {
 
 # define FTS_NOATIME    0x0800          /* use O_NOATIME during traversal */
 
-# define FTS_OPTIONMASK 0x0fff          /* valid user option mask */
+  /* Use this flag to disable stripping of trailing slashes
+     from input path names during fts_open initialization.  */
+# define FTS_VERBATIM   0x1000
 
-# define FTS_NAMEONLY   0x1000          /* (private) child names only */
-# define FTS_STOP       0x2000          /* (private) unrecoverable error */
+# define FTS_OPTIONMASK 0x1fff          /* valid user option mask */
+
+# define FTS_NAMEONLY   0x2000          /* (private) child names only */
+# define FTS_STOP       0x4000          /* (private) unrecoverable error */
         int fts_options;                /* fts_open options, global flags */
 
         /* Map a directory's device number to a boolean.  The boolean is

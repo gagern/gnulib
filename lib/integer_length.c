@@ -1,5 +1,5 @@
 /* integer_length - find most significant bit in an 'unsigned int'.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,12 @@
 #include <limits.h>
 
 #include "float+.h"
+
+/* MSVC with option -fp:strict refuses to compile constant initializers that
+   contain floating-point operations.  Pacify this compiler.  */
+#ifdef _MSC_VER
+# pragma fenv_access (off)
+#endif
 
 #define NBITS (sizeof (unsigned int) * CHAR_BIT)
 

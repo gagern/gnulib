@@ -1,5 +1,5 @@
 /* An fseeko() function that, together with fflush(), is POSIX compliant.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -32,6 +31,14 @@ fseeko (FILE *fp, off_t offset, int whence)
 # undef fseek
 # define fseeko fseek
 #endif
+#if _GL_WINDOWS_64_BIT_OFF_T
+# undef fseeko
+# if HAVE__FSEEKI64 /* msvc, mingw64 */
+#  define fseeko _fseeki64
+# else /* mingw */
+#  define fseeko fseeko64
+# endif
+#endif
 {
 #if LSEEK_PIPE_BROKEN
   /* mingw gives bogus answers rather than failure on non-seekable files.  */
@@ -44,7 +51,7 @@ fseeko (FILE *fp, off_t offset, int whence)
   if (fp->_IO_read_end == fp->_IO_read_ptr
       && fp->_IO_write_ptr == fp->_IO_write_base
       && fp->_IO_save_base == NULL)
-#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
 # if defined __SL64 && defined __SCLE /* Cygwin */
   if ((fp->_flags & __SL64) == 0)
     {
@@ -89,6 +96,9 @@ fseeko (FILE *fp, off_t offset, int whence)
       && fp->__get_limit == fp->__bufp
       && fp->__put_limit == fp->__bufp
       && !fp->__pushed_back)
+#elif defined EPLAN9                /* Plan9 */
+  if (fp->rp == fp->buf
+      && fp->wp == fp->buf)
 #else
   #error "Please port gnulib fseeko.c to your platform! Look at the code in fpurge.c, then report this to bug-gnulib."
 #endif
@@ -99,7 +109,7 @@ fseeko (FILE *fp, off_t offset, int whence)
       off_t pos = lseek (fileno (fp), offset, whence);
       if (pos == -1)
         {
-#if defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#if defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
           fp_->_flags &= ~__SOFF;
 #endif
           return -1;
@@ -108,7 +118,7 @@ fseeko (FILE *fp, off_t offset, int whence)
 #if defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1 /* GNU libc, BeOS, Haiku, Linux libc5 */
       fp->_flags &= ~_IO_EOF_SEEN;
       fp->_offset = pos;
-#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+#elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
 # if defined __CYGWIN__
       /* fp_->_offset is typed as an integer.  */
       fp_->_offset = pos;

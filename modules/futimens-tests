@@ -7,6 +7,8 @@ tests/signature.h
 tests/macros.h
 
 Depends-on:
+gettext
+fcntl-h
 ignore-value
 timespec
 dup
@@ -18,4 +20,4 @@ configure.ac:
 Makefile.am:
 TESTS += test-futimens
 check_PROGRAMS += test-futimens
-test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME)
+test_futimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@

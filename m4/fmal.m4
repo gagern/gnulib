@@ -1,5 +1,5 @@
-# fmal.m4 serial 1
-dnl Copyright (C) 2011 Free Software Foundation, Inc.
+# fmal.m4 serial 4
+dnl Copyright (C) 2011-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -9,14 +9,29 @@ AC_DEFUN([gl_FUNC_FMAL],
   AC_REQUIRE([gl_MATH_H_DEFAULTS])
   AC_REQUIRE([gl_LONG_DOUBLE_VS_DOUBLE])
 
+  dnl Persuade glibc <math.h> to declare fmal().
+  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+
   dnl Determine FMAL_LIBM.
-  gl_MATHFUNC([fmal], [long double], [(long double, long double, long double)])
+  gl_MATHFUNC([fmal], [long double], [(long double, long double, long double)],
+    [extern
+     #ifdef __cplusplus
+     "C"
+     #endif
+     long double fmal (long double, long double, long double);
+    ])
   if test $gl_cv_func_fmal_no_libm = yes \
      || test $gl_cv_func_fmal_in_libm = yes; then
-    gl_FUNC_FMAL_WORKS
-    case "$gl_cv_func_fmal_works" in
-      *no) REPLACE_FMAL=1 ;;
-    esac
+    dnl Also check whether it's declared.
+    dnl IRIX 6.5 has fmal() in libm but doesn't declare it in <math.h>,
+    dnl and the function is buggy.
+    AC_CHECK_DECL([fmal], , [REPLACE_FMAL=1], [[#include <math.h>]])
+    if test $REPLACE_FMAL = 0; then
+      gl_FUNC_FMAL_WORKS
+      case "$gl_cv_func_fmal_works" in
+        *no) REPLACE_FMAL=1 ;;
+      esac
+    fi
   else
     HAVE_FMAL=0
   fi
@@ -339,7 +354,7 @@ int main()
       failed_tests |= 16;
   }
   /* This test fails on glibc 2.11 x86,x86_64,powerpc glibc 2.7 hppa,sparc,
-     MacOS X 10.5, FreeBSD 6.4 x86, OSF/1 5.1, mingw.  */
+     Mac OS X 10.5, FreeBSD 6.4 x86, OSF/1 5.1, mingw.  */
   {
     volatile long double x = ldexpl (1.0L, LDBL_MAX_EXP - 1);
     volatile long double y = 2.0L;

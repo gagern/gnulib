@@ -1,5 +1,5 @@
 /* Test of rounding towards negative infinity.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,7 +18,10 @@
 
 #include <math.h>
 
+#include "isnand-nolibm.h"
 #include "minus-zero.h"
+#include "infinity.h"
+#include "nan.h"
 #include "macros.h"
 
 int
@@ -38,6 +41,14 @@ main ()
   /* Negative numbers.  */
   ASSERT (!!signbit (floor (-0.3)) == !!signbit (minus_zerod));
   ASSERT (!!signbit (floor (-0.7)) == !!signbit (minus_zerod));
+
+  /* [MX] shaded specification in POSIX.  */
+
+  /* NaN.  */
+  ASSERT (isnand (floor (NaNd ())));
+  /* Infinity.  */
+  ASSERT (floor (Infinityd ()) == Infinityd ());
+  ASSERT (floor (- Infinityd ()) == - Infinityd ());
 
   return 0;
 }

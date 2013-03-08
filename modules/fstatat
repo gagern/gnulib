@@ -4,8 +4,8 @@ fstatat() function: Return information about a file at a directory.
 Files:
 lib/fstatat.c
 lib/at-func.c
-lib/openat-priv.h
 m4/fstatat.m4
+m4/lstat.m4
 
 Depends-on:
 sys_stat
@@ -13,6 +13,7 @@ extensions
 at-internal     [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
 dosname         [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
 errno           [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
+extern-inline   [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
 fchdir          [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
 fcntl-h         [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
 lstat           [test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1]
@@ -25,8 +26,6 @@ gl_FUNC_FSTATAT
 if test $HAVE_FSTATAT = 0 || test $REPLACE_FSTATAT = 1; then
   AC_LIBOBJ([fstatat])
 fi
-AC_REQUIRE([AC_C_INLINE]) dnl because 'inline' is used in lib/openat.h
-gl_MODULE_INDICATOR([fstatat]) dnl for lib/openat.h
 gl_SYS_STAT_MODULE_INDICATOR([fstatat])
 
 Makefile.am:
@@ -38,4 +37,4 @@ License:
 GPL
 
 Maintainer:
-Jim Meyering, Eric Blake
+Jim Meyering, Eric Blake, Paul Eggert

@@ -1,5 +1,5 @@
-# fstatat.m4 serial 2
-dnl Copyright (C) 2004-2011 Free Software Foundation, Inc.
+# fstatat.m4 serial 3
+dnl Copyright (C) 2004-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -45,7 +45,7 @@ AC_DEFUN([gl_FUNC_FSTATAT],
       ])
 
     case $gl_cv_func_fstatat_zero_flag+$gl_cv_func_lstat_dereferences_slashed_symlink in
-    *yes+yes) ;;
+    *yes+*yes) ;;
     *) REPLACE_FSTATAT=1
        case $gl_cv_func_fstatat_zero_flag in
        *yes)

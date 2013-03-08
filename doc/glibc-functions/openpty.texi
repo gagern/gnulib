@@ -8,7 +8,7 @@ Portability problems fixed by Gnulib:
 @itemize
 @item
 This function is missing on some platforms:
-AIX 5.1, HP-UX 11, IRIX 6.5, Solaris 11 2010-11.
+AIX 5.1, HP-UX 11, IRIX 6.5, Solaris 11 2011-11.
 @item
 One some systems (at least including Cygwin, Interix, OSF/1 4 and 5,
 and Mac OS X) linking with @code{-lutil} is not required.
@@ -34,5 +34,5 @@ mingw, MSVC 9.
 After a successful call to @code{openpty}, the application needs to close
 the master's file descriptor before closing the slave's file descriptor,
 otherwise the process may hang in a state where it cannot be killed, on
-some platforms: MacOS X 10.4.11.
+some platforms: Mac OS X 10.4.11.
 @end itemize

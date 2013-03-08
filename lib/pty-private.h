@@ -1,5 +1,5 @@
 /* Interface to the pt_chown program.
-   Copyright (C) 1998-1999, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 1998-1999, 2009-2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Zack Weinberg <zack@rabi.phys.columbia.edu>, 1998.
 
@@ -14,9 +14,8 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
-   02111-1307 USA.  */
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
 
 #ifndef _PTY_PRIVATE_H
 #define _PTY_PRIVATE_H 1
@@ -27,7 +26,7 @@
 /* The file descriptor connected to the master pseudo terminal.  */
 #define PTY_FILENO 3
 
-/* Path to the helper program that implements `grantpt' in user space.  */
+/* Path to the helper program that implements 'grantpt' in user space.  */
 #define _PATH_PT_CHOWN PKGLIBEXECDIR "/pt_chown"
 
 /* Test whether given TTY is really a Unix98 pseudo terminal.  */

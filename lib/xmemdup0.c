@@ -1,6 +1,6 @@
 /* xmemdup0.c -- copy a block of arbitrary bytes, plus a trailing NUL
 
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@
 #include <string.h>
 
 /* Clone an arbitrary block of bytes P of size S, with error checking,
-   and include a terminating NUL byte.  P is of type `void const *',
+   and include a terminating NUL byte.  P is of type 'void const *',
    to make it easier to use this with other mem* functions that return
-   `void *', but since appending a NUL byte only makes sense on bytes,
-   the return type is `char *'.
+   'void *', but since appending a NUL byte only makes sense on bytes,
+   the return type is 'char *'.
 
    The terminating NUL makes it safe to use strlen or rawmemchr to
    check for embedded NUL; it also speeds up algorithms such as escape

@@ -1,6 +1,6 @@
 /* Set file access and modification times.
 
-   Copyright (C) 2003-2011 Free Software Foundation, Inc.
+   Copyright (C) 2003-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#define _GL_UTIMENS_INLINE _GL_EXTERN_INLINE
 #include "utimens.h"
 
 #include <assert.h>

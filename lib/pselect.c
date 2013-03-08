@@ -1,6 +1,6 @@
 /* pselect - synchronous I/O multiplexing
 
-   Copyright 2011 Free Software Foundation, Inc.
+   Copyright 2011-2013 Free Software Foundation, Inc.
 
    This file is part of gnulib.
 
@@ -15,8 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* written by Paul Eggert */
 
@@ -33,6 +32,8 @@
    TIMEOUT seconds, and use signal mask SIGMASK while waiting.  A null
    pointer parameter stands for no descriptors, an infinite timeout,
    or an unaffected signal mask.  */
+
+#if !HAVE_PSELECT
 
 int
 pselect (int nfds, fd_set *restrict rfds,
@@ -75,3 +76,35 @@ pselect (int nfds, fd_set *restrict rfds,
 
   return select_result;
 }
+
+#else /* HAVE_PSELECT */
+# include <unistd.h>
+# undef pselect
+
+int
+rpl_pselect (int nfds, fd_set *restrict rfds,
+	     fd_set *restrict wfds, fd_set *restrict xfds,
+             struct timespec const *restrict timeout,
+	     sigset_t const *restrict sigmask)
+{
+  int i;
+
+  /* FreeBSD 8.2 has a bug: it does not always detect invalid fds.  */
+  if (nfds < 0 || nfds > FD_SETSIZE)
+    {
+      errno = EINVAL;
+      return -1;
+    }
+  for (i = 0; i < nfds; i++)
+    {
+      if (((rfds && FD_ISSET (i, rfds))
+           || (wfds && FD_ISSET (i, wfds))
+           || (xfds && FD_ISSET (i, xfds)))
+          && dup2 (i, i) != i)
+        return -1;
+    }
+
+  return pselect (nfds, rfds, wfds, xfds, timeout, sigmask);
+}
+
+#endif

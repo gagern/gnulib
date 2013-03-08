@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1995 Ian Jackson <iwj10@cus.cam.ac.uk>
    Copyright (C) 2001 Anthony Towns <aj@azure.humbug.org.au>
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ match_suffix (const char **str)
 }
 
 /* verrevcmp helper function */
-static inline int
+static int
 order (unsigned char c)
 {
   if (c_isdigit (c))
@@ -77,10 +77,10 @@ order (unsigned char c)
    This implements the algorithm for comparison of version strings
    specified by Debian and now widely adopted.  The detailed
    specification can be found in the Debian Policy Manual in the
-   section on the `Version' control field.  This version of the code
+   section on the 'Version' control field.  This version of the code
    implements that from s5.6.12 of Debian Policy v3.8.0.1
    http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version */
-static int
+static int _GL_ATTRIBUTE_PURE
 verrevcmp (const char *s1, size_t s1_len, const char *s2, size_t s2_len)
 {
   size_t s1_pos = 0;

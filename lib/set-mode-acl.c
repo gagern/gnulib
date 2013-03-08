@@ -1,6 +1,6 @@
 /* set-mode-acl.c - set access control list equivalent to a mode
 
-   Copyright (C) 2002-2003, 2005-2011 Free Software Foundation, Inc.
+   Copyright (C) 2002-2003, 2005-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
    Written by Paul Eggert and Andreas Gruenbacher, and Bruno Haible.  */
 
 #include <config.h>
+
+#define ACL_INTERNAL_INLINE _GL_EXTERN_INLINE
 
 #include "acl.h"
 
@@ -56,7 +58,7 @@ qset_acl (char const *name, int desc, mode_t mode)
 #if USE_ACL
 # if HAVE_ACL_GET_FILE
   /* POSIX 1003.1e draft 17 (abandoned) specific version.  */
-  /* Linux, FreeBSD, MacOS X, IRIX, Tru64 */
+  /* Linux, FreeBSD, Mac OS X, IRIX, Tru64 */
 #  if !HAVE_ACL_TYPE_EXTENDED
   /* Linux, FreeBSD, IRIX, Tru64 */
 
@@ -141,19 +143,19 @@ qset_acl (char const *name, int desc, mode_t mode)
   return 0;
 
 #  else /* HAVE_ACL_TYPE_EXTENDED */
-  /* MacOS X */
+  /* Mac OS X */
 
-  /* On MacOS X,  acl_get_file (name, ACL_TYPE_ACCESS)
-     and          acl_get_file (name, ACL_TYPE_DEFAULT)
+  /* On Mac OS X,  acl_get_file (name, ACL_TYPE_ACCESS)
+     and           acl_get_file (name, ACL_TYPE_DEFAULT)
      always return NULL / EINVAL.  You have to use
-                  acl_get_file (name, ACL_TYPE_EXTENDED)
-     or           acl_get_fd (open (name, ...))
+                   acl_get_file (name, ACL_TYPE_EXTENDED)
+     or            acl_get_fd (open (name, ...))
      to retrieve an ACL.
      On the other hand,
-                  acl_set_file (name, ACL_TYPE_ACCESS, acl)
-     and          acl_set_file (name, ACL_TYPE_DEFAULT, acl)
+                   acl_set_file (name, ACL_TYPE_ACCESS, acl)
+     and           acl_set_file (name, ACL_TYPE_DEFAULT, acl)
      have the same effect as
-                  acl_set_file (name, ACL_TYPE_EXTENDED, acl):
+                   acl_set_file (name, ACL_TYPE_EXTENDED, acl):
      Each of these calls sets the file's ACL.  */
 
   acl_t acl;
@@ -197,7 +199,7 @@ qset_acl (char const *name, int desc, mode_t mode)
   return chmod_or_fchmod (name, desc, mode);
 #  endif
 
-# elif HAVE_FACL && defined GETACLCNT /* Solaris, Cygwin, not HP-UX */
+# elif HAVE_FACL && defined GETACL /* Solaris, Cygwin, not HP-UX */
 
   int done_setacl = 0;
 
@@ -214,47 +216,60 @@ qset_acl (char const *name, int desc, mode_t mode)
   int convention;
 
   {
+    /* Initially, try to read the entries into a stack-allocated buffer.
+       Use malloc if it does not fit.  */
+    enum
+      {
+        alloc_init = 4000 / sizeof (ace_t), /* >= 3 */
+        alloc_max = MIN (INT_MAX, SIZE_MAX / sizeof (ace_t))
+      };
+    ace_t buf[alloc_init];
+    size_t alloc = alloc_init;
+    ace_t *entries = buf;
+    ace_t *malloced = NULL;
     int count;
-    ace_t *entries;
 
     for (;;)
       {
-        if (desc != -1)
-          count = facl (desc, ACE_GETACLCNT, 0, NULL);
-        else
-          count = acl (name, ACE_GETACLCNT, 0, NULL);
-        if (count <= 0)
+        count = (desc != -1
+                 ? facl (desc, ACE_GETACL, alloc, entries)
+                 : acl (name, ACE_GETACL, alloc, entries));
+        if (count < 0 && errno == ENOSPC)
           {
-            convention = -1;
-            break;
+            /* Increase the size of the buffer.  */
+            free (malloced);
+            if (alloc > alloc_max / 2)
+              {
+                errno = ENOMEM;
+                return -1;
+              }
+            alloc = 2 * alloc; /* <= alloc_max */
+            entries = malloced = (ace_t *) malloc (alloc * sizeof (ace_t));
+            if (entries == NULL)
+              {
+                errno = ENOMEM;
+                return -1;
+              }
+            continue;
           }
-        entries = (ace_t *) malloc (count * sizeof (ace_t));
-        if (entries == NULL)
-          {
-            errno = ENOMEM;
-            return -1;
-          }
-        if ((desc != -1
-             ? facl (desc, ACE_GETACL, count, entries)
-             : acl (name, ACE_GETACL, count, entries))
-            == count)
-          {
-            int i;
-
-            convention = 0;
-            for (i = 0; i < count; i++)
-              if (entries[i].a_flags & (OLD_ACE_OWNER | OLD_ACE_GROUP | OLD_ACE_OTHER))
-                {
-                  convention = 1;
-                  break;
-                }
-            free (entries);
-            break;
-          }
-        /* Huh? The number of ACL entries changed since the last call.
-           Repeat.  */
-        free (entries);
+        break;
       }
+
+    if (count <= 0)
+      convention = -1;
+    else
+      {
+        int i;
+
+        convention = 0;
+        for (i = 0; i < count; i++)
+          if (entries[i].a_flags & (OLD_ACE_OWNER | OLD_ACE_GROUP | OLD_ACE_OTHER))
+            {
+              convention = 1;
+              break;
+            }
+      }
+    free (malloced);
   }
 
   if (convention >= 0)
@@ -677,8 +692,8 @@ qset_acl (char const *name, int desc, mode_t mode)
 int
 set_acl (char const *name, int desc, mode_t mode)
 {
-  int r = qset_acl (name, desc, mode);
-  if (r != 0)
+  int ret = qset_acl (name, desc, mode);
+  if (ret != 0)
     error (0, errno, _("setting permissions for %s"), quote (name));
-  return r;
+  return ret;
 }

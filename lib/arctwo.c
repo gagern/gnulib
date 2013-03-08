@@ -1,5 +1,5 @@
 /* arctwo.c --- The RC2 cipher as described in RFC 2268.
- * Copyright (C) 2003-2006, 2008-2011 Free Software Foundation, Inc.
+ * Copyright (C) 2003-2006, 2008-2013 Free Software Foundation, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -12,9 +12,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
+ * along with this file; if not, see <http://www.gnu.org/licenses/>.
  */
 
 /* Code from GnuTLS/Libgcrypt adapted for gnulib by Simon Josefsson. */
@@ -69,7 +67,7 @@ static const uint8_t arctwo_sbox[] = {
 };
 
 /* C89 compliant way to cast 'char' to 'unsigned char'. */
-static inline unsigned char
+static unsigned char
 to_uchar (char ch)
 {
   return ch;

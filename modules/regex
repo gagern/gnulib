@@ -8,6 +8,7 @@ lib/regex_internal.c
 lib/regex_internal.h
 lib/regexec.c
 lib/regcomp.c
+m4/eealloc.m4
 m4/regex.m4
 m4/mbstate_t.m4
 
@@ -17,7 +18,6 @@ ssize_t
 alloca-opt      [test $ac_use_included_regex = yes]
 btowc           [test $ac_use_included_regex = yes]
 gettext-h       [test $ac_use_included_regex = yes]
-localcharset    [test $ac_use_included_regex = yes]
 malloc-gnu      [test $ac_use_included_regex = yes]
 memcmp          [test $ac_use_included_regex = yes]
 memmove         [test $ac_use_included_regex = yes]
@@ -26,10 +26,10 @@ mbsinit         [test $ac_use_included_regex = yes]
 nl_langinfo     [test $ac_use_included_regex = yes]
 stdbool         [test $ac_use_included_regex = yes]
 stdint          [test $ac_use_included_regex = yes]
-strcase         [test $ac_use_included_regex = yes]
 wchar           [test $ac_use_included_regex = yes]
 wcrtomb         [test $ac_use_included_regex = yes]
 wctype-h        [test $ac_use_included_regex = yes]
+wctype          [test $ac_use_included_regex = yes]
 
 configure.ac:
 gl_REGEX

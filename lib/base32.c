@@ -1,5 +1,5 @@
 /* base32.c -- Encode binary data using printable characters.
-   Copyright (C) 1999-2001, 2004-2006, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 1999-2001, 2004-2006, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Adapted from Simon Josefsson's base64 code by Gijs van Tulder.
  *
@@ -52,7 +51,7 @@
 #include <string.h>
 
 /* C89 compliant way to cast 'char' to 'unsigned char'. */
-static inline unsigned char
+static unsigned char
 to_uchar (char ch)
 {
   return ch;
@@ -303,7 +302,7 @@ base32_decode_ctx_init (struct base32_decode_context *ctx)
    and return CTX->buf.  In either case, advance *IN to point to the byte
    after the last one processed, and set *N_NON_NEWLINE to the number of
    verified non-newline bytes accessible through the returned pointer.  */
-static inline char *
+static char *
 get_8 (struct base32_decode_context *ctx,
        char const *restrict *in, char const *restrict in_end,
        size_t *n_non_newline)
@@ -357,7 +356,7 @@ get_8 (struct base32_decode_context *ctx,
    as many bytes as possible are written to *OUT.  On return, advance
    *OUT to point to the byte after the last one written, and decrement
    *OUTLEN to reflect the number of bytes remaining in *OUT.  */
-static inline bool
+static bool
 decode_8 (char const *restrict in, size_t inlen,
           char *restrict *outp, size_t *outleft)
 {

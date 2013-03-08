@@ -1,5 +1,5 @@
 /* Test of parse_datetime() function.
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Simon Josefsson <simon@josefsson.org>, 2008.  */
 
@@ -30,7 +29,7 @@
 
 #ifdef DEBUG
 #define LOG(str, now, res)                                              \
-  printf ("string `%s' diff %d %d\n",                   \
+  printf ("string '%s' diff %d %d\n",                                 \
           str, res.tv_sec - now.tv_sec, res.tv_nsec - now.tv_nsec);
 #else
 #define LOG(str, now, res) (void) 0
@@ -123,6 +122,12 @@ main (int argc _GL_UNUSED, char **argv)
   time_t ref_time = 1304250918;
 
   set_program_name (argv[0]);
+
+  /* Set the time zone to US Eastern time with the 2012 rules.  This
+     should disable any leap second support.  Otherwise, there will be
+     a problem with glibc on sites that default to leap seconds; see
+     <http://bugs.gnu.org/12206>.  */
+  setenv ("TZ", "EST5EDT,M3.2.0,M11.1.0", 1);
 
   gmtoff = gmt_offset (ref_time);
 
@@ -409,6 +414,10 @@ main (int argc _GL_UNUSED, char **argv)
   LOG (p, now, result);
   ASSERT (result.tv_sec == 24 * 3600
           && result.tv_nsec == now.tv_nsec);
+
+  /* Exercise a sign-extension bug.  Before July 2012, an input
+     starting with a high-bit-set byte would be treated like "0".  */
+  ASSERT ( ! parse_datetime (&result, "\xb0", &now));
 
   return 0;
 }

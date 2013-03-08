@@ -1,6 +1,6 @@
 /* gethrxtime -- get high resolution real time
 
-   Copyright (C) 2005, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,20 +18,35 @@
 /* Written by Paul Eggert.  */
 
 #ifndef GETHRXTIME_H_
-# define GETHRXTIME_H_ 1
+#define GETHRXTIME_H_ 1
 
-# include "xtime.h"
+#include "xtime.h"
+
+_GL_INLINE_HEADER_BEGIN
+#ifndef GETHRXTIME_INLINE
+# define GETHRXTIME_INLINE _GL_INLINE
+#endif
+
+#ifdef  __cplusplus
+extern "C" {
+#endif
 
 /* Get the current time, as a count of the number of nanoseconds since
    an arbitrary epoch (e.g., the system boot time).  Prefer a
    high-resolution clock that is not subject to resetting or
    drifting.  */
 
-# if HAVE_ARITHMETIC_HRTIME_T && HAVE_DECL_GETHRTIME
-#  include <time.h>
-static inline xtime_t gethrxtime (void) { return gethrtime (); }
+#if HAVE_ARITHMETIC_HRTIME_T && HAVE_DECL_GETHRTIME
+# include <time.h>
+GETHRXTIME_INLINE xtime_t gethrxtime (void) { return gethrtime (); }
 # else
 xtime_t gethrxtime (void);
-# endif
+#endif
+
+_GL_INLINE_HEADER_END
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif

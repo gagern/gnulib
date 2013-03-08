@@ -1,5 +1,5 @@
 /* Test of POSIX compatible vsprintf() and sprintf() functions.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -259,7 +259,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   }
 
   { /* Rounding can turn a ...FFF into a ...000.
-       This shows a MacOS X 10.3.9 (Darwin 7.9) bug.  */
+       This shows a Mac OS X 10.3.9 (Darwin 7.9) bug.  */
     char result[1000];
     int retval =
       my_sprintf (result, "%.1a %d", 1.999, 33, 44, 55);
@@ -610,7 +610,7 @@ test_function (int (*my_sprintf) (char *, const char *, ...))
   }
 
   { /* Rounding can turn a ...FFF into a ...000.
-       This shows a MacOS X 10.3.9 (Darwin 7.9) bug and a
+       This shows a Mac OS X 10.3.9 (Darwin 7.9) bug and a
        glibc 2.4 bug <http://sourceware.org/bugzilla/show_bug.cgi?id=2908>.  */
     char result[1000];
     int retval =

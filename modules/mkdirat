@@ -4,7 +4,6 @@ mkdirat() function: Create a directory relative to a given directory.
 Files:
 lib/mkdirat.c
 lib/at-func.c
-lib/openat-priv.h
 m4/mkdirat.m4
 
 Depends-on:
@@ -14,6 +13,7 @@ at-internal     [test $HAVE_MKDIRAT = 0]
 dosname         [test $HAVE_MKDIRAT = 0]
 errno           [test $HAVE_MKDIRAT = 0]
 fchdir          [test $HAVE_MKDIRAT = 0]
+fcntl-h         [test $HAVE_MKDIRAT = 0]
 mkdir           [test $HAVE_MKDIRAT = 0]
 openat-die      [test $HAVE_MKDIRAT = 0]
 openat-h        [test $HAVE_MKDIRAT = 0]

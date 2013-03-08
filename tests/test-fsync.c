@@ -1,5 +1,5 @@
 /* Test of fsync() function.
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ main (void)
     if (fsync (fd) != 0)
       {
         ASSERT (errno == EINVAL /* POSIX */
-                || errno == ENOTSUP /* seen on MacOS X 10.5 */
+                || errno == ENOTSUP /* seen on Mac OS X 10.5 */
                 || errno == EBADF /* seen on AIX 7.1 */
                 || errno == EIO /* seen on mingw */
                 );
@@ -51,6 +51,7 @@ main (void)
     ASSERT (errno == EBADF);
   }
   {
+    close (99);
     errno = 0;
     ASSERT (fsync (99) == -1);
     ASSERT (errno == EBADF);

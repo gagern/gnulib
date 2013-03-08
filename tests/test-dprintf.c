@@ -1,5 +1,5 @@
 /* Test of dprintf() function.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 SIGNATURE_CHECK (dprintf, int, (int, const char *, ...));
 
 #include <errno.h>
+#include <unistd.h>
 
 #include "macros.h"
 
@@ -35,6 +36,7 @@ main (int argc, char *argv[])
     ASSERT (errno == EBADF);
   }
   {
+    close (99);
     errno = 0;
     ASSERT (dprintf (99, "test") == -1);
     ASSERT (errno == EBADF);

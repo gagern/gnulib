@@ -1,6 +1,6 @@
 # Checks for stat-related time functions.
 
-# Copyright (C) 1998-1999, 2001, 2003, 2005-2007, 2009-2011 Free Software
+# Copyright (C) 1998-1999, 2001, 2003, 2005-2007, 2009-2013 Free Software
 # Foundation, Inc.
 
 # This file is free software; the Free Software Foundation
@@ -19,7 +19,6 @@ dnl From Paul Eggert.
 
 AC_DEFUN([gl_STAT_TIME],
 [
-  AC_REQUIRE([AC_C_INLINE])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   AC_CHECK_HEADERS_ONCE([sys/time.h])
 
@@ -70,7 +69,6 @@ AC_DEFUN([gl_STAT_TIME],
 #
 AC_DEFUN([gl_STAT_BIRTHTIME],
 [
-  AC_REQUIRE([AC_C_INLINE])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   AC_CHECK_HEADERS_ONCE([sys/time.h])
   AC_CHECK_MEMBERS([struct stat.st_birthtimespec.tv_nsec], [],

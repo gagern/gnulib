@@ -1,6 +1,6 @@
 /* getdomainname emulation for systems that doesn't have it.
 
-   Copyright (C) 2003, 2006, 2008, 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2003, 2006, 2008, 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ int
 getdomainname (char *name, size_t len)
 #undef getdomainname
 {
-#if HAVE_GETDOMAINNAME                 /* MacOS X, FreeBSD, AIX, IRIX, OSF/1 */
+#if HAVE_GETDOMAINNAME                 /* Mac OS X, FreeBSD, AIX, IRIX, OSF/1 */
   extern int getdomainname (char *, int);
 
   if (len > INT_MAX)

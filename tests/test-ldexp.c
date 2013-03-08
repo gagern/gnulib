@@ -1,5 +1,5 @@
 /* Test of ldexp() function.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,9 +40,10 @@ SIGNATURE_CHECK (ldexp, double, (double, int));
 #define NAN NaNd ()
 #define L_(literal) literal
 #define MINUS_ZERO minus_zerod
-#define LDEXP ldexp
 #define MIN_EXP DBL_MIN_EXP
 #define MAX_EXP DBL_MAX_EXP
+#define LDEXP ldexp
+#define RANDOM randomd
 #include "test-ldexp.h"
 
 int

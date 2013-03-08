@@ -1,5 +1,5 @@
 /* Test of fmod() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,11 +23,17 @@
 #include "signature.h"
 SIGNATURE_CHECK (fmod, double, (double, double));
 
+#include <float.h>
+
 #include "macros.h"
 
-volatile double x;
-volatile double y;
-double z;
+#define DOUBLE double
+#define L_(literal) literal
+#define MANT_DIG DBL_MANT_DIG
+#define MAX_EXP DBL_MAX_EXP
+#define FMOD fmod
+#define RANDOM randomd
+#include "test-fmod.h"
 
 int
 main ()
@@ -37,6 +43,8 @@ main ()
   y = 3.141592654;
   z = fmod (x, y);
   ASSERT (z >= 2.962721817 && z <= 2.962721819);
+
+  test_function ();
 
   return 0;
 }

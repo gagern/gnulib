@@ -1,5 +1,5 @@
 /* vsprintf with automatic memory allocation.
-   Copyright (C) 1999, 2002-2011 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* This file can be parametrized with the following macros:
      VASNPRINTF         The name of the function being defined.
@@ -276,7 +275,7 @@ decimal_point_char (void)
 {
   const char *point;
   /* Determine it in a multithread-safe way.  We know nl_langinfo is
-     multithread-safe on glibc systems and MacOS X systems, but is not required
+     multithread-safe on glibc systems and Mac OS X systems, but is not required
      to be multithread-safe by POSIX.  sprintf(), however, is multithread-safe.
      localeconv() is rarely multithread-safe.  */
 #  if HAVE_NL_LANGINFO && (__GLIBC__ || defined __UCLIBC__ || (defined __APPLE__ && defined __MACH__))
@@ -1531,7 +1530,7 @@ is_borderline (const char *digits, size_t precision)
 
 /* Returns the number of TCHAR_T units needed as temporary space for the result
    of sprintf or SNPRINTF of a single conversion directive.  */
-static inline size_t
+static size_t
 MAX_ROOM_NEEDED (const arguments *ap, size_t arg_index, FCHAR_T conversion,
                  arg_type type, int flags, size_t width, int has_precision,
                  size_t precision, int pad_ourselves)
@@ -2814,7 +2813,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
                   if (has_width)
                     {
 #  if ENABLE_UNISTDIO
-                      /* Outside POSIX, it's preferrable to compare the width
+                      /* Outside POSIX, it's preferable to compare the width
                          against the number of _characters_ of the converted
                          value.  */
                       w = DCHAR_MBSNLEN (result + length, characters);
@@ -4885,7 +4884,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
                    in format strings in writable memory may crash the program
                    (if compiled with _FORTIFY_SOURCE=2), so we should avoid it
                    in this situation.  */
-                /* On native Win32 systems (such as mingw), we can avoid using
+                /* On native Windows systems (such as mingw), we can avoid using
                    %n because:
                      - Although the gl_SNPRINTF_TRUNCATION_C99 test fails,
                        snprintf does not write more than the specified number
@@ -4894,7 +4893,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
                      - Although the gl_SNPRINTF_RETVAL_C99 test fails, snprintf
                        allows us to recognize the case of an insufficient
                        buffer size: it returns -1 in this case.
-                   On native Win32 systems (such as mingw) where the OS is
+                   On native Windows systems (such as mingw) where the OS is
                    Windows Vista, the use of %n in format strings by default
                    crashes the program. See
                      <http://gcc.gnu.org/ml/gcc/2007-06/msg00122.html> and
@@ -5417,7 +5416,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
                       {
                         size_t w;
 # if ENABLE_UNISTDIO
-                        /* Outside POSIX, it's preferrable to compare the width
+                        /* Outside POSIX, it's preferable to compare the width
                            against the number of _characters_ of the converted
                            value.  */
                         w = DCHAR_MBSNLEN (result + length, count);

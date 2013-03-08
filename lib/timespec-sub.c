@@ -1,6 +1,6 @@
 /* Subtract two struct timespec values.
 
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
    overflow, return an extremal value.  This assumes 0 <= tv_nsec <=
    999999999.  */
 
-#include <config.h>
 #include <config.h>
 #include "timespec.h"
 

@@ -1,6 +1,6 @@
 /* A GNU-like <search.h>.
 
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -158,7 +158,7 @@ _GL_CXXALIASWARN (tdelete);
        and after the right subtree traversal,
      - for leaf nodes: once.
    The arguments passed to ACTION are:
-     1. the node; it can be casted to a 'const void * const *', i.e. into a
+     1. the node; it can be cast to a 'const void * const *', i.e. into a
         pointer to the key,
      2. an indicator which visit of the node this is,
      3. the level of the node in the tree (0 for the root).  */

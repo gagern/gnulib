@@ -1,5 +1,5 @@
 /* Test of fabs() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,10 +23,17 @@
 #include "signature.h"
 SIGNATURE_CHECK (fabs, double, (double));
 
-#include "macros.h"
+#include <string.h>
 
-volatile double x;
-double y;
+#include "macros.h"
+#include "minus-zero.h"
+
+#define DOUBLE double
+#define L_(literal) literal
+#define MINUS_ZERO minus_zerod
+#define FABS fabs
+#define RANDOM randomd
+#include "test-fabs.h"
 
 int
 main ()
@@ -40,6 +47,8 @@ main ()
   x = -0.6;
   y = fabs (x);
   ASSERT (y == 0.6);
+
+  test_function ();
 
   return 0;
 }

@@ -1,6 +1,6 @@
 /* Test for nonblocking read and write on sockets.
 
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 
 #include "nonblocking.h"
 #include "wait-process.h"
+#include "progname.h"
 
 #include "macros.h"
 #include "socket-server.h"
@@ -43,13 +44,18 @@
 int
 main (int argc, char *argv[])
 {
-  const char *child_path = argv[1];
-  int test = atoi (argv[2]);
+  const char *child_path;
+  int test;
   int server;
   int port;
   int child;
   int server_socket;
   int exitcode;
+
+  set_program_name (argv[0]);
+
+  child_path = argv[1];
+  test = atoi (argv[2]);
 
   /* Create a server socket.  */
   server = create_server (0, 1, &port);

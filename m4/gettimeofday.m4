@@ -1,6 +1,6 @@
-# serial 17
+# serial 20
 
-# Copyright (C) 2001-2003, 2005, 2007, 2009-2011 Free Software Foundation, Inc.
+# Copyright (C) 2001-2003, 2005, 2007, 2009-2013 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -50,16 +50,22 @@ int gettimeofday (struct timeval *restrict, struct timezone *restrict);
     elif test $gl_cv_func_gettimeofday_posix_signature != yes; then
       REPLACE_GETTIMEOFDAY=1
     fi
+    dnl If we override 'struct timeval', we also have to override gettimeofday.
+    if test $REPLACE_STRUCT_TIMEVAL = 1; then
+      REPLACE_GETTIMEOFDAY=1
+    fi
     m4_ifdef([gl_FUNC_TZSET_CLOBBER], [
       gl_FUNC_TZSET_CLOBBER
-      if test $gl_cv_func_tzset_clobber = yes; then
-        REPLACE_GETTIMEOFDAY=1
-        gl_GETTIMEOFDAY_REPLACE_LOCALTIME
-        AC_DEFINE([tzset], [rpl_tzset],
-          [Define to rpl_tzset if the wrapper function should be used.])
-        AC_DEFINE([TZSET_CLOBBERS_LOCALTIME], [1],
-          [Define if tzset clobbers localtime's static buffer.])
-      fi
+      case "$gl_cv_func_tzset_clobber" in
+        *yes)
+          REPLACE_GETTIMEOFDAY=1
+          gl_GETTIMEOFDAY_REPLACE_LOCALTIME
+          AC_DEFINE([tzset], [rpl_tzset],
+            [Define to rpl_tzset if the wrapper function should be used.])
+          AC_DEFINE([TZSET_CLOBBERS_LOCALTIME], [1],
+            [Define if tzset clobbers localtime's static buffer.])
+          ;;
+      esac
     ])
   fi
   AC_DEFINE_UNQUOTED([GETTIMEOFDAY_TIMEZONE], [$gl_gettimeofday_timezone],
@@ -78,6 +84,7 @@ dnl the wrapper functions that work around the problem.
 AC_DEFUN([gl_FUNC_GETTIMEOFDAY_CLOBBER],
 [
  AC_REQUIRE([gl_HEADER_SYS_TIME_H])
+ AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
 
  AC_CACHE_CHECK([whether gettimeofday clobbers localtime buffer],
   [gl_cv_func_gettimeofday_clobber],
@@ -100,15 +107,23 @@ AC_DEFUN([gl_FUNC_GETTIMEOFDAY_CLOBBER],
         ]])],
      [gl_cv_func_gettimeofday_clobber=no],
      [gl_cv_func_gettimeofday_clobber=yes],
-     dnl When crosscompiling, assume it is broken.
-     [gl_cv_func_gettimeofday_clobber=yes])])
+     [# When cross-compiling:
+      case "$host_os" in
+                # Guess all is fine on glibc systems.
+        *-gnu*) gl_cv_func_gettimeofday_clobber="guessing no" ;;
+                # If we don't know, assume the worst.
+        *)      gl_cv_func_gettimeofday_clobber="guessing yes" ;;
+      esac
+     ])])
 
- if test $gl_cv_func_gettimeofday_clobber = yes; then
-   REPLACE_GETTIMEOFDAY=1
-   gl_GETTIMEOFDAY_REPLACE_LOCALTIME
-   AC_DEFINE([GETTIMEOFDAY_CLOBBERS_LOCALTIME], [1],
-     [Define if gettimeofday clobbers the localtime buffer.])
- fi
+ case "$gl_cv_func_gettimeofday_clobber" in
+   *yes)
+     REPLACE_GETTIMEOFDAY=1
+     gl_GETTIMEOFDAY_REPLACE_LOCALTIME
+     AC_DEFINE([GETTIMEOFDAY_CLOBBERS_LOCALTIME], [1],
+       [Define if gettimeofday clobbers the localtime buffer.])
+     ;;
+ esac
 ])
 
 AC_DEFUN([gl_GETTIMEOFDAY_REPLACE_LOCALTIME], [

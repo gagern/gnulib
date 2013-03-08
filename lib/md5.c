@@ -1,6 +1,6 @@
 /* Functions to compute MD5 message digest of files or memory blocks.
    according to the definition of MD5 in RFC 1321 from April 1992.
-   Copyright (C) 1995-1997, 1999-2001, 2005-2006, 2008-2011 Free Software
+   Copyright (C) 1995-1997, 1999-2001, 2005-2006, 2008-2013 Free Software
    Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -15,8 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.  */
 
@@ -84,7 +83,7 @@ md5_init_ctx (struct md5_ctx *ctx)
 /* Copy the 4 byte value from v into the memory location pointed to by *cp,
    If your architecture allows unaligned access this is equivalent to
    * (uint32_t *) cp = v  */
-static inline void
+static void
 set_uint32 (char *cp, uint32_t v)
 {
   memcpy (cp, &v, sizeof v);
@@ -313,13 +312,13 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
   uint32_t B = ctx->B;
   uint32_t C = ctx->C;
   uint32_t D = ctx->D;
+  uint32_t lolen = len;
 
   /* First increment the byte count.  RFC 1321 specifies the possible
      length of the file up to 2^64 bits.  Here we only compute the
      number of bytes.  Do a double word increment.  */
-  ctx->total[0] += len;
-  if (ctx->total[0] < len)
-    ++ctx->total[1];
+  ctx->total[0] += lolen;
+  ctx->total[1] += (len >> 31 >> 1) + (ctx->total[0] < lolen);
 
   /* Process all bytes in the buffer with 64 bytes in each round of
      the loop.  */

@@ -1,7 +1,7 @@
-# serial 29
+# serial 30
 # How to list mounted file systems.
 
-# Copyright (C) 1998-2004, 2006, 2009-2011 Free Software Foundation, Inc.
+# Copyright (C) 1998-2004, 2006, 2009-2013 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -70,7 +70,7 @@ AC_FUNC_GETMNTENT
 # with other getmntent implementations.
 
 # NOTE: Normally, I wouldn't use a check for system type as I've done for
-# `CRAY' below since that goes against the whole autoconf philosophy.  But
+# 'CRAY' below since that goes against the whole autoconf philosophy.  But
 # I think there is too great a chance that some non-Cray system has a
 # function named listmntent to risk the false positive.
 
@@ -110,7 +110,7 @@ if test -z "$ac_list_mounted_fs"; then
     AC_DEFINE([MOUNTED_VMOUNT], [1],
         [Define if there is a function named mntctl that can be used to read
          the list of mounted file systems, and there is a system header file
-         that declares `struct vmount.'  (AIX)])
+         that declares 'struct vmount'.  (AIX)])
   fi
 fi
 
@@ -339,7 +339,7 @@ if test -z "$ac_list_mounted_fs"; then
       ac_list_mounted_fs=found
       AC_DEFINE([MOUNTED_INTERIX_STATVFS], [1],
                 [Define if we are on interix, and ought to use statvfs plus
-                 some special knowledge on where mounted filesystems can be
+                 some special knowledge on where mounted file systems can be
                  found. (Interix)])
     fi
     ;;

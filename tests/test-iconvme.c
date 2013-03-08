@@ -1,5 +1,5 @@
 /* Recode strings between character sets, using iconv.
-   Copyright (C) 2004-2005, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2004-2005, 2009-2013 Free Software Foundation, Inc.
    Written by Simon Josefsson.
 
    This program is free software: you can redistribute it and/or modify
@@ -66,9 +66,9 @@ int main (int ac, char *av[])
         from[strlen (from) - 1] = '\0';
     }
 
-  printf (" Input string: `%s'\n"
-          "From code set: `%s'\n"
-          "  To code set: `%s'\n",
+  printf (" Input string: '%s'\n"
+          "From code set: '%s'\n"
+          "  To code set: '%s'\n",
           in, from, to);
 
   out = iconv_string (in, from, to);
@@ -77,7 +77,7 @@ int main (int ac, char *av[])
     perror ("iconv");
   else
     {
-      printf ("\nOutput: `%s'\n", out);
+      printf ("\nOutput: '%s'\n", out);
       free (out);
     }
 

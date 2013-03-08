@@ -1,5 +1,5 @@
 /* Test of copysignf() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <math.h>
 
 #include "signature.h"
-SIGNATURE_CHECK (copysignf, double, (double, double));
+SIGNATURE_CHECK (copysignf, float, (float, float));
 
 #include "macros.h"
 #include "minus-zero.h"

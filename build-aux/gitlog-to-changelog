@@ -3,13 +3,13 @@ eval '(exit $?0)' && eval 'exec perl -wS "$0" ${1+"$@"}'
     if 0;
 # Convert git log output to ChangeLog format.
 
-my $VERSION = '2011-11-02 07:53'; # UTC
+my $VERSION = '2012-07-29 06:11'; # UTC
 # The definition above must lie within the first 8 lines in order
 # for the Emacs time-stamp write hook (at end) to update it.
 # If you change this file with Emacs, please let the write hook
 # do its job.  Otherwise, update this string manually.
 
-# Copyright (C) 2008-2011 Free Software Foundation, Inc.
+# Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ sub usage ($)
   my $STREAM = ($exit_code == 0 ? *STDOUT : *STDERR);
   if ($exit_code != 0)
     {
-      print $STREAM "Try `$ME --help' for more information.\n";
+      print $STREAM "Try '$ME --help' for more information.\n";
     }
   else
     {
@@ -64,12 +64,21 @@ OPTIONS:
                   makes a change to SHA1's commit log text or metadata.
    --append-dot append a dot to the first line of each commit message if
                   there is no other punctuation or blank at the end.
+   --no-cluster never cluster commit messages under the same date/author
+                  header; the default is to cluster adjacent commit messages
+                  if their headers are the same and neither commit message
+                  contains multiple paragraphs.
+   --srcdir=DIR the root of the source tree, from which the .git/
+                  directory can be derived.
    --since=DATE convert only the logs since DATE;
                   the default is to convert all log entries.
    --format=FMT set format string for commit subject and body;
                   see 'man git-log' for the list of format metacharacters;
                   the default is '%s%n%b%n'
-
+   --strip-tab  remove one additional leading TAB from commit message lines.
+   --strip-cherry-pick  remove data inserted by "git cherry-pick";
+                  this includes the "cherry picked from commit ..." line,
+                  and the possible final "Conflicts:" paragraph.
    --help       display this help and exit
    --version    output version information and exit
 
@@ -77,6 +86,21 @@ EXAMPLE:
 
   $ME --since=2008-01-01 > ChangeLog
   $ME -- -n 5 foo > last-5-commits-to-branch-foo
+
+SPECIAL SYNTAX:
+
+The following types of strings are interpreted specially when they appear
+at the beginning of a log message line.  They are not copied to the output.
+
+  Copyright-paperwork-exempt: Yes
+    Append the "(tiny change)" notation to the usual "date name email"
+    ChangeLog header to mark a change that does not require a copyright
+    assignment.
+  Co-authored-by: Joe User <user\@example.com>
+    List the specified name and email address on a second
+    ChangeLog header, denoting a co-author.
+  Signed-off-by: Joe User <user\@example.com>
+    These lines are simply elided.
 
 In a FILE specified via --amend, comment lines (starting with "#") are ignored.
 FILE must consist of <SHA,CODE+> pairs where SHA is a 40-byte SHA1 (alone on
@@ -93,7 +117,7 @@ s/all tile types/all file types/
 1379ed974f1fa39b12e2ffab18b3f7a607082202
 # Due to a bug in vc-dwim, I mis-attributed a patch by Paul to myself.
 # Change the author to be Paul.  Note the escaped "@":
-s,Jim .*>,Paul Eggert <eggert\@cs.ucla.edu>,
+s,Jim .*>,Paul Eggert <eggert\\\@cs.ucla.edu>,
 
 EOF
     }
@@ -170,11 +194,39 @@ sub parse_amend_file($)
   return $h;
 }
 
+# git_dir_option $SRCDIR
+#
+# From $SRCDIR, the --git-dir option to pass to git (none if $SRCDIR
+# is undef).  Return as a list (0 or 1 element).
+sub git_dir_option($)
+{
+  my ($srcdir) = @_;
+  my @res = ();
+  if (defined $srcdir)
+    {
+      my $qdir = shell_quote $srcdir;
+      my $cmd = "cd $qdir && git rev-parse --show-toplevel";
+      my $qcmd = shell_quote $cmd;
+      my $git_dir = qx($cmd);
+      defined $git_dir
+        or die "$ME: cannot run $qcmd: $!\n";
+      $? == 0
+        or die "$ME: $qcmd had unexpected exit code or signal ($?)\n";
+      chomp $git_dir;
+      push @res, "--git-dir=$git_dir/.git";
+    }
+  @res;
+}
+
 {
   my $since_date;
   my $format_string = '%s%n%b%n';
   my $amend_file;
   my $append_dot = 0;
+  my $cluster = 1;
+  my $strip_tab = 0;
+  my $strip_cherry_pick = 0;
+  my $srcdir;
   GetOptions
     (
      help => sub { usage 0 },
@@ -183,8 +235,11 @@ sub parse_amend_file($)
      'format=s' => \$format_string,
      'amend=s' => \$amend_file,
      'append-dot' => \$append_dot,
+     'cluster!' => \$cluster,
+     'strip-tab' => \$strip_tab,
+     'strip-cherry-pick' => \$strip_cherry_pick,
+     'srcdir=s' => \$srcdir,
     ) or usage 1;
-
 
   defined $since_date
     and unshift @ARGV, "--since=$since_date";
@@ -193,13 +248,17 @@ sub parse_amend_file($)
   # that makes a correction in the log or attribution of that commit.
   my $amend_code = defined $amend_file ? parse_amend_file $amend_file : {};
 
-  my @cmd = (qw (git log --log-size),
+  my @cmd = ('git',
+             git_dir_option $srcdir,
+             qw(log --log-size),
              '--pretty=format:%H:%ct  %an  <%ae>%n%n'.$format_string, @ARGV);
   open PIPE, '-|', @cmd
-    or die ("$ME: failed to run `". quoted_cmd (@cmd) ."': $!\n"
+    or die ("$ME: failed to run '". quoted_cmd (@cmd) ."': $!\n"
             . "(Is your Git too old?  Version 1.5.1 or later is required.)\n");
 
+  my $prev_multi_paragraph;
   my $prev_date_line = '';
+  my @prev_coauthors = ();
   while (1)
     {
       defined (my $in = <PIPE>)
@@ -240,6 +299,13 @@ sub parse_amend_file($)
           $rest = $_;
         }
 
+      # Remove lines inserted by "git cherry-pick".
+      if ($strip_cherry_pick)
+        {
+          $rest =~ s/^\s*Conflicts:\n.*//sm;
+          $rest =~ s/^\s*\(cherry picked from commit [\da-f]+\)\n//m;
+        }
+
       my @line = split "\n", $rest;
       my $author_line = shift @line;
       defined $author_line
@@ -248,19 +314,20 @@ sub parse_amend_file($)
         or die "$ME:$.: Invalid line "
           . "(expected date/author/email):\n$author_line\n";
 
-      my $date_line = sprintf "%s  $2\n", strftime ("%F", localtime ($1));
-      # If this line would be the same as the previous date/name/email
-      # line, then arrange not to print it.
-      if ($date_line ne $prev_date_line)
-        {
-          $prev_date_line eq ''
-            or print "\n";
-          print $date_line;
-        }
-      $prev_date_line = $date_line;
+      # Format 'Copyright-paperwork-exempt: Yes' as a standard ChangeLog
+      # `(tiny change)' annotation.
+      my $tiny = (grep (/^Copyright-paperwork-exempt:\s+[Yy]es$/, @line)
+                  ? '  (tiny change)' : '');
 
-      # Omit "Signed-off-by..." lines.
-      @line = grep !/^Signed-off-by: .*>$/, @line;
+      my $date_line = sprintf "%s  %s$tiny\n",
+        strftime ("%F", localtime ($1)), $2;
+
+      my @coauthors = grep /^Co-authored-by:.*$/, @line;
+      # Omit meta-data lines we've already interpreted.
+      @line = grep !/^(?:Signed-off-by:[ ].*>$
+                       |Co-authored-by:[ ]
+                       |Copyright-paperwork-exempt:[ ]
+                       )/x, @line;
 
       # Remove leading and trailing blank lines.
       if (@line)
@@ -268,6 +335,41 @@ sub parse_amend_file($)
           while ($line[0] =~ /^\s*$/) { shift @line; }
           while ($line[$#line] =~ /^\s*$/) { pop @line; }
         }
+
+      # Record whether there are two or more paragraphs.
+      my $multi_paragraph = grep /^\s*$/, @line;
+
+      # Format 'Co-authored-by: A U Thor <email@example.com>' lines in
+      # standard multi-author ChangeLog format.
+      for (@coauthors)
+        {
+          s/^Co-authored-by:\s*/\t    /;
+          s/\s*</  </;
+
+          /<.*?@.*\..*>/
+            or warn "$ME: warning: missing email address for "
+              . substr ($_, 5) . "\n";
+        }
+
+      # If clustering of commit messages has been disabled, if this header
+      # would be different from the previous date/name/email/coauthors header,
+      # or if this or the previous entry consists of two or more paragraphs,
+      # then print the header.
+      if ( ! $cluster
+          || $date_line ne $prev_date_line
+          || "@coauthors" ne "@prev_coauthors"
+          || $multi_paragraph
+          || $prev_multi_paragraph)
+        {
+          $prev_date_line eq ''
+            or print "\n";
+          print $date_line;
+          @coauthors
+            and print join ("\n", @coauthors), "\n";
+        }
+      $prev_date_line = $date_line;
+      @prev_coauthors = @coauthors;
+      $prev_multi_paragraph = $multi_paragraph;
 
       # If there were any lines
       if (@line == 0)
@@ -287,6 +389,10 @@ sub parse_amend_file($)
                     or $line[0] .= '.';
                 }
             }
+
+          # Remove one additional leading TAB from each line.
+          $strip_tab
+            and map { s/^\t// } @line;
 
           # Prefix each non-empty line with a TAB.
           @line = map { length $_ ? "\t$_" : '' } @line;

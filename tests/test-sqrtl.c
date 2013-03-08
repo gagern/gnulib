@@ -1,5 +1,5 @@
 /* Test of sqrtl() function.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,11 +23,27 @@
 #include "signature.h"
 SIGNATURE_CHECK (sqrtl, long double, (long double));
 
+#include <float.h>
+
 #include "fpucw.h"
 #include "macros.h"
 
-volatile long double x;
-long double y;
+#define DOUBLE long double
+#define L_(literal) literal##L
+#define MANT_DIG DBL_MANT_DIG
+#define SQRT sqrtl
+#define RANDOM randoml
+#include "test-sqrt.h"
+
+static long double
+my_ldexpl (long double x, int d)
+{
+  for (; d > 0; d--)
+    x *= 2.0L;
+  for (; d < 0; d++)
+    x *= 0.5L;
+  return x;
+}
 
 int
 main ()
@@ -40,6 +56,22 @@ main ()
   x = 0.6L;
   y = sqrtl (x);
   ASSERT (y >= 0.7745966692L && y <= 0.7745966693L);
+
+  /* Another particular value.  */
+  {
+    long double z;
+    long double err;
+
+    x = 8.1974099812331540680810141969554806865L;
+    y = sqrtl (x);
+    z = y * y - x;
+    err = my_ldexpl (z, LDBL_MANT_DIG);
+    if (err < 0)
+      err = - err;
+    ASSERT (err <= 100.0L);
+  }
+
+  test_function ();
 
   return 0;
 }

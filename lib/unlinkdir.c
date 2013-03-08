@@ -1,6 +1,6 @@
 /* unlinkdir.c - determine whether we can unlink directories
 
-   Copyright (C) 2005-2006, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2005-2006, 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include "unlinkdir.h"
 #include "priv-set.h"
+#include "root-uid.h"
 #include <unistd.h>
 
 #if ! UNLINK_CANNOT_UNLINK_DIR
@@ -43,7 +44,7 @@ cannot_unlink_dir (void)
       cannot = (priv_set_ismember (PRIV_SYS_LINKDIR) == 0);
 # else
       /* In traditional Unix, only root can unlink directories.  */
-      cannot = (geteuid () != 0);
+      cannot = (geteuid () != ROOT_UID);
 # endif
       initialized = true;
     }

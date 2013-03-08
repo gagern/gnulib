@@ -1,5 +1,5 @@
-# ceilf.m4 serial 12
-dnl Copyright (C) 2007, 2009-2011 Free Software Foundation, Inc.
+# ceilf.m4 serial 14
+dnl Copyright (C) 2007, 2009-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -22,6 +22,7 @@ AC_DEFUN([gl_FUNC_CEILF],
     fi
     m4_ifdef([gl_FUNC_CEILF_IEEE], [
       if test $gl_ceilf_required = ieee && test $REPLACE_CEILF = 0; then
+        AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
         AC_CACHE_CHECK([whether ceilf works according to ISO C 99 with IEC 60559],
           [gl_cv_func_ceilf_ieee],
           [
@@ -51,7 +52,13 @@ int main (int argc, char *argv[])
               ]])],
               [gl_cv_func_ceilf_ieee=yes],
               [gl_cv_func_ceilf_ieee=no],
-              [gl_cv_func_ceilf_ieee="guessing no"])
+              [case "$host_os" in
+                         # Guess yes on glibc systems.
+                 *-gnu*) gl_cv_func_ceilf_ieee="guessing yes" ;;
+                         # If we don't know, assume the worst.
+                 *)      gl_cv_func_ceilf_ieee="guessing no" ;;
+               esac
+              ])
             LIBS="$save_LIBS"
           ])
         case "$gl_cv_func_ceilf_ieee" in
@@ -82,8 +89,9 @@ AC_DEFUN([gl_FUNC_CEILF_LIBS],
            # define __NO_MATH_INLINES 1 /* for glibc */
            #endif
            #include <math.h>
+           float (*funcptr) (float) = ceilf;
            float x;]],
-         [[x = ceilf(x);]])],
+         [[x = funcptr(x) + ceilf(x);]])],
       [gl_cv_func_ceilf_libm=])
     if test "$gl_cv_func_ceilf_libm" = "?"; then
       save_LIBS="$LIBS"
@@ -94,8 +102,9 @@ AC_DEFUN([gl_FUNC_CEILF_LIBS],
              # define __NO_MATH_INLINES 1 /* for glibc */
              #endif
              #include <math.h>
+             float (*funcptr) (float) = ceilf;
              float x;]],
-           [[x = ceilf(x);]])],
+           [[x = funcptr(x) + ceilf(x);]])],
         [gl_cv_func_ceilf_libm="-lm"])
       LIBS="$save_LIBS"
     fi

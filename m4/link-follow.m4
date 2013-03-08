@@ -1,8 +1,8 @@
-# serial 16
+# serial 19
 dnl Run a program to determine whether link(2) follows symlinks.
 dnl Set LINK_FOLLOWS_SYMLINKS accordingly.
 
-# Copyright (C) 1999-2001, 2004-2006, 2009-2011 Free Software Foundation, Inc.
+# Copyright (C) 1999-2001, 2004-2006, 2009-2013 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -16,6 +16,7 @@ dnl link() is sufficient).  If it is -1, use a Solaris specific
 dnl runtime test.  If it is -2, use a generic runtime test.
 AC_DEFUN([gl_FUNC_LINK_FOLLOWS_SYMLINK],
 [dnl
+  AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_CHECK_FUNCS_ONCE([readlink])
   dnl Mingw lacks link, although gnulib provides a good replacement.
   dnl However, it also lacks symlink, so there's nothing to test in
@@ -81,19 +82,27 @@ AC_DEFUN([gl_FUNC_LINK_FOLLOWS_SYMLINK],
            ]])],
            [gl_cv_func_link_follows_symlink=no], dnl GNU behavior
            [gl_cv_func_link_follows_symlink=yes], dnl Followed link/compile failed
-           [gl_cv_func_link_follows_symlink=unknown] dnl We're cross compiling.
-         )
+           [dnl We're cross compiling.
+            dnl The past results are "yes" on Mac OS X, FreeBSD, NetBSD,
+            dnl OpenBSD, Minix, AIX, HP-UX, OSF/1, and "no" on Linux, Cygwin.
+            case "$host_os" in
+                           # On glibc/Linux we know the result.
+              linux*-gnu*) gl_cv_func_link_follows_symlink="guessing no" ;;
+                           # Otherwise, we don't know.
+              *)           gl_cv_func_link_follows_symlink=unknown ;;
+            esac
+           ])
          rm -f conftest.file conftest.sym conftest.hard
         ])
-      case $gl_cv_func_link_follows_symlink in
-        yes) gl_link_follows_symlinks=1 ;;
-        no) ;; # already defaulted to 0
+      case "$gl_cv_func_link_follows_symlink" in
+        *yes) gl_link_follows_symlinks=1 ;;
+        *no) ;; # already defaulted to 0
         *) gl_link_follows_symlinks=-2 ;;
       esac
     fi
   fi
   AC_DEFINE_UNQUOTED([LINK_FOLLOWS_SYMLINKS], [$gl_link_follows_symlinks],
-    [Define to 1 if `link(2)' dereferences symbolic links, 0 if it
+    [Define to 1 if 'link(2)' dereferences symbolic links, 0 if it
      creates hard links to symlinks, -1 if it depends on the variable __xpg4,
      and -2 if unknown.])
 ])

@@ -1,5 +1,5 @@
 /* Test of getter for RLIMIT_AS.
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 
 #include "macros.h"
 
+void *memchunk1;
+void *memchunk2;
+
 int
 main ()
 {
@@ -30,11 +33,11 @@ main ()
 
   value1 = get_rusage_as ();
 
-  malloc (0x88);
+  memchunk1 = malloc (0x88);
 
   value2 = get_rusage_as ();
 
-  malloc (0x281237);
+  memchunk2 = malloc (0x281237);
 
   value3 = get_rusage_as ();
 

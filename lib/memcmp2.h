@@ -1,5 +1,5 @@
 /* Compare two memory areas with possibly different lengths.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify it
    under the terms of the GNU Lesser General Public License as published
@@ -29,7 +29,8 @@ extern "C" {
    This function's result is locale independent, unlike memcoll()'s.
    Return a negative number if S1 < S2, a positive number if S1 > S2, or
    0 if S1 and S2 have the same contents.  */
-extern int memcmp2 (const char *s1, size_t n1, const char *s2, size_t n2);
+extern int memcmp2 (const char *s1, size_t n1, const char *s2, size_t n2)
+  _GL_ATTRIBUTE_PURE;
 
 
 #ifdef __cplusplus

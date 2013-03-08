@@ -1,5 +1,5 @@
 /* Quad-precision floating point argument reduction.
-   Copyright (C) 1999, 2007, 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2007, 2009-2013 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Jakub Jelinek <jj@ultra.linux.cz>
 
@@ -23,6 +23,9 @@
 
 #include <float.h>
 #include <math.h>
+
+/* Code based on glibc/sysdeps/ieee754/ldbl-128/e_rem_pio2l.c
+   and           glibc/sysdeps/ieee754/dbl-64/k_rem_pio2.c.  */
 
 /* Table of constants for 2/pi, 5628 hexadecimal digits of 2/pi */
 static const int two_over_pi[] = {
@@ -456,7 +459,7 @@ kernel_rem_pio2 (double *x, double *y, int e0, int nx, int prec,
 
   jz = jk;
 recompute:
-  /* distill q[] into iq[] reversingly */
+  /* distill q[] into iq[] in reverse order */
   for (i = 0, j = jz, z = q[jz]; j > 0; i++, j--)
     {
       fw = (double) ((int) (twon24 * z));

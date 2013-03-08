@@ -1,5 +1,5 @@
 /* provide a chdir function that tries not to fail due to ENAMETOOLONG
-   Copyright (C) 2004-2011 Free Software Foundation, Inc.
+   Copyright (C) 2004-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,19 +42,19 @@ struct cd_buf
   int fd;
 };
 
-static inline void
+static void
 cdb_init (struct cd_buf *cdb)
 {
   cdb->fd = AT_FDCWD;
 }
 
-static inline int
+static int
 cdb_fchdir (struct cd_buf const *cdb)
 {
   return fchdir (cdb->fd);
 }
 
-static inline void
+static void
 cdb_free (struct cd_buf const *cdb)
 {
   if (0 <= cdb->fd)
@@ -83,7 +83,7 @@ cdb_advance_fd (struct cd_buf *cdb, char const *dir)
 }
 
 /* Return a pointer to the first non-slash in S.  */
-static inline char *
+static char * _GL_ATTRIBUTE_PURE
 find_non_slash (char const *s)
 {
   size_t n_slash = strspn (s, "/");
@@ -96,7 +96,7 @@ find_non_slash (char const *s)
    name.  It handles an arbitrarily long directory name by operating
    on manageable portions of the name.  On systems without the openat
    syscall, this means changing the working directory to more and more
-   `distant' points along the long directory name and then restoring
+   "distant" points along the long directory name and then restoring
    the working directory.  If any of those attempts to save or restore
    the working directory fails, this function exits nonzero.
 
@@ -245,7 +245,7 @@ main (int argc, char *argv[])
 
   if (argc <= 1)
     {
-      /* Using `pwd' here makes sense only if it is a robust implementation,
+      /* Using 'pwd' here makes sense only if it is a robust implementation,
          like the one in coreutils after the 2004-04-19 changes.  */
       char const *cmd = "pwd";
       execlp (cmd, (char *) NULL);

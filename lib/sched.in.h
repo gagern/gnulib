@@ -1,5 +1,5 @@
 /* Replacement <sched.h> for platforms that lack it.
-   Copyright (C) 2008-2011 Free Software Foundation, Inc.
+   Copyright (C) 2008-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 /* Get pid_t.
    This is needed on glibc 2.11 (see
    glibc bug <http://sourceware.org/bugzilla/show_bug.cgi?id=13198>)
-   and MacOS X 10.5.  */
+   and Mac OS X 10.5.  */
 #include <sys/types.h>
 
 #if !@HAVE_STRUCT_SCHED_PARAM@

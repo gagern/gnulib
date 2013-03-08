@@ -1,5 +1,5 @@
 /* gc.h --- Header file for implementation agnostic crypto wrapper API.
- * Copyright (C) 2002-2005, 2007-2008, 2011 Free Software Foundation, Inc.
+ * Copyright (C) 2002-2005, 2007-2008, 2011-2013 Free Software Foundation, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -12,9 +12,7 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
+ * along with this file; if not, see <http://www.gnu.org/licenses/>.
  *
  */
 

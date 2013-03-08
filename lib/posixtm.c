@@ -1,6 +1,6 @@
 /* Parse dates for touch and date.
 
-   Copyright (C) 1989-1991, 1998, 2000-2011 Free Software Foundation, Inc.
+   Copyright (C) 1989-1991, 1998, 2000-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
    - It's typically faster.
    POSIX says that only '0' through '9' are digits.  Prefer ISDIGIT to
    isdigit unless it's important to use the locale's definition
-   of `digit' even when the host does not conform to POSIX.  */
+   of "digit" even when the host does not conform to POSIX.  */
 #define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
 
 /*
@@ -144,7 +144,7 @@ posix_time_parse (struct tm *tm, const char *s, unsigned int syntax_bits)
       len = 4;
     }
 
-  /* Handle 8 digits worth of `MMDDhhmm'.  */
+  /* Handle 8 digits worth of 'MMDDhhmm'.  */
   tm->tm_mon = *p++ - 1;
   tm->tm_mday = *p++;
   tm->tm_hour = *p++;

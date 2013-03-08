@@ -1,5 +1,5 @@
 /* Determine the session ID of the controlling terminal of the current process.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,8 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -28,7 +27,7 @@
 pid_t
 tcgetsid (int fd)
 {
-#ifdef TIOCGSID /* MacOS X, OpenBSD */
+#ifdef TIOCGSID /* Mac OS X, OpenBSD */
   int sid;
 
   if (ioctl (fd, TIOCGSID, &sid) < 0)

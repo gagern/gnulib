@@ -1,5 +1,5 @@
 /* Retrieve information about a FILE stream.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ freading (FILE *fp)
   return ((fp->_flags & _IO_NO_WRITES) != 0
           || ((fp->_flags & (_IO_NO_READS | _IO_CURRENTLY_PUTTING)) == 0
               && fp->_IO_read_base != NULL));
-# elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, MacOS X, Cygwin */
+# elif defined __sferror || defined __DragonFly__ /* FreeBSD, NetBSD, OpenBSD, DragonFly, Mac OS X, Cygwin */
   return (fp_->_flags & __SRD) != 0;
 # elif defined __EMX__               /* emx+gcc */
   return (fp->_flags & _IOREAD) != 0;
@@ -62,6 +62,10 @@ freading (FILE *fp)
 #  else
   return (fp->__buffer < fp->__get_limit /*|| fp->__bufp == fp->__put_limit ??*/);
 #  endif
+# elif defined EPLAN9                /* Plan9 */
+  if (fp->state == 0 /* CLOSED */ || fp->state == 4 /* WR */)
+    return 0;
+  return (fp->state == 3 /* RD */ && (fp->bufl == 0 || fp->rp < fp->wp));
 # else
 #  error "Please port gnulib freading.c to your platform!"
 # endif

@@ -1,5 +1,5 @@
-# truncf.m4 serial 8
-dnl Copyright (C) 2007, 2010-2011 Free Software Foundation, Inc.
+# truncf.m4 serial 9
+dnl Copyright (C) 2007, 2010-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -43,6 +43,7 @@ AC_DEFUN([gl_FUNC_TRUNCF],
     fi
     m4_ifdef([gl_FUNC_TRUNCF_IEEE], [
       if test $gl_truncf_required = ieee && test $REPLACE_TRUNCF = 0; then
+        AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
         AC_CACHE_CHECK([whether truncf works according to ISO C 99 with IEC 60559],
           [gl_cv_func_truncf_ieee],
           [
@@ -68,7 +69,13 @@ int main (int argc, char *argv[])
               ]])],
               [gl_cv_func_truncf_ieee=yes],
               [gl_cv_func_truncf_ieee=no],
-              [gl_cv_func_truncf_ieee="guessing no"])
+              [case "$host_os" in
+                         # Guess yes on glibc systems.
+                 *-gnu*) gl_cv_func_truncf_ieee="guessing yes" ;;
+                         # If we don't know, assume the worst.
+                 *)      gl_cv_func_truncf_ieee="guessing no" ;;
+               esac
+              ])
             LIBS="$save_LIBS"
           ])
         case "$gl_cv_func_truncf_ieee" in

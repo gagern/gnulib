@@ -1,5 +1,5 @@
 /* Test of getcwd() function.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,23 +38,29 @@
    trigger a bug in glibc's getcwd implementation before 2.4.90-10.  */
 #define TARGET_LEN (5 * 1024)
 
+#if defined HAVE_OPENAT || (defined GNULIB_OPENAT && defined HAVE_FDOPENDIR)
+# define HAVE_OPENAT_SUPPORT 1
+#else
+# define HAVE_OPENAT_SUPPORT 0
+#endif
+
 /* Keep this test in sync with m4/getcwd-abort-bug.m4.  */
 static int
 test_abort_bug (void)
 {
-  char const *dir_name = "confdir-14B---";
   char *cwd;
   size_t initial_cwd_len;
   int fail = 0;
-  size_t desired_depth;
-  size_t d;
 
-#ifdef PATH_MAX
   /* The bug is triggered when PATH_MAX < getpagesize (), so skip
      this relatively expensive and invasive test if that's not true.  */
-  if (getpagesize () <= PATH_MAX)
-    return 0;
+#ifdef PATH_MAX
+  int bug_possible = PATH_MAX < getpagesize ();
+#else
+  int bug_possible = 0;
 #endif
+  if (! bug_possible)
+    return 0;
 
   cwd = getcwd (NULL, 0);
   if (cwd == NULL)
@@ -62,36 +68,43 @@ test_abort_bug (void)
 
   initial_cwd_len = strlen (cwd);
   free (cwd);
-  desired_depth = ((TARGET_LEN - 1 - initial_cwd_len)
-                   / (1 + strlen (dir_name)));
-  for (d = 0; d < desired_depth; d++)
-    {
-      if (mkdir (dir_name, S_IRWXU) < 0 || chdir (dir_name) < 0)
-        {
-          if (! (errno == ERANGE || errno == ENAMETOOLONG || errno == ENOENT))
-            fail = 3; /* Unable to construct deep hierarchy.  */
-          break;
-        }
-    }
 
-  /* If libc has the bug in question, this invocation of getcwd
-     results in a failed assertion.  */
-  cwd = getcwd (NULL, 0);
-  if (cwd == NULL)
-    fail = 4; /* getcwd didn't assert, but it failed for a long name
-                 where the answer could have been learned.  */
-  free (cwd);
-
-  /* Call rmdir first, in case the above chdir failed.  */
-  rmdir (dir_name);
-  while (0 < d--)
+  if (HAVE_OPENAT_SUPPORT)
     {
-      if (chdir ("..") < 0)
+      static char const dir_name[] = "confdir-14B---";
+      size_t desired_depth = ((TARGET_LEN - 1 - initial_cwd_len)
+                              / sizeof dir_name);
+      size_t d;
+      for (d = 0; d < desired_depth; d++)
         {
-          fail = 5;
-          break;
+          if (mkdir (dir_name, S_IRWXU) < 0 || chdir (dir_name) < 0)
+            {
+              if (! (errno == ERANGE || errno == ENAMETOOLONG
+                     || errno == ENOENT))
+                fail = 3; /* Unable to construct deep hierarchy.  */
+              break;
+            }
         }
+
+      /* If libc has the bug in question, this invocation of getcwd
+         results in a failed assertion.  */
+      cwd = getcwd (NULL, 0);
+      if (cwd == NULL)
+        fail = 4; /* getcwd didn't assert, but it failed for a long name
+                     where the answer could have been learned.  */
+      free (cwd);
+
+      /* Call rmdir first, in case the above chdir failed.  */
       rmdir (dir_name);
+      while (0 < d--)
+        {
+          if (chdir ("..") < 0)
+            {
+              fail = 5;
+              break;
+            }
+          rmdir (dir_name);
+        }
     }
 
   return fail;
@@ -134,7 +147,7 @@ test_long_name (void)
   size_t n_chdirs = 0;
 
   if (cwd == NULL)
-    return 10;
+    return 1;
 
   cwd_len = initial_cwd_len = strlen (cwd);
 
@@ -152,7 +165,7 @@ test_long_name (void)
       if (mkdir (DIR_NAME, S_IRWXU) < 0 || chdir (DIR_NAME) < 0)
         {
           if (! (errno == ERANGE || errno == ENAMETOOLONG || errno == ENOENT))
-            fail = 20;
+            fail = 2;
           break;
         }
 
@@ -161,12 +174,17 @@ test_long_name (void)
           c = getcwd (buf, PATH_MAX);
           if (!c && errno == ENOENT)
             {
-              fail = 11;
+              fail = 3;
               break;
             }
-          if (c || ! (errno == ERANGE || errno == ENAMETOOLONG))
+          if (c)
             {
-              fail = 21;
+              fail = 4;
+              break;
+            }
+          if (! (errno == ERANGE || errno == ENAMETOOLONG))
+            {
+              fail = 5;
               break;
             }
         }
@@ -181,12 +199,12 @@ test_long_name (void)
               if (! (errno == ERANGE || errno == ENOENT
                      || errno == ENAMETOOLONG))
                 {
-                  fail = 22;
+                  fail = 6;
                   break;
                 }
               if (AT_FDCWD || errno == ERANGE || errno == ENOENT)
                 {
-                  fail = 12;
+                  fail = 7;
                   break;
                 }
             }
@@ -194,7 +212,7 @@ test_long_name (void)
 
       if (c && strlen (c) != cwd_len)
         {
-          fail = 23;
+          fail = 8;
           break;
         }
       ++n_chdirs;
@@ -224,5 +242,5 @@ test_long_name (void)
 int
 main (int argc, char **argv)
 {
-  return test_abort_bug () + test_long_name ();
+  return test_abort_bug () * 10 + test_long_name ();
 }

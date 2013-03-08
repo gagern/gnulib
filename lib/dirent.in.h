@@ -1,5 +1,5 @@
 /* A GNU-like <dirent.h>.
-   Copyright (C) 2006-2011 Free Software Foundation, Inc.
+   Copyright (C) 2006-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -53,6 +53,14 @@ struct dirent
 typedef struct gl_directory DIR;
 #  define GNULIB_defined_struct_dirent 1
 # endif
+#endif
+
+/* The __attribute__ feature is available in gcc versions 2.5 and later.
+   The attribute __pure__ was added in gcc 2.96.  */
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
+# define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
+#else
+# define _GL_ATTRIBUTE_PURE /* empty */
 #endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
@@ -229,6 +237,7 @@ _GL_WARN_ON_USE (scandir, "scandir is unportable - "
 # if !@HAVE_ALPHASORT@
 _GL_FUNCDECL_SYS (alphasort, int,
                   (const struct dirent **, const struct dirent **)
+                  _GL_ATTRIBUTE_PURE
                   _GL_ARG_NONNULL ((1, 2)));
 # endif
 /* Need to cast, because on glibc systems, the parameters are

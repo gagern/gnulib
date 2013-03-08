@@ -1,5 +1,5 @@
 /* Test of rounding towards negative infinity.
-   Copyright (C) 2010-2011 Free Software Foundation, Inc.
+   Copyright (C) 2010-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -18,7 +18,10 @@
 
 #include <math.h>
 
+#include "isnanf-nolibm.h"
 #include "minus-zero.h"
+#include "infinity.h"
+#include "nan.h"
 #include "macros.h"
 
 /* If IEEE compliance was not requested, the ICC compiler inlines its
@@ -51,6 +54,14 @@ main (int argc, char **argv _GL_UNUSED)
   /* Negative numbers.  */
   ASSERT (!!signbit (my_floorf (-0.3f)) == !!signbit (minus_zerof));
   ASSERT (!!signbit (my_floorf (-0.7f)) == !!signbit (minus_zerof));
+
+  /* [MX] shaded specification in POSIX.  */
+
+  /* NaN.  */
+  ASSERT (isnanf (floorf (NaNf ())));
+  /* Infinity.  */
+  ASSERT (floorf (Infinityf ()) == Infinityf ());
+  ASSERT (floorf (- Infinityf ()) == - Infinityf ());
 
   return 0;
 }

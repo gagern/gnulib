@@ -1,5 +1,5 @@
-# dup.m4 serial 2
-dnl Copyright (C) 2011 Free Software Foundation, Inc.
+# dup.m4 serial 3
+dnl Copyright (C) 2011-2013 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -22,6 +22,4 @@ AC_DEFUN([gl_FUNC_DUP],
 ])
 
 # Prerequisites of lib/dup.c.
-AC_DEFUN([gl_PREREQ_DUP], [
-  AC_REQUIRE([AC_C_INLINE])
-])
+AC_DEFUN([gl_PREREQ_DUP], [:])

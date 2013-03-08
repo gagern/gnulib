@@ -1,5 +1,5 @@
 /* Open a stream to a file.
-   Copyright (C) 2007-2011 Free Software Foundation, Inc.
+   Copyright (C) 2007-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <stdio.h>
 #undef __need_FILE
 
-static inline FILE *
+static FILE *
 orig_fopen (const char *filename, const char *mode)
 {
   return fopen (filename, mode);

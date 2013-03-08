@@ -1,5 +1,5 @@
 /* Tests of mkfifoat and mknodat.
-   Copyright (C) 2009-2011 Free Software Foundation, Inc.
+   Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -98,6 +98,7 @@ main (void)
                );
       }
       {
+        close (99);
         errno = 0;
         ASSERT (func (99, "foo", 0600) == -1);
         ASSERT (errno == EBADF
