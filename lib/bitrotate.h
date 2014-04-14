@@ -1,5 +1,5 @@
 /* bitrotate.h - Rotate bits in integers
-   Copyright (C) 2008-2013 Free Software Foundation, Inc.
+   Copyright (C) 2008-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#ifndef _GL_INLINE_HEADER_BEGIN
+ #error "Please include config.h first."
+#endif
 _GL_INLINE_HEADER_BEGIN
 #ifndef BITROTATE_INLINE
 # define BITROTATE_INLINE _GL_INLINE

@@ -1,5 +1,5 @@
 /* Test of case-insensitive searching in a string.
-   Copyright (C) 2007-2013 Free Software Foundation, Inc.
+   Copyright (C) 2007-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,8 +37,9 @@ main ()
      caused by SIGALRM.  All known platforms that lack alarm also lack
      strcasestr, and the replacement strcasestr is known to not take too
      long.  */
+  int alarm_value = 50;
   signal (SIGALRM, SIG_DFL);
-  alarm (50);
+  alarm (alarm_value);
 #endif
 
   {

@@ -1,6 +1,6 @@
 /* acl.c - access control lists
 
-   Copyright (C) 2002, 2008-2013 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2008-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,9 +17,11 @@
 
    Written by Paul Eggert.  */
 
+#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
+bool acl_errno_valid (int) _GL_ATTRIBUTE_CONST;
 int file_has_acl (char const *, struct stat const *);
 int qset_acl (char const *, int, mode_t);
 int set_acl (char const *, int, mode_t);

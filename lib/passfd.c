@@ -1,4 +1,4 @@
-/* Copyright (C) 2011-2013 Free Software Foundation, Inc.
+/* Copyright (C) 2011-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -110,6 +110,7 @@ recvfd (int sock, int flags)
   struct iovec iov;
   struct msghdr msg;
   int fd = -1;
+  ssize_t len;
 # ifdef CMSG_FIRSTHDR
   struct cmsghdr *cmsg;
   char buf[CMSG_SPACE (sizeof fd)];
@@ -142,16 +143,17 @@ recvfd (int sock, int flags)
   memcpy (CMSG_DATA (cmsg), &fd, sizeof fd);
   msg.msg_controllen = cmsg->cmsg_len;
 
-  if (recvmsg (sock, &msg, flags_recvmsg) < 0)
+  len = recvmsg (sock, &msg, flags_recvmsg);
+  if (len < 0)
     return -1;
 
   cmsg = CMSG_FIRSTHDR (&msg);
   /* be paranoiac */
-  if (cmsg == NULL || cmsg->cmsg_len != CMSG_LEN (sizeof fd)
+  if (len == 0 || cmsg == NULL || cmsg->cmsg_len != CMSG_LEN (sizeof fd)
       || cmsg->cmsg_level != SOL_SOCKET || cmsg->cmsg_type != SCM_RIGHTS)
     {
       /* fake errno: at end the file is not available */
-      errno = EACCES;
+      errno = len ? EACCES : ENOTCONN;
       return -1;
     }
 

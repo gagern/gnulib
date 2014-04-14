@@ -9,7 +9,7 @@ m4/mgetgroups.m4
 Depends-on:
 getgroups
 getugroups
-realloc-gnu
+realloc-posix
 xalloc-oversized
 
 configure.ac:
@@ -22,7 +22,7 @@ Include:
 "mgetgroups.h"
 
 License:
-GPL
+LGPLv2+
 
 Maintainer:
 Jim Meyering, Eric Blake

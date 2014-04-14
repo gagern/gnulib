@@ -1,5 +1,5 @@
 /* gc.h --- Header file for implementation agnostic crypto wrapper API.
- * Copyright (C) 2002-2005, 2007-2008, 2011-2013 Free Software Foundation, Inc.
+ * Copyright (C) 2002-2005, 2007-2008, 2011-2014 Free Software Foundation, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -159,6 +159,10 @@ extern Gc_rc gc_hmac_md5 (const void *key, size_t keylen,
                           const void *in, size_t inlen, char *resbuf);
 extern Gc_rc gc_hmac_sha1 (const void *key, size_t keylen,
                            const void *in, size_t inlen, char *resbuf);
+extern Gc_rc gc_hmac_sha256 (const void *key, size_t keylen,
+                             const void *in, size_t inlen, char *resbuf);
+extern Gc_rc gc_hmac_sha512 (const void *key, size_t keylen,
+                             const void *in, size_t inlen, char *resbuf);
 
 /* Derive cryptographic keys from a password P of length PLEN, with
    salt S of length SLEN, placing the result in pre-allocated buffer

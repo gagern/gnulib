@@ -1,5 +1,5 @@
 /* Assist in file system timestamp tests.
-   Copyright (C) 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,19 +19,37 @@
 #ifndef GLTEST_NAP_H
 # define GLTEST_NAP_H
 
-static int
-lt_mtime (struct stat const *a, struct stat const *b)
-{
-  time_t as = a->st_mtime;
-  time_t bs = b->st_mtime;
-  int ans = get_stat_mtime_ns (a);
-  int bns = get_stat_mtime_ns (b);
+# include <limits.h>
+# include <stdbool.h>
 
-  return as < bs || (as == bs && ans < bns);
+/* File descriptor used for the witness file.  */
+static int nap_fd = -1;
+
+/* Return A - B, in ns.
+   Return 0 if the true result would be negative.
+   Return INT_MAX if the true result would be greater than INT_MAX.  */
+static int
+diff_timespec (struct timespec a, struct timespec b)
+{
+  time_t as = a.tv_sec;
+  time_t bs = b.tv_sec;
+  int ans = a.tv_nsec;
+  int bns = b.tv_nsec;
+
+  if (! (bs < as || (bs == as && bns < ans)))
+    return 0;
+  if (as - bs <= INT_MAX / 1000000000)
+    {
+      int sdiff = (as - bs) * 1000000000;
+      int usdiff = ans - bns;
+      if (usdiff < INT_MAX - sdiff)
+        return sdiff + usdiff;
+    }
+  return INT_MAX;
 }
 
 static void
-get_mtime (int fd, struct stat *st, int do_write)
+get_stat (int fd, struct stat *st, int do_write)
 {
   if (do_write)
     ASSERT (write (fd, "\n", 1) == 1);
@@ -39,65 +57,72 @@ get_mtime (int fd, struct stat *st, int do_write)
 }
 
 /* Given a file whose descriptor is FD, see whether delaying by DELAY
-   microseconds causes a change in a file's time stamp.  If the time
-   stamps differ, repeat the test one more time, in case we crossed a
-   quantization boundary on a file system with lower resolution.  *ST
-   is the file's status, recently gotten.  Update *ST to reflect the
-   latest status gotten.  */
-static int
-nap_works (int fd, int delay, struct stat *st)
+   nanoseconds causes a change in a file's ctime and mtime.
+   OLD_ST is the file's status, recently gotten.  */
+static bool
+nap_works (int fd, int delay, struct stat old_st)
 {
-  struct stat old_st;
-  old_st = *st;
-  usleep (delay);
-  get_mtime (fd, st, 1);
-  if (! lt_mtime (&old_st, st))
-    return 0;
-  old_st = *st;
-  usleep (delay);
-  get_mtime (fd, st, 1);
-  return lt_mtime (&old_st, st);
+  struct stat st;
+  struct timespec delay_spec;
+  delay_spec.tv_sec = delay / 1000000000;
+  delay_spec.tv_nsec = delay % 1000000000;
+  ASSERT (nanosleep (&delay_spec, 0) == 0);
+  get_stat (fd, &st, 1);
+
+  if (   diff_timespec (get_stat_ctime (&st), get_stat_ctime (&old_st))
+      && diff_timespec (get_stat_mtime (&st), get_stat_mtime (&old_st)))
+    return true;
+
+  return false;
 }
 
-static int
-guess_delay (void)
+#define TEMPFILE BASE "nap.tmp"
+
+static void
+clear_temp_file (void)
 {
-  /* Try a 1-microsecond sleep first, for speed.  If that doesn't
-     work, try a 1 ms sleep; that should work with ext.  If it doesn't
-     work, try a 20 ms sleep.  xfs has a quantization of about 10
-     milliseconds, even though it has a granularity of 1 nanosecond,
-     and NTFS has a default quantization of 15.25 milliseconds, even
-     though it has a granularity of 100 nanoseconds, so 20 ms is a
-     good quantization to try.  If that doesn't work, try 1 second.
-     The worst case is 2 seconds, needed for FAT.  */
-  static int const delaytab[] = {1, 1000, 20000, 1000000 };
-  int fd = creat (BASE "tmp", 0600);
-  int i;
-  int delay = 2000000;
-  struct stat st;
-  ASSERT (0 <= fd);
-  get_mtime (fd, &st, 0);
-  for (i = 0; i < sizeof delaytab / sizeof delaytab[0]; i++)
-    if (nap_works (fd, delaytab[i], &st))
-      {
-        delay = delaytab[i];
-        break;
-      }
-  ASSERT (close (fd) == 0);
-  ASSERT (unlink (BASE "tmp") == 0);
-  return delay;
+  if (0 <= nap_fd)
+    {
+      ASSERT (close (nap_fd) != -1);
+      ASSERT (unlink (TEMPFILE) != -1);
+    }
 }
 
 /* Sleep long enough to notice a timestamp difference on the file
-   system in the current directory.  Assumes that BASE is defined,
-   and requires that the test module depends on usleep.  */
+   system in the current directory.  Use an adaptive approach, trying
+   to find the smallest delay which works on the current file system
+   to make the timestamp difference appear.  Assert a maximum delay of
+   ~2 seconds, more precisely sum(2^n) from 0 to 30 = 2^31 - 1 = 2.1s.
+   Assumes that BASE is defined, and requires that the test module
+   depends on nanosleep.  */
 static void
 nap (void)
 {
-  static int delay;
-  if (!delay)
-    delay = guess_delay ();
-  usleep (delay);
+  struct stat old_st;
+  static int delay = 1;
+
+  if (-1 == nap_fd)
+    {
+      atexit (clear_temp_file);
+      ASSERT ((nap_fd = creat (TEMPFILE, 0600)) != -1);
+      get_stat (nap_fd, &old_st, 0);
+    }
+  else
+    {
+      ASSERT (0 <= nap_fd);
+      get_stat (nap_fd, &old_st, 1);
+    }
+
+  if (1 < delay)
+    delay = delay / 2;  /* Try half of the previous delay.  */
+  ASSERT (0 < delay);
+
+  for ( ; delay <= 2147483647; delay = delay * 2)
+    if (nap_works (nap_fd, delay, old_st))
+      return;
+
+  /* Bummer: even the highest nap delay didn't work. */
+  ASSERT (0);
 }
 
 #endif /* GLTEST_NAP_H */

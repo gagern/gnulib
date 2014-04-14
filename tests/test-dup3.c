@@ -1,5 +1,5 @@
 /* Test duplicating file descriptors.
-   Copyright (C) 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -76,6 +76,7 @@ int
 main ()
 {
   int use_cloexec;
+  int bad_fd = getdtablesize ();
 
 #if O_CLOEXEC
   for (use_cloexec = 0; use_cloexec <= 1; use_cloexec++)
@@ -123,8 +124,17 @@ main ()
       errno = 0;
       ASSERT (dup3 (fd, -2, o_flags) == -1);
       ASSERT (errno == EBADF);
+      if (bad_fd > 256)
+        {
+          ASSERT (dup3 (fd, 255, 0) == 255);
+          ASSERT (dup3 (fd, 256, 0) == 256);
+          ASSERT (close (255) == 0);
+          ASSERT (close (256) == 0);
+        }
+      ASSERT (dup3 (fd, bad_fd - 1, 0) == bad_fd - 1);
+      ASSERT (close (bad_fd - 1) == 0);
       errno = 0;
-      ASSERT (dup3 (fd, 10000000, o_flags) == -1);
+      ASSERT (dup3 (fd, bad_fd, o_flags) == -1);
       ASSERT (errno == EBADF);
 
       /* Using dup3 can skip fds.  */

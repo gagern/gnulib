@@ -1,5 +1,5 @@
 /* Copying of files.
-   Copyright (C) 2001-2003, 2006-2007, 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2001-2003, 2006-2007, 2009-2014 Free Software Foundation, Inc.
    Written by Bruno Haible <haible@clisp.cons.org>, 2001.
 
    This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,7 @@
 #endif
 
 #include "error.h"
+#include "ignore-value.h"
 #include "safe-read.h"
 #include "full-write.h"
 #include "acl.h"
@@ -140,7 +141,7 @@ qcopy_file_preserving (const char *src_filename, const char *dest_filename)
 
 #if HAVE_CHOWN
   /* Preserve the owner and group.  */
-  chown (dest_filename, statbuf.st_uid, statbuf.st_gid);
+  ignore_value (chown (dest_filename, statbuf.st_uid, statbuf.st_gid));
 #endif
 
   /* Preserve the access permissions.  */

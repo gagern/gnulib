@@ -1,5 +1,5 @@
 /* Test changing to a directory named by a file descriptor.
-   Copyright (C) 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ main (void)
   /* Repeat test twice, once in '.' and once in '..'.  */
   for (i = 0; i < 2; i++)
     {
-      ASSERT (chdir (".." + 1 - i) == 0);
+      ASSERT (chdir (&".."[1 - i]) == 0);
       ASSERT (fchdir (fd) == 0);
       {
         size_t len = strlen (cwd) + 1;

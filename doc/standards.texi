@@ -3,7 +3,7 @@
 @setfilename standards.info
 @settitle GNU Coding Standards
 @c This date is automagically updated when you save this file:
-@set lastupdate February 13, 2013
+@set lastupdate March 31, 2014
 @c %**end of header
 
 @dircategory GNU organization
@@ -28,7 +28,7 @@ The GNU coding standards, last updated @value{lastupdate}.
 
 Copyright @copyright{} 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-2011, 2012, 2013 Free Software Foundation, Inc.
+2011, 2012, 2013, 2014 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -291,34 +291,17 @@ account when designing your program.
 @cindex programming languages
 
 When you want to use a language that gets compiled and runs at high
-speed, the best language to use is C.  Using another language is like
-using a non-standard feature: it will cause trouble for users.  Even if
-GCC supports the other language, users may find it inconvenient to have
-to install the compiler for that other language in order to build your
-program.  For example, if you write your program in C++, people will
-have to install the GNU C++ compiler in order to compile your program.
+speed, the best language to use is C.  C++ is ok too, but please don't
+make heavy use of templates.  So is Java, if you compile it.
 
-C has one other advantage over C++ and other compiled languages: more
-people know C, so more people will find it easy to read and modify the
-program if it is written in C.
-
-So in general it is much better to use C, rather than the
-comparable alternatives.
-
-But there are two exceptions to that conclusion:
-
-@itemize @bullet
-@item
-It is no problem to use another language to write a tool specifically
-intended for use with that language.  That is because the only people
-who want to build the tool will be those who have installed the other
-language anyway.
-
-@item
-If an application is of interest only to a narrow part of the community,
-then the question of which language it is written in has less effect on
-other people, so you may as well please yourself.
-@end itemize
+When highest efficiency is not required, other languages commonly used
+in the free software community, such as Scheme, Python, Ruby, and
+Java, are OK too.  Scheme, as implemented by GNU@tie{}Guile, plays a
+particular role in the GNU System: it is the preferred language to
+extend programs written in C/C++, and also a fine language for a wide
+range of applications.  The more GNU components use Guile and Scheme,
+the more users are able to extend and combine them (@pxref{The Emacs
+Thesis,,, guile, GNU Guile Reference Manual}).
 
 Many programs are designed to be extensible: they include an interpreter
 for a language that is higher level than C.  Often much of the program
@@ -333,8 +316,8 @@ language Scheme (an especially clean and simple dialect of Lisp).
 Guile also includes bindings for GTK+/GNOME, making it practical to
 write modern GUI functionality within Guile.  We don't reject programs
 written in other ``scripting languages'' such as Perl and Python, but
-using Guile is very important for the overall consistency of the GNU
-system.
+using Guile is the path that will lead to overall consistency of the
+GNU system.
 
 
 @node Compatibility
@@ -862,6 +845,13 @@ pipe, then it is usually best to make the default behavior the one that
 is useful with output to a terminal, and have an option for the other
 behavior.
 
+There is an exception for programs whose output in certain cases is
+binary data.  Sending such output to a terminal is useless and can
+cause trouble.  If such a program normally sends its output to stdout,
+it should detect, in these cases, when the output is a terminal and
+give an error message instead.  The @code{-f} option should override
+this exception, thus permitting the output to go to the terminal.
+
 Compatibility requires certain programs to depend on the type of output
 device.  It would be disastrous if @code{ls} or @code{sh} did not do so
 in the way all users expect.  In some of these cases, we supplement the
@@ -869,7 +859,6 @@ program with a preferred alternate version that does not depend on the
 output device type.  For example, we provide a @code{dir} program much
 like @code{ls} except that its default output format is always
 multi-column format.
-
 
 @node Graphical Interfaces
 @section Standards for Graphical Interfaces
@@ -940,7 +929,7 @@ among GNU utilities, and fewer idiosyncrasies for users to remember.
 All programs should support two standard options: @samp{--version}
 and @samp{--help}.  CGI programs should accept these as command-line
 options, and also if given as the @env{PATH_INFO}; for instance,
-visiting @url{http://example.org/p.cgi/--help} in a browser should
+visiting @indicateurl{http://example.org/p.cgi/--help} in a browser should
 output the same information as invoking @samp{p.cgi --help} from the
 command line.
 
@@ -1075,7 +1064,7 @@ The Apache Software Foundation license,
 @url{http://www.apache.org/@/licenses}.
 
 @item Artistic
-The Artistic license used for Perl, @url{http://www.perlfoundation.org/@/legal}.
+The Artistic license used for Perl, @url{http://dev.perl.org/licenses/artistic.html}.
 
 @item Expat
 The Expat license, @url{http://www.jclark.com/@/xml/@/copying.txt}.
@@ -2306,8 +2295,8 @@ Print the version number.
 @cindex X.509
 
 The OID (object identifier) 1.3.6.1.4.1.11591 has been assigned to the
-GNU Project (thanks to Werner Koch).  These are used for SNMP, LDAP,
-X.509 certificates, and so on.  The web site
+GNU Project (thanks to Sergey Poznyakoff).  These are used for SNMP,
+LDAP, X.509 certificates, and so on.  The web site
 @url{http://www.alvestrand.no/objectid} has a (voluntary) listing of
 many OID assignments.
 
@@ -2388,6 +2377,11 @@ when writing GNU software.
 @node Formatting
 @section Formatting Your Source Code
 @cindex formatting source code
+
+@cindex line length
+@cindex length of source lines
+Please keep the length of source lines to 79 characters or less, for
+maximum readability in the widest range of environments.
 
 @cindex open brace
 @cindex braces, in C source
@@ -3257,8 +3251,9 @@ the option @option{--quoting-style} of GNU @code{ls}.
 @section Mmap
 @findex mmap
 
-Don't assume that @code{mmap} either works on all files or fails
-for all files.  It may work on some files and fail on others.
+If you use @code{mmap} to read or write files, don't assume it either
+works on all files or fails for all files.  It may work on some files
+and fail on others.
 
 The proper way to use @code{mmap} is to try it on the specific file for
 which you want to use it---and if @code{mmap} doesn't work, fall back on
@@ -3373,13 +3368,13 @@ are purely tutorial and cover the basics of the subject.  These provide
 the framework for a beginner to understand the rest of the manual.  The
 Bison manual provides a good example of how to do this.
 
-To serve as a reference, a manual should have an Index that list all the
-functions, variables, options, and important concepts that are part of
-the program.  One combined Index should do for a short manual, but
-sometimes for a complex package it is better to use multiple indices.
-The Texinfo manual includes advice on preparing good index entries, see
-@ref{Index Entries, , Making Index Entries, texinfo, GNU Texinfo}, and
-see @ref{Indexing Commands, , Defining the Entries of an
+To serve as a reference, a manual should have an Index that lists all
+the functions, variables, options, and important concepts that are
+part of the program.  One combined Index should do for a short manual,
+but sometimes for a complex package it is better to use multiple
+indices.  The Texinfo manual includes advice on preparing good index
+entries, see @ref{Index Entries, , Making Index Entries, texinfo, GNU
+Texinfo}, and see @ref{Indexing Commands, , Defining the Entries of an
 Index, texinfo, GNU Texinfo}.
 
 Don't use Unix man pages as a model for how to write GNU documentation;
@@ -3924,7 +3919,8 @@ corresponding to most of the standard directory variables
 
 @example
 --prefix --exec-prefix --bindir --sbindir --libexecdir --sysconfdir
---sharedstatedir --localstatedir --libdir --includedir --oldincludedir
+--sharedstatedir --localstatedir --runstatedir
+--libdir --includedir --oldincludedir
 --datarootdir --datadir --infodir --localedir --mandir --docdir
 --htmldir --dvidir --pdfdir --psdir
 @end example

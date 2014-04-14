@@ -1,5 +1,5 @@
 /* Multibyte character I/O: macros for multi-byte encodings.
-   Copyright (C) 2001, 2005, 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2005, 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -62,6 +62,9 @@
 
 #include "mbchar.h"
 
+#ifndef _GL_INLINE_HEADER_BEGIN
+ #error "Please include config.h first."
+#endif
 _GL_INLINE_HEADER_BEGIN
 #ifndef MBFILE_INLINE
 # define MBFILE_INLINE _GL_INLINE
@@ -244,6 +247,9 @@ typedef mbchar_t mbf_char_t;
 
 #define mb_iseof(mbc) ((mbc).bytes == 0)
 
+#ifndef _GL_INLINE_HEADER_BEGIN
+ #error "Please include config.h first."
+#endif
 _GL_INLINE_HEADER_BEGIN
 
 #endif /* _MBFILE_H */

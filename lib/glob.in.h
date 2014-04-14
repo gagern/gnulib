@@ -1,6 +1,6 @@
 /* glob.h -- Find a path matching a pattern.
 
-   Copyright (C) 2005-2007, 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2005-2007, 2009-2014 Free Software Foundation, Inc.
 
    Written by Derek Price <derek@ximbiot.com> & Paul Eggert <eggert@CS.UCLA.EDU>
 
@@ -42,6 +42,9 @@
 #endif
 #ifndef __THROW
 # define __THROW
+#endif
+#ifndef __THROWNL
+# define __THROWNL
 #endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */

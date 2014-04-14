@@ -1,6 +1,6 @@
 /* Implement a trivial subset of POSIX 1003.1-2008 pthread.h.
 
-   Copyright (C) 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,11 +36,23 @@
 #include <stdlib.h>
 #undef __need_system_stdlib_h
 
+
+/* The pthreads-win32 <pthread.h> defines a couple of broken macros.  */
+#undef asctime_r
+#undef ctime_r
+#undef gmtime_r
+#undef localtime_r
+#undef rand_r
+#undef strtok_r
+
 #include <errno.h>
 #include <sched.h>
 #include <sys/types.h>
 #include <time.h>
 
+#ifndef _GL_INLINE_HEADER_BEGIN
+ #error "Please include config.h first."
+#endif
 _GL_INLINE_HEADER_BEGIN
 #ifndef _GL_PTHREAD_INLINE
 # define _GL_PTHREAD_INLINE _GL_INLINE

@@ -1,5 +1,5 @@
 /* Tests of chown.
-   Copyright (C) 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -57,9 +57,9 @@ test_chown (int (*func) (char const *, uid_t, gid_t), bool print)
   ASSERT (mkdir (BASE "dir", 0700) == 0);
   ASSERT (stat (BASE "dir", &st1) == 0);
 
-  /* Filter out mingw, which has no concept of groups.  */
+  /* Filter out mingw and file systems which have no concept of groups.  */
   result = func (BASE "dir", st1.st_uid, getegid ());
-  if (result == -1 && errno == ENOSYS)
+  if (result == -1 && (errno == ENOSYS || errno == EPERM))
     {
       ASSERT (rmdir (BASE "dir") == 0);
       if (print)

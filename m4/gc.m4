@@ -1,11 +1,12 @@
 # gc.m4 serial 9
-dnl Copyright (C) 2005-2013 Free Software Foundation, Inc.
+dnl Copyright (C) 2005-2014 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 AC_DEFUN([gl_GC],
 [
+  AC_SUBST([LIB_CRYPTO])
   AC_ARG_WITH([libgcrypt],
     AS_HELP_STRING([--with-libgcrypt], [use libgcrypt for low-level crypto]),
     libgcrypt=$withval, libgcrypt=no)

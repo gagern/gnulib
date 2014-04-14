@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004, 2007-2013 Free Software Foundation, Inc.
+ * Copyright (C) 2004, 2007-2014 Free Software Foundation, Inc.
  * Written by Bruno Haible and Eric Blake
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,8 +37,9 @@ main (int argc, char *argv[])
      caused by SIGALRM.  All known platforms that lack alarm also have
      a quadratic strstr, and the replacement strstr is known to not
      take too long.  */
+  int alarm_value = 50;
   signal (SIGALRM, SIG_DFL);
-  alarm (50);
+  alarm (alarm_value);
 #endif
 
   {

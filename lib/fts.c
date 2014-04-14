@@ -1,6 +1,6 @@
 /* Traverse a file hierarchy.
 
-   Copyright (C) 2004-2013 Free Software Foundation, Inc.
+   Copyright (C) 2004-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -1447,19 +1447,21 @@ fts_build (register FTS *sp, int type)
         nitems = 0;
         while (cur->fts_dirp) {
                 bool is_dir;
+                size_t d_namelen;
                 struct dirent *dp = readdir(cur->fts_dirp);
                 if (dp == NULL)
                         break;
                 if (!ISSET(FTS_SEEDOT) && ISDOT(dp->d_name))
                         continue;
 
-                if ((p = fts_alloc (sp, dp->d_name,
-                                    _D_EXACT_NAMLEN (dp))) == NULL)
+                d_namelen = _D_EXACT_NAMLEN (dp);
+                p = fts_alloc (sp, dp->d_name, d_namelen);
+                if (!p)
                         goto mem1;
-                if (_D_EXACT_NAMLEN (dp) >= maxlen) {
+                if (d_namelen >= maxlen) {
                         /* include space for NUL */
                         oldaddr = sp->fts_path;
-                        if (! fts_palloc(sp, _D_EXACT_NAMLEN (dp) + len + 1)) {
+                        if (! fts_palloc(sp, d_namelen + len + 1)) {
                                 /*
                                  * No more memory.  Save
                                  * errno, free up the current structure and the
@@ -1483,7 +1485,7 @@ mem1:                           saved_errno = errno;
                         maxlen = sp->fts_pathlen - len;
                 }
 
-                new_len = len + _D_EXACT_NAMLEN (dp);
+                new_len = len + d_namelen;
                 if (new_len < len) {
                         /*
                          * In the unlikely event that we would end up

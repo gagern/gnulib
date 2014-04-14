@@ -5,7 +5,7 @@
 @c For double-sided printing, uncomment:
 @c @setchapternewpage odd
 @c This date is automagically updated when you save this file:
-@set lastupdate February 13, 2013
+@set lastupdate March 19, 2014
 @c %**end of header
 
 @dircategory GNU organization
@@ -24,7 +24,7 @@ Information for maintainers of GNU software, last updated @value{lastupdate}.
 
 Copyright @copyright{} 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-2010, 2011, 2012, 2013 Free Software Foundation, Inc.
+2010, 2011, 2012, 2013, 2014 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -147,11 +147,11 @@ committee members.  Additional information is in
 
 @cindex down, when GNU machines are
 @cindex outage, of GNU machines
-@cindex @url{http://identi.ca/group/fsfstatus}
+@cindex @url{https://pumprock.net/fsfstatus}
 If you find that any GNU computer systems (@code{fencepost.gnu.org},
 @code{ftp.gnu.org}, @code{www.gnu.org}, @code{savannah.gnu.org},
 @dots{}) seem to be down, you can check the current status at
-@url{http://identi.ca/group/fsfstatus}.  Most likely the problem, if
+@url{http://pumprock.net/fsfstatus}.  Most likely the problem, if
 it can be alleviated at the FSF end, is already being worked on.
 
 @cindex sysadmin, FSF
@@ -284,6 +284,7 @@ as you maintain the program, to avoid legal difficulties.
 * Copyright Notices::
 * License Notices::
 * External Libraries::
+* Crediting Authors::
 @end menu
 
 @node Copyright Papers
@@ -292,13 +293,19 @@ as you maintain the program, to avoid legal difficulties.
 @cindex assignments, copyright
 @cindex disclaimers
 
-If you maintain an FSF-copyrighted package
-certain legal procedures are required when incorporating legally significant
-changes written by other people.  This ensures that the FSF has the
-legal right to distribute the package, and the standing to defend its
-GPL-covered status in court if necessary.
+If you maintain an FSF-copyrighted package, certain legal procedures
+are required when incorporating legally significant changes written by
+other people.  This ensures that the FSF has the legal right to
+distribute the package, and the standing to defend its GPL-covered
+status in court if necessary.
 
-@strong{Before} incorporating significant changes, make sure that the
+GNU packages need not be FSF-copyrighted; this is up to the author(s),
+generally at the time the package is dubbed GNU.  When copyright is
+assigned to the FSF, the FSF can act to stop GPL violations about the
+package.  Otherwise, legal actions are up to the author(s).  The rest
+of this section is about the case when a package is FSF-copyrighted.
+
+@emph{Before} incorporating significant changes, make sure that the
 person who wrote the changes has signed copyright papers and that the
 Free Software Foundation has received and signed them.  We may also
 need an employer's disclaimer from the person's employer, which
@@ -385,16 +392,19 @@ When the contributor emails the form to the FSF, the FSF sends per an
 electronic (usually PDF) copy of the assignment.  This, or whatever
 response is required, should happen within five business days of the
 initial request.  If no reply from the FSF comes after that time,
-please send a reminder.  If you still get no response after an
+please send a reminder.  If there is still no response after an
 additional week, please write to @email{maintainers@@gnu.org} about it.
 
-After receiving the necessary form, all contributors then print it and
-sign it.  Contributors located in the USA or Germany can then email or
-fax a scanned copy back to the FSF (or use postal mail, if they
-prefer).  Contributors residing outside the USA or Germany must mail
-the signed form to the FSF via postal mail.  To emphasize, the
-necessary distinction is between residents and non-residents of these
-countries; citizenship does not matter.
+After receiving the necessary form, the contributor needs to sign it.
+Contributors residing in the USA may use GPG in order to sign their
+assignment.  Contributors located in the USA or Germany can print,
+sign, and then email (or fax) a scanned copy back to the FSF.
+(Specific instructions for both cases are sent with the assignment
+form.)  They may use postal mail, if they prefer. Contributors
+residing outside the USA or Germany must mail the signed form to the
+FSF via postal mail.  To emphasize, the necessary distinction is
+between residents and non-residents of these countries; citizenship
+does not matter.
 
 For less common cases, we have template files you should send to the
 contributor.  Be sure to fill in the name of the person and the name
@@ -1039,6 +1049,18 @@ methods only for general-purpose modules that were written for other
 programs and released separately for general use.  For anything that was
 written as a contribution to your package, please get papers signed.
 
+@node Crediting Authors
+@section Crediting Authors
+@cindex crediting authors
+
+Strictly speaking, this is not a legal issue, but it seems to belong
+with copyright notices.
+
+In any FSF-copyrighted GNU package, the authors of a file are not
+named in the copyright notice.  Therefore, it is nice to include a
+comment line @samp{Authors: @var{authors of this file}} at the top
+near the copyright notice, to give them credit in close association
+with their contribution.
 
 @node Clean Ups
 @chapter Cleaning Up Changes
@@ -1073,7 +1095,6 @@ Standards}).  The Emacs Lisp manual contains an appendix that gives
 coding standards for Emacs Lisp programs; it is good to urge Lisp authors to
 read it (@pxref{Tips, , Tips and Conventions, elisp, The GNU Emacs Lisp
 Reference Manual}).
-
 
 @node Platforms
 @chapter Platforms to Support
@@ -1202,11 +1223,8 @@ have an account there, please read
 @url{http://www.gnu.org/software/README.accounts.html} (@pxref{GNU
 Accounts and Resources}).
 
-But if you don't want to learn how to do those things, you can
-alternatively ask @email{alias-file@@gnu.org} to add you to the
-bug-reporting list for your program.  To set up a new list, contact
-@email{new-mailing-list@@gnu.org}.  You can subscribe to a list managed
-by Mailman by sending mail to the corresponding @samp{-request} address.
+But if you don't want to learn how to do those things, you can ask
+@email{new-mailing-list@@gnu.org} to help you.
 
 @cindex spam prevention
 You should moderate postings from non-subscribed addresses on your
@@ -1326,6 +1344,7 @@ distributions.
 @menu
 * Distribution tar Files::
 * Distribution Patches::
+* Binary Distribution::
 * Distribution on ftp.gnu.org::
 * Test Releases::
 * Automated FTP Uploads::
@@ -1419,6 +1438,22 @@ which subdirectory to find each file in.
 It's wise to test your patch by applying it to a copy of the old
 version, and checking that the result exactly matches the new version.
 
+@node Binary Distribution
+@section Binary Distribution for Nonfree Platforms
+
+Some package maintainers release pre-compiled binaries proprietary
+for systems such as Microsoft Windows or MacOS.  It's entirely up to you
+whether to do that; we don't ask you to do it, but we don't object.
+Please do not let anyone make you feel you have an obligation to do
+this.
+
+If you distribute them, please inform their users prominently that
+those non-free platforms trample their freedom.  It is useful to refer
+them to
+@url{http://www.gnu.org/philosophy/free-software-even-more-important.html}.
+You can say, ``This program respects your freedom, but Windows does
+not.  To have freedom, you need to stop using Windows and other
+software that denies your freedom.''
 
 @node Distribution on ftp.gnu.org
 @section Distribution on @code{ftp.gnu.org}
@@ -1526,9 +1561,11 @@ maintain the web pages at @url{http://www.gnu.org} for your project
 
 @item
 In the @samp{My Account Conf} page on @code{savannah}, upload the GPG
-key you will use to sign your packages.  If you haven't created one
-before, you can do so with the command @code{gpg --gen-key} (you can
-accept and/or confirm the default answers to its questions).
+key (in ASCII-armored format) that you will use to sign your packages.
+If you haven't created one before, you can do so with the command
+@code{gpg --gen-key} (you can accept and/or confirm the default
+answers to its questions).  Then, to get the ASCII-armored version,
+run @samp{gpg --export --armor @var{your_key_id}}.
 
 Optional but recommended: Send your key to a GPG public key server:
 @code{gpg --keyserver keys.gnupg.net --send-keys @var{keyid}}, where
@@ -1548,8 +1585,7 @@ Name of package(s) that you are the maintainer for, your
 preferred email address, and your Savannah username.
 
 @item
-An ASCII armored copy of your GPG key, as an attachment.  (@samp{gpg
---export -a @var{your_key_id} >mykey.asc} should give you this.)
+The ASCII armored copy of your GPG key, as an attachment.
 
 @item
 A list of names and preferred email addresses of other individuals you
@@ -1567,6 +1603,10 @@ corresponding packages.
 
 The upload system will email receipts to the given email addresses
 when an upload is made, either successfully or unsuccessfully.
+
+Should you later have to update your GPG key, you'll have to re-submit
+it to both Savannah and @email{ftp-upload@@gnu.org}, as these systems
+are not connected.
 
 
 @node Automated Upload Procedure
@@ -1610,7 +1650,10 @@ One programmatic way to create and transfer the necessary files is to
 use the @code{gnupload} script, which is available from the
 @file{build-aux/} directory of the @code{gnulib} project at
 @url{http://savannah.gnu.org/projects/gnulib}.  Run
-@code{gnupload@tie{}--help} for a description and examples.
+@code{gnupload@tie{}--help} for a description and examples.  (With
+@code{gnupload}, you specify a destination such as
+@samp{ftp.gnu.org:}@var{pkgname} rather than using the
+@samp{ftp-upload} hostname.)
 
 @code{gnupload} invokes the program @code{ncftpput} to do the actual
 transfers; if you don't happen to have the @code{ncftp} package
@@ -1701,8 +1744,9 @@ is optional, and ignored if present:@*
 @t{comment: let's hope this works!}
 @end table
 
-Putting the above together, the complete contents of the directive
-file @file{foo-1.0.tar.gz.directive} for our example would be:
+Putting all of the above together, the complete contents of the
+directive file @file{foo-1.0.tar.gz.directive} for our example would
+be:
 
 @example
 version: 1.2
@@ -1953,7 +1997,8 @@ Please also post release announcements in the news section of your
 Savannah project site.  Here, it is fine to also write news entries
 for test releases and any other newsworthy events.  The news feeds
 from all GNU projects at savannah are aggregated at
-@url{http://planet.gnu.org} (GNU Planet).  You can also post items
+@url{http://planet.gnu.org} (GNU Planet), unless the text of the entry
+contains the string @samp{::noplanet::}.  You can also post items
 directly, or arrange for feeds from other locations; see information
 on the GNU Planet web page.
 
@@ -2031,7 +2076,7 @@ on @code{www.gnu.org} link to that site.
 
 The best way to maintain the web pages for your project is to register
 the project on @code{savannah.gnu.org}.  Then you can edit the pages
-using CVS, using the separate ``web repository'' available on
+using CVS, using the separate ``web pages repository'' available on
 Savannah, which corresponds to
 @indicateurl{http://www.gnu.org/software/@var{package}/}.  You can
 keep your source files there too (using any of a variety of version
@@ -2293,7 +2338,7 @@ our position by recommending use of documentation that isn't free.
 
 Please don't host discussions about your package in a service that
 requires nonfree software.  For instance, Google+ ``communities''
-require running a nonfree Javascript program to post a message, so
+require running a nonfree JavaScript program to post a message, so
 they can't be used in the Free World.  To host discussions there would
 be excluding people who live by free software principles.
 
@@ -2347,7 +2392,7 @@ However, due to the much greater publicity that the term ``open source''
 receives, the GNU Project needs to overcome a widespread
 mistaken impression that GNU is @emph{and always was} an ``open
 source'' activity.  For this reason, please use the term ``free
-software'', not ``open source'', in GNU software releases, GNU
+software'', not ``open source'' or ``FOSS'', in GNU software releases, GNU
 documentation, and announcements and articles that you publish in your
 role as the maintainer of a GNU package.  A reference to the URL given
 above, to explain the difference, is a useful thing to include as
@@ -2393,15 +2438,17 @@ forms such as ``Linux-based systems'' because those fail to highlight
 the difference between the kernel and the system, and could encourage
 readers to overlook the distinction.
 
-To contrast the GNU system properly with respect to GNU/Linux, you can
-call it ``GNU/Hurd'' or ``the GNU/Hurd system''.  However, when that
-contrast is not specifically the focus, please call it just ``GNU'' or
-``the GNU system''.
+To contrast the GNU system proper with GNU/Linux, you can call it
+``GNU/Hurd'' or ``the GNU/Hurd system''.  However, when that contrast
+is not specifically the focus, please call it just ``GNU'' or ``the
+GNU system''.
 
 When referring to the collection of servers that is the higher level
 of the GNU kernel, please call it ``the Hurd'' or ``the GNU Hurd''.
 Note that this uses a space, not a slash.
 
+For more about this point, see
+@url{http://www.gnu.org/gnu/gnu-linux-faq.html}.
 
 @node Interviews and Speeches
 @chapter Interviews and Speeches
@@ -2553,6 +2600,14 @@ Thanks for your support!
 We don't recommend any specific payment service.  However, GNU
 developers should not use a service that requires them to sign a
 proprietary software license, such as Google's payment service.
+Please also avoid sites that requires users to run nonfree software in
+order to donate.  (This includes JavaScript software, so try it with
+LibreJS or with JavaScript disabled.)
+
+In the text you post on the site, please pay attention to the
+terminological issues we care about (@pxref{Terminology}).
+
+We have no objections to using Bitcoin to receive donations.
 
 The FSF can collect donations for a limited number of projects; if you
 want to propose that for your project, write to

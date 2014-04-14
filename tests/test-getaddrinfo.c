@@ -1,6 +1,6 @@
 /* Test the getaddrinfo module.
 
-   Copyright (C) 2006-2013 Free Software Foundation, Inc.
+   Copyright (C) 2006-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -114,6 +114,8 @@ simple (char const *host, char const *service)
 
   for (ai = ai0; ai; ai = ai->ai_next)
     {
+      void *ai_addr = ai->ai_addr;
+      struct sockaddr_in *sock_addr = ai_addr;
       dbgprintf ("\tflags %x\n", ai->ai_flags);
       dbgprintf ("\tfamily %x\n", ai->ai_family);
       dbgprintf ("\tsocktype %x\n", ai->ai_socktype);
@@ -121,8 +123,7 @@ simple (char const *host, char const *service)
       dbgprintf ("\taddrlen %ld: ", (unsigned long) ai->ai_addrlen);
       dbgprintf ("\tFound %s\n",
                  inet_ntop (ai->ai_family,
-                            &((struct sockaddr_in *)
-                              ai->ai_addr)->sin_addr,
+                            &sock_addr->sin_addr,
                             buf, sizeof (buf) - 1));
       if (ai->ai_canonname)
         dbgprintf ("\tFound %s...\n", ai->ai_canonname);

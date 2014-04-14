@@ -1,5 +1,5 @@
 /* gc-gnulib.c --- Common gnulib internal crypto interface functions
- * Copyright (C) 2002-2013 Free Software Foundation, Inc.
+ * Copyright (C) 2002-2014 Free Software Foundation, Inc.
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -48,7 +48,7 @@
 #ifdef GNULIB_GC_SHA1
 # include "sha1.h"
 #endif
-#if defined(GNULIB_GC_HMAC_MD5) || defined(GNULIB_GC_HMAC_SHA1)
+#if defined(GNULIB_GC_HMAC_MD5) || defined(GNULIB_GC_HMAC_SHA1) || defined(GNULIB_GC_HMAC_SHA256) || defined(GNULIB_GC_HMAC_SHA512)
 # include "hmac.h"
 #endif
 
@@ -911,6 +911,26 @@ gc_hmac_sha1 (const void *key, size_t keylen,
               const void *in, size_t inlen, char *resbuf)
 {
   hmac_sha1 (key, keylen, in, inlen, resbuf);
+  return GC_OK;
+}
+#endif
+
+#ifdef GNULIB_GC_HMAC_SHA256
+Gc_rc
+gc_hmac_sha256 (const void *key, size_t keylen,
+                const void *in, size_t inlen, char *resbuf)
+{
+  hmac_sha256 (key, keylen, in, inlen, resbuf);
+  return GC_OK;
+}
+#endif
+
+#ifdef GNULIB_GC_HMAC_SHA512
+Gc_rc
+gc_hmac_sha512 (const void *key, size_t keylen,
+                const void *in, size_t inlen, char *resbuf)
+{
+  hmac_sha512 (key, keylen, in, inlen, resbuf);
   return GC_OK;
 }
 #endif

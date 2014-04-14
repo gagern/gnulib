@@ -1,6 +1,6 @@
 /* Save the list of files in a directory in a string.
 
-   Copyright (C) 1997, 1999, 2001, 2003, 2005, 2009-2013 Free Software
+   Copyright (C) 1997, 1999, 2001, 2003, 2005, 2009-2014 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,20 @@
 #define _GL_SAVEDIR_H
 
 #include <dirent.h>
-char *streamsavedir (DIR *dirp);
-char *savedir (char const *dir);
-char *fdsavedir (int fd); /* deprecated */
+
+enum savedir_option
+  {
+    SAVEDIR_SORT_NONE,
+    SAVEDIR_SORT_NAME,
+#if D_INO_IN_DIRENT
+    SAVEDIR_SORT_INODE,
+    SAVEDIR_SORT_FASTREAD = SAVEDIR_SORT_INODE
+#else
+    SAVEDIR_SORT_FASTREAD = SAVEDIR_SORT_NONE
+#endif
+  };
+
+char *streamsavedir (DIR *, enum savedir_option);
+char *savedir (char const *, enum savedir_option);
 
 #endif

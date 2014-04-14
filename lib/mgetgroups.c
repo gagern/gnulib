@@ -1,6 +1,6 @@
 /* mgetgroups.c -- return a list of the groups a user or current process is in
 
-   Copyright (C) 2007-2013 Free Software Foundation, Inc.
+   Copyright (C) 2007-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ mgetgroups (char const *username, gid_t gid, gid_t **groups)
       return -1;
     }
 
-  if (!username && gid != (gid_t) -1)
+  if (max_n_groups == 0 || (!username && gid != (gid_t) -1))
     max_n_groups++;
   g = realloc_groupbuf (NULL, max_n_groups);
   if (g == NULL)

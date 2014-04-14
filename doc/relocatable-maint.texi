@@ -8,7 +8,7 @@ and have it work correctly (including i18n).  So many users need to go
 through @code{configure; make; make install} with all its
 dependencies, options, and hurdles.
 
-Red Hat, Debian, and similar package systems solve the ``ease of
+Red Hat, Debian, and other binary distributions solve the ``ease of
 installation'' problem, but they hardwire path names, usually to
 @file{/usr} or @file{/usr/local}.  This means that users need root
 privileges to install a binary package, and prevents installing two
@@ -122,17 +122,57 @@ if test "@@RELOCATABLE@@" = yes; then
   orig_installdir="$bindir" # see Makefile.am's *_SCRIPTS variables
   func_find_curr_installdir # determine curr_installdir
   func_find_prefixes
-  # Relocate the directory variables that we use.
-  gettext_dir=`
-    echo "$gettext_dir/" \
+  relocate () @{
+    echo "$1/" \
     | sed -e "s%^$@{orig_installprefix@}/%$@{curr_installprefix@}/%" \
-    | sed -e 's,/$,,'`
+    | sed -e 's,/$,,'
+  @}
+else
+  relocate () @{
+    echo "$1"
+  @}
 fi
+
+# Get some relocated directory names.
+sysconfdir=`relocate "@@sysconfdir@@"`
+some_datadir=`relocate "@@datadir@@/something"`
 @end example
 
 You must adapt the definition of @code{orig_installdir}, depending on
 where the script gets installed.  Also, at the end, instead of
-@code{gettext_dir}, transform those variables that you need.
+@code{sysconfdir} and @code{some_datadir}, transform those variables
+that you need.
+
+@item
+If your package installs Perl scripts, also import the
+@code{relocatable-perl} module.  Then, near the beginning of each
+Perl script that your package installs, add the following:
+
+@example
+@@relocatable_pl@@
+if ("@@RELOCATABLE@@" eq "yes") @{
+  my $exec_prefix = "@@exec_prefix@@";
+  my $orig_installdir = "@@bindir@@"; # see Makefile.am's *_SCRIPTS variables
+  my ($orig_installprefix, $curr_installprefix) = find_prefixes($orig_installdir, find_curr_installdir());
+  sub relocate @{ # the subroutine is defined whether or not the enclosing block is executed
+    my ($dir) = @@_;
+    if ("@@RELOCATABLE@@" eq "yes") @{
+      $dir =~ s%^$orig_installprefix/%$curr_installprefix/%;
+      $dir =~ s,/$,,;
+    @}
+    return $dir;
+  @}
+@}
+
+# Get some relocated directory names.
+$sysconfdir = relocate("@@sysconfdir@@");
+$some_datadir = relocate(@@datadir@@/something");
+@end example
+
+You must adapt the definition of @code{$orig_installdir}, depending on
+where the script gets installed.  Also, at the end, instead of
+@code{sysconfdir} and @code{some_datadir}, transform those variables
+that you need.
 
 @item
 In your @file{Makefile.am}, for every program @command{foo} that gets

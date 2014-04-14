@@ -1,5 +1,5 @@
 # Makefile for gnulib doc.
-# Copyright (C) 2004, 2006-2013 Free Software Foundation, Inc.
+# Copyright (C) 2004, 2006-2014 Free Software Foundation, Inc.
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -39,7 +39,7 @@ INSTALL_PRELUDE = echo '@firstparagraphindent insert'
 
 OMIT_TRAILING_EMPTY_LINES = /^$$/H; /^$$/d; x; s/\n//p; s/\n*//; x
 
-# INSTALL file with old ASCII quotation marks (looks ugly on modern machines).
+# INSTALL file with directed ASCII quotation marks.
 INSTALL: install.texi
 	$(INSTALL_PRELUDE) | cat - $< > tmp.texi
 	$(MAKEINFO) --plaintext --no-validate tmp.texi \
@@ -55,10 +55,11 @@ INSTALL.UTF-8: INSTALL
 	sed -e "s/\`\([^']*\)'/‘\1’/g" $< > $@
 
 GNULIB_TEXI_FILES = $(filter-out maintain.texi make-stds.texi standards.texi,$(wildcard *.texi)) $(wildcard posix-headers/*.texi) $(wildcard posix-functions/*.texi) $(wildcard glibc-headers/*.texi) $(wildcard glibc-functions/*.texi)
+NEWEST_GNULIB_TEXI_FILE = $(shell ls -t $(GNULIB_TEXI_FILES) | sed 1q)
 
 # Date of last update. Requires GNU date.
 updated-stamp: $(GNULIB_TEXI_FILES)
-	date -u -r `ls -t $^ | sed 1q` +"@set UPDATED %F %T" > $@
+	date -u -r $(NEWEST_GNULIB_TEXI_FILE) +"@set UPDATED %F %T" > $@
 
 # Dependencies. Search for @include to find them all.
 gnulib.info gnulib.html gnulib.dvi gnulib.pdf: $(GNULIB_TEXI_FILES) updated-stamp

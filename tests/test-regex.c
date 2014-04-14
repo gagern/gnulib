@@ -1,5 +1,5 @@
 /* Test regular expressions
-   Copyright 1996-2001, 2003-2013 Free Software Foundation, Inc.
+   Copyright 1996-2001, 2003-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,10 +21,12 @@
 #include <locale.h>
 #include <limits.h>
 #include <string.h>
-#if HAVE_ALARM
+#if HAVE_DECL_ALARM
 # include <unistd.h>
 # include <signal.h>
 #endif
+
+#include "localcharset.h"
 
 int
 main (void)
@@ -36,7 +38,7 @@ main (void)
   const char *s;
   struct re_registers regs;
 
-#if HAVE_ALARM
+#if HAVE_DECL_ALARM
   /* Some builds of glibc go into an infinite loop on this test.  */
   int alarm_value = 2;
   signal (SIGALRM, SIG_DFL);
@@ -65,25 +67,41 @@ main (void)
           result |= 1;
       }
 
-      {
-        /* This test is from glibc bug 15078.
-           The test case is from Andreas Schwab in
-           <http://www.sourceware.org/ml/libc-alpha/2013-01/msg00967.html>.
-           */
-        static char const pat[] = "[^x]x";
-        static char const data[] =
-          "\xe1\x80\x80\xe1\x80\xbb\xe1\x80\xbd\xe1\x80\x94\xe1\x80"
-          "\xba\xe1\x80\xaf\xe1\x80\x95\xe1\x80\xbax";
-        re_set_syntax (0);
-        memset (&regex, 0, sizeof regex);
-        s = re_compile_pattern (pat, sizeof pat - 1, &regex);
-        if (s)
-          result |= 1;
-        else if (re_search (&regex, data, sizeof data - 1,
-                            0, sizeof data - 1, 0)
-                 != 21)
-          result |= 1;
-      }
+      /* Check whether it's really a UTF-8 locale.
+         On mingw, the setlocale call succeeds but returns
+         "English_United States.1252", with locale_charset() returning
+         "CP1252".  */
+      if (strcmp (locale_charset (), "UTF-8") == 0)
+        {
+          /* This test is from glibc bug 15078.
+             The test case is from Andreas Schwab in
+             <http://www.sourceware.org/ml/libc-alpha/2013-01/msg00967.html>.
+          */
+          static char const pat[] = "[^x]x";
+          static char const data[] =
+            /* <U1000><U103B><U103D><U1014><U103A><U102F><U1015><U103A> */
+            "\xe1\x80\x80"
+            "\xe1\x80\xbb"
+            "\xe1\x80\xbd"
+            "\xe1\x80\x94"
+            "\xe1\x80\xba"
+            "\xe1\x80\xaf"
+            "\xe1\x80\x95"
+            "\xe1\x80\xba"
+            "x";
+          re_set_syntax (0);
+          memset (&regex, 0, sizeof regex);
+          s = re_compile_pattern (pat, sizeof pat - 1, &regex);
+          if (s)
+            result |= 1;
+          else
+            {
+              i = re_search (&regex, data, sizeof data - 1,
+                             0, sizeof data - 1, 0);
+              if (i != 0 && i != 21)
+                result |= 1;
+            }
+        }
 
       if (! setlocale (LC_ALL, "C"))
         return 1;

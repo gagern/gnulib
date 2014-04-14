@@ -1,5 +1,5 @@
-# pty.m4 serial 12
-dnl Copyright (C) 2010-2013 Free Software Foundation, Inc.
+# pty.m4 serial 13
+dnl Copyright (C) 2010-2014 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -72,6 +72,8 @@ AC_DEFUN([gl_FUNC_FORKPTY],
     dnl The system does not have forkpty.
     HAVE_FORKPTY=0
   fi
+  AC_DEFINE_UNQUOTED([HAVE_FORKPTY], [$HAVE_FORKPTY],
+    [Define to 1 if the system has the 'forkpty' function.])
 ])
 
 AC_DEFUN([gl_FUNC_OPENPTY],

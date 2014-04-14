@@ -1,5 +1,5 @@
 /* Test userspec.c
-   Copyright (C) 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -180,6 +180,17 @@ main (void)
           fail = 1;
         }
     }
+
+  /* Ensure NULL parameters are ignored.  */
+  {
+    uid_t uid = (uid_t) -1;
+    char const *diag = parse_user_spec ("", &uid, NULL, NULL, NULL);
+    if (diag)
+      {
+        printf ("unexpected error: %s\n", diag);
+        fail = 1;
+      }
+  }
 
   return fail;
 }

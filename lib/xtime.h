@@ -1,6 +1,6 @@
 /* xtime -- extended-resolution integer time stamps
 
-   Copyright (C) 2005-2006, 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2005-2006, 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 #ifndef XTIME_H_
 #define XTIME_H_ 1
 
+#ifndef _GL_INLINE_HEADER_BEGIN
+ #error "Please include config.h first."
+#endif
 _GL_INLINE_HEADER_BEGIN
 #ifndef XTIME_INLINE
 # define XTIME_INLINE _GL_INLINE

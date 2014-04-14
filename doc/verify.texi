@@ -1,6 +1,6 @@
 @c GNU verify module documentation
 
-@c Copyright (C) 2006, 2009-2013 Free Software Foundation, Inc.
+@c Copyright (C) 2006, 2009-2014 Free Software Foundation, Inc.
 
 @c Permission is granted to copy, distribute and/or modify this document
 @c under the terms of the GNU Free Documentation License, Version 1.3
@@ -16,16 +16,18 @@
 @findex verify
 @findex verify_expr
 
-The @samp{verify} module supports compile-time tests, as opposed to
-the standard @code{assert} macro which supports only runtime tests.
-Since the tests occur at compile-time, they are more reliable, and
-they require no runtime overhead.
+This module provides a header file @file{verify.h} that defines
+macros related to compile-time verification.
 
-This module provides a header file @file{verify.h} that defines two
-macros: @code{verify (@var{V})} and @code{verify_expr
+Two of these macros are @code{verify (@var{V})} and @code{verify_expr
 (@var{V}, @var{EXPR})}.  Both accept an integer constant expression
 argument @var{V} and verify that it is nonzero.  If not, a compile-time error
 results.
+
+These two macros implement compile-time tests, as opposed to
+the standard @code{assert} macro which supports only runtime tests.
+Since the tests occur at compile-time, they are more reliable, and
+they require no runtime overhead.
 
 @code{verify (@var{V});} is a declaration; it can occur outside of
 functions.  In contrast, @code{verify_expr (@var{V}, @var{EXPR})} is
@@ -60,7 +62,20 @@ within a @code{struct} or @code{union} specifier, in place of an
 ordinary member declaration.  Second, they require the programmer to
 specify a compile-time diagnostic as a string literal.
 
-Here are some example uses of @code{verify} and @code{verify_expr}.
+The @file{verify.h} header defines one more macro, @code{assume
+(@var{E})}, which expands to an expression of type @code{void}
+that causes the compiler to assume that @var{E} yields a nonzero
+value.  @var{E} should be a scalar expression, and should not
+have side effects; it may or may not be evaluated.  The behavior is
+undefined if @var{E} would yield zero.  The main use of @code{assume}
+is optimization, as the compiler may be able to generate better code
+if it assumes @var{E}.  For best results, @var{E} should be simple
+enough that a compiler can determine that it has no side effects: if
+@var{E} calls an external function or accesses volatile storage the
+compiler may not be able to optimize @var{E} away and @code{assume
+(@var{E})} may therefore slow down the program.
+
+Here are some example uses of these macros.
 
 @example
 #include <verify.h>
@@ -87,4 +102,18 @@ verify (~ (time_t) -1 == 0);
    even when T is narrower than unsigned int.  */
 #define MAX_UNSIGNED_VAL(t) \
    ((T) verify_expr (0 < (T) -1, -1))
+
+/* Return T divided by CHAR_MAX + 1, where behavior is
+   undefined if T < 0.  In the common case where CHAR_MAX
+   is 127 the compiler can therefore implement the division
+   by shifting T right 7 bits, an optimization that would
+   not be valid if T were negative.  */
+time_t
+time_index (time_t t)
+@{
+  assume (0 <= t);
+  return t / (CHAR_MAX + 1);
+@}
+
+
 @end example

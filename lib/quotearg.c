@@ -1,6 +1,6 @@
 /* quotearg.c - quote arguments for output
 
-   Copyright (C) 1998-2002, 2004-2013 Free Software Foundation, Inc.
+   Copyright (C) 1998-2002, 2004-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -348,7 +348,12 @@ quotearg_buffer_restyled (char *buffer, size_t buffersize,
 
       if (backslash_escapes
           && quote_string_len
-          && i + quote_string_len <= argsize
+          && (i + quote_string_len
+              <= (argsize == SIZE_MAX && 1 < quote_string_len
+                  /* Use strlen only if we must: when argsize is SIZE_MAX,
+                     and when the quote string is more than 1 byte long.
+                     If we do call strlen, save the result.  */
+                  ? (argsize = strlen (arg)) : argsize))
           && memcmp (arg + i, quote_string, quote_string_len) == 0)
         {
           if (elide_outer_quotes)
@@ -621,7 +626,7 @@ quotearg_buffer_restyled (char *buffer, size_t buffersize,
 
       if (! ((backslash_escapes || elide_outer_quotes)
              && quote_these_too
-             && quote_these_too[c / INT_BITS] & (1 << (c % INT_BITS)))
+             && quote_these_too[c / INT_BITS] >> (c % INT_BITS) & 1)
           && !is_right_quote)
         goto store_c;
 

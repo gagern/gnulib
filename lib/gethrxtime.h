@@ -1,6 +1,6 @@
 /* gethrxtime -- get high resolution real time
 
-   Copyright (C) 2005, 2009-2013 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2009-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@
 
 #include "xtime.h"
 
+#ifndef _GL_INLINE_HEADER_BEGIN
+ #error "Please include config.h first."
+#endif
 _GL_INLINE_HEADER_BEGIN
 #ifndef GETHRXTIME_INLINE
 # define GETHRXTIME_INLINE _GL_INLINE

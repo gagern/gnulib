@@ -1,5 +1,5 @@
 /* Test manipulation of non-blocking flag.
-   Copyright (C) 2011-2013 Free Software Foundation, Inc.
+   Copyright (C) 2011-2014 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -124,7 +124,7 @@ main (void)
   }
   {
     errno = 0;
-    ASSERT (set_nonblocking_flag (10000000, false) == -1);
+    ASSERT (set_nonblocking_flag (getdtablesize (), false) == -1);
     ASSERT (errno == EBADF);
   }
 

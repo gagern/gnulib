@@ -1,7 +1,7 @@
 /* Determine whether string value is affirmation or negative response
    according to current locale's data.
 
-   Copyright (C) 1996, 1998, 2000, 2002-2003, 2006-2013 Free Software
+   Copyright (C) 1996, 1998, 2000, 2002-2003, 2006-2014 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -110,7 +110,10 @@ try (const char *response, const char *pattern, char **lastp, regex_t *re)
         return -1;
       /* Compile the pattern and cache it for future runs.  */
       if (regcomp (re, safe_pattern, REG_EXTENDED) != 0)
-        return -1;
+        {
+          free (safe_pattern);
+          return -1;
+        }
       *lastp = safe_pattern;
     }
 
