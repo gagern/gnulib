@@ -44,7 +44,8 @@ _GL_INLINE_HEADER_BEGIN
     do                                                                  \
       {                                                                 \
         unsigned long result;                                           \
-        return MSC_BUILTIN (&result, x) ? result : CHAR_BIT * sizeof x; \
+        unsigned long bitsize = CHAR_BIT * sizeof x;                    \ 
+        return MSC_BUILTIN (&result, x) ? result^(bitsize-1) : bitsize; \
       }                                                                 \
     while (0)
 #else
